@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧成語接龍小遊戲</title>
+    <style>
+        :root {
+            --primary-color: #4a3728;
+            --secondary-color: #8b5a2b;
+            --bg-color: #f4efe8;
+            --card-bg: #ffffff;
+            --accent-color: #d9534f;
+        }
+
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            border: 2px solid var(--secondary-color);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-top: 0;
+            border-bottom: 2px dashed var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .status-panel {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+
+        .word-display-box {
+            background: #fdfaf6;
+            border: 1px solid #e6dfd3;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .current-word {
+            font-size: 2rem;
+            letter-spacing: 5px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .target-char {
+            font-size: 1.1rem;
+            color: #666;
+        }
+
+        .target-char span {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.4rem;
+            border: 1px solid var(--accent-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #fff0f0;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.2rem;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            text-align: center;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--secondary-color);
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-color);
+        }
+
+        .message {
+            min-height: 24px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .success { color: #28a745; }
+        .error { color: var(--accent-color); }
+
+        .history-section {
+            margin-top: 20px;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            color: #777;
+            margin-bottom: 5px;
+        }
+
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            list-style: none;
+            margin: 0;
+        }
+
+        .history-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        
+        .history-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>古典成語接龍</h1>
+    
+    <div class="status-panel">
+        <div>得分：<span id="score">0</span></div>
+        <div>已接：<span id="count">0</span> 題</div>
+    </div>
+
+    <div class="word-display-box">
+        <div class="current-word" id="current-word">一心一意</div>
+        <div class="target-char">請用紅字接龍：下一題開頭必須是 <span id="target-char">意</span></div>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="user-input" placeholder="請輸入四字成語" maxlength="4" autocomplete="off">
+        <button id="submit-btn">提交</button>
+    </div>
+
+    <div id="message-box" class="message"></div>
+
+    <div class="history-section">
+        <div class="history-title">接龍紀錄：</div>
+        <ul class="history-list" id="history-list">
+            </ul>
+    </div>
+</div>
+
+<script>
+    // 1. 內建小型成語資料庫（供基本的成語合法性驗證，實務上可再自行擴充）
+    const idiomDictionary = [
+        "一心一意", "意氣風發", "發揚光大", "大功告成", "成群結隊", 
+        "隊伍整齊", "齊心協力", "力不從心", "心安理得", "得寸進尺", 
+        "尺璧非寶", "寶刀未老", "老當益壯", "壯志凌雲", "雲淡風輕", 
+        "輕而易舉", "舉一反三", "三思而行", "行雲流水", "水落石出",
+        "出人頭地", "地大物博", "博古通今", "今非昔比", "比比皆是",
+        "是非分明", "明辨是非", "明知故犯", "犯上作亂", "亂七八糟"
+    ];
+
+    // 2. 遊戲狀態變數
+    let currentIdiom = "一心一意";
+    let targetChar = "意";
+    let score = 0;
+    let comboCount = 0;
+    let usedIdioms = new Set([currentIdiom]); // 防止重複輸入相同的成語
+
+    // 3. 取得 DOM 元素
+    const currentWordEl = document.getElementById('current-word');
+    const targetCharEl = document.getElementById('target-char');
+    const userInputEl = document.getElementById('user-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const messageBoxEl = document.getElementById('message-box');
+    const scoreEl = document.getElementById('score');
+    const countEl = document.getElementById('count');
+    const historyListEl = document.getElementById('history-list');
+
+    // 初始化遊戲畫面
+    function initGame() {
+        updateDisplay();
+        addHistoryLog(currentIdiom, true);
+    }
+
+    // 更新畫面顯示
+    function updateDisplay() {
+        currentWordEl.textContent = currentIdiom;
+        targetChar = currentIdiom.charAt(currentIdiom.length - 1); // 取得最後一個字
+        targetCharEl.textContent = targetChar;
+        scoreEl.textContent = score;
+        countEl.textContent = comboCount;
+    }
+
+    // 顯示提示訊息
+    function showMessage(text, type) {
+        messageBoxEl.textContent = text;
+        messageBoxEl.className = "message " + type;
+    }
+
+    // 新增歷史紀錄
+    function addHistoryLog(word, isSystem = false) {
+        const li = document.createElement('li');
+        li.textContent = isSystem ? `[起手式] ${word}` : `➔ ${word}`;
+        historyListEl.insertBefore(li, historyListEl.firstChild); // 最新紀錄排在最上面
+    }
+
+    // 4. 核心檢查與提交邏輯
+    function checkAnswer() {
+        const inputVal = userInputEl.value.trim();
+
+        // 條件一：必須是四個字
+        if (inputVal.length !== 4) {
+            showMessage("請輸入正確的四字成語！", "error");
+            return;
+        }
+
+        // 條件二：首字必須符合上一題的尾字
+        const firstChar = inputVal.charAt(0);
+        if (firstChar !== targetChar) {
+            showMessage(`開頭字錯誤！必須以「${targetChar}」開頭。`, "error");
+            return;
+        }
+
+        // 條件三：不能重複使用已輸入過的成語
+        if (usedIdioms.has(inputVal)) {
+            showMessage("這個成語已經用過囉！", "error");
+            return;
+        }
+
+        // 條件四：驗證是否為真實成語（此處僅比對內建資料庫）
+        // 提示：為了遊戲體驗，如果不想限制太嚴格，可以把這個 if 區塊註解掉。
+        if (!idiomDictionary.includes(inputVal)) {
+            showMessage("查無此成語，請試試別的！（或擴充字庫）", "error");
+            return;
+        }
+
+        // 通過所有驗證，更新遊戲狀態
+        currentIdiom = inputVal;
+        usedIdioms.add(inputVal);
+        score += 10;
+        comboCount += 1;
+
+        showMessage("答對了！太厲害了！", "success");
+        addHistoryLog(inputVal);
+        updateDisplay();
+        
+        // 清空輸入框
+        userInputEl.value = "";
+    }
+
+    // 5. 事件監聽
+    submitBtn.addEventListener('click', checkAnswer);
+    
+    // 支援按下 Enter 鍵直接提交
+    userInputEl.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkAnswer();
+        }
+    });
+
+    // 啟動遊戲
+    initGame();
+</script>
+
+</body>
+</html>

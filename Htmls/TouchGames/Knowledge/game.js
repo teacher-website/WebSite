@@ -270,18 +270,13 @@ function renderDuelQ() {
   const q = pool[qIndex];
   duel.locked = [false, false];
   duel.roundOver = false;
-  duel.playerAns = [null, null];
   $("d-round").textContent = `第 ${qIndex + 1} / ${pool.length} 回合　${q.icon} ${q.subj}`;
   $("d-question").textContent = q.q;
   [0, 1].forEach(p => {
     $("d-side-" + p).classList.remove("locked");
     const grid = $("d-grid-" + p);
     grid.innerHTML = "";
-    // 每位玩家各自洗牌，選項順序不同
-    const idx = shuffle([0, 1, 2, 3].slice(0, q.opts.length));
-    const playerOpts = idx.map(i => q.opts[i]);
-    duel.playerAns[p] = idx.indexOf(q.ans);
-    playerOpts.forEach((opt, i) => {
+    q.opts.forEach((opt, i) => {
       const b = document.createElement("button");
       b.className = "answer-btn";
       b.innerHTML = `<span class="a-label">${LABELS[i]}</span><span>${opt}</span>`;
@@ -294,7 +289,7 @@ function renderDuelQ() {
 function answerDuel(p, i, btn) {
   if (duel.roundOver || duel.locked[p]) return;
   const q = pool[qIndex];
-  if (i === duel.playerAns[p]) {
+  if (i === q.ans) {
     duel.roundOver = true;
     stopTimer();
     const pts = 100 + Math.ceil(timeLeft) * 5;
@@ -333,7 +328,7 @@ function revealDuel(q) {
     const btns = $("d-grid-" + p).children;
     for (let i = 0; i < btns.length; i++) {
       btns[i].disabled = true;
-      if (i === duel.playerAns[p]) btns[i].classList.add("correct");
+      if (i === q.ans) btns[i].classList.add("correct");
     }
   });
 }
@@ -473,41 +468,6 @@ $("btn-full").onclick = () => {
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen().catch(() => {});
 };
-
-/* ── 切換題庫 ── */
-$("btn-bank").onclick = async () => {
-  if (!window.showOpenFilePicker) {
-    alert("您的瀏覽器不支援檔案選取，請使用 Chrome / Edge 並以 file:// 開啟");
-    return;
-  }
-  try {
-    const [h] = await window.showOpenFilePicker({
-      types: [{ description: 'JavaScript 題庫', accept: { 'text/javascript': ['.js'] } }],
-      multiple: false,
-    });
-    const file = await h.getFile();
-    const text = await file.text();
-    // 解析 QUESTION_BANK
-    const fn = new Function(text + '\n; return QUESTION_BANK;');
-    const bank = fn();
-    if (!bank || typeof bank !== 'object' || !Object.keys(bank).length) {
-      alert('⚠️ 無法從此檔案讀取題庫，請確認格式正確');
-      return;
-    }
-    // 替換全域題庫
-    Object.keys(QUESTION_BANK).forEach(k => delete QUESTION_BANK[k]);
-    Object.assign(QUESTION_BANK, bank);
-    // 顯示目前題庫名稱
-    const label = document.getElementById('bank-label');
-    if (label) { label.textContent = '📂 ' + h.name; label.style.display = 'block'; }
-    // 回到首頁並重新渲染科目
-    showScreen('screen-home');
-    sfx.correct();
-  } catch (e) {
-    if (e.name !== 'AbortError') alert('⚠️ 載入失敗：' + e.message);
-  }
-};
-
 document.addEventListener("contextmenu", e => e.preventDefault());
 /* 第一次觸控時喚醒音訊（瀏覽器限制） */
 document.addEventListener("pointerdown", () => { try { audio(); } catch (e) {} }, { once: true });

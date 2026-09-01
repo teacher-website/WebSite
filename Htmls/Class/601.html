@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>601 點名單</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI','Microsoft JhengHei',sans-serif; background:#fce4ec; min-height:100vh; padding:20px; }
+h1 { text-align:center; color:#c2185b; margin-bottom:8px; font-size:1.4rem; }
+.date-row { text-align:center; color:#888; font-size:.85rem; margin-bottom:14px; }
+.toolbar { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:14px; }
+button { padding:7px 14px; border:none; border-radius:10px; cursor:pointer; font-weight:bold; transition:opacity .2s; }
+button:hover { opacity:.82; }
+.stats { text-align:center; font-size:.88rem; color:#666; margin-bottom:14px; }
+.stats span { margin:0 8px; }
+.classroom-wrap { background:#fff9fb; border-radius:18px; padding:18px 24px; max-width:900px; margin:0 auto; box-shadow:0 4px 18px rgba(194,24,91,.1); }
+.board-label { text-align:center; background:#ce93d8; color:#fff; border-radius:12px; padding:8px 0; font-size:1rem; font-weight:bold; margin-bottom:12px; letter-spacing:.1em; }
+.bulletin-label { text-align:center; background:#f8bbd0; color:#c2185b; border-radius:12px; padding:6px 0; font-size:.9rem; font-weight:bold; margin-bottom:12px; letter-spacing:.1em; }
+.seat-area { display:flex; align-items:stretch; gap:8px; }
+.side-label { writing-mode:vertical-rl; text-orientation:upright; background:#ffe082; color:#795548; border-radius:10px; padding:10px 6px; font-size:.85rem; font-weight:bold; display:flex; align-items:center; justify-content:center; min-width:32px; }
+.grid { flex:1; display:grid; gap:8px; }
+.seat { background:#fff; border:2px dashed #e0e0e0; border-radius:12px; min-height:72px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:border-color .2s,background .2s; padding:6px; user-select:none; }
+.seat.empty-slot { color:#ccc; font-size:.9rem; border-color:#eee; }
+.seat.occupied { border:2px solid #f48fb1; background:#fff0f5; }
+.seat.present { background:#e8f5e9; border-color:#81c784; }
+.seat.absent  { background:#ffeaea; border-color:#ef9a9a; }
+.seat.late    { background:#fff8e1; border-color:#ffd54f; }
+.seat.leave   { background:#e3f2fd; border-color:#90caf9; }
+.seat-name { font-size:.85rem; font-weight:bold; color:#555; text-align:center; line-height:1.3; }
+.seat-num { position:absolute; top:4px; left:7px; font-size:.65rem; color:#bbb; }
+.seat-status { font-size:.72rem; margin-top:3px; border-radius:6px; padding:1px 6px; font-weight:bold; }
+.present .seat-status { color:#388e3c; background:#c8e6c9; }
+.absent  .seat-status { color:#c62828; background:#ffcdd2; }
+.late    .seat-status { color:#f57f17; background:#fff9c4; }
+.leave   .seat-status { color:#1565c0; background:#bbdefb; }
+.popup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.25); z-index:100; align-items:center; justify-content:center; }
+.popup-overlay.show { display:flex; }
+.popup { background:#fff; border-radius:16px; padding:24px 30px; min-width:240px; box-shadow:0 8px 32px rgba(0,0,0,.18); text-align:center; }
+.popup h3 { color:#c2185b; margin-bottom:16px; font-size:1.1rem; }
+.popup-btns { display:flex; flex-direction:column; gap:10px; }
+.popup-btns button { font-size:.95rem; padding:9px; }
+.btn-present { background:#a5d6a7; color:#2e7d32; }
+.btn-absent  { background:#ef9a9a; color:#b71c1c; }
+.btn-late    { background:#ffe082; color:#f57f17; }
+.btn-leave   { background:#90caf9; color:#1565c0; }
+.btn-unset   { background:#e0e0e0; color:#555; }
+.btn-swap    { background:#ce93d8; color:#6a1b9a; }
+.btn-cancel  { background:#f5f5f5; color:#555; margin-top:4px; }
+@media print {
+  body { background:#fff; padding:0; }
+  .toolbar, .stats { display:none; }
+  .classroom-wrap { box-shadow:none; max-width:100%; }
+  .seat { min-height:60px; }
+}
+</style>
+</head>
+<body>
+<h1>📋 601 點名單</h1>
+<div class="date-row" id="dateRow"></div>
+<div class="toolbar">
+  <button style="background:#ef9a9a;color:#fff" onclick="clearAllStatus()">🧹 清除出缺席</button>
+  <button style="background:#a5d6a7;color:#fff" onclick="setAll('present')">✅ 全部到課</button>
+  <button style="background:#90caf9;color:#fff" onclick="window.print()">🖨️ 列印</button>
+  <button style="background:#ffcc80;color:#555" onclick="exportCSV()">📊 匯出 CSV</button>
+  <button style="background:#9fa8da;color:#fff" onclick="exportConfig()">⚙️ 匯出設定檔</button>
+</div>
+<div class="stats">
+  <span>👥 總人數：<b id="statPlaced">0</b></span>
+  <span>✅ 到課：<b id="statPresent">0</b></span>
+  <span>❌ 缺席：<b id="statAbsent">0</b></span>
+  <span>⏰ 遲到：<b id="statLate">0</b></span>
+  <span>📝 請假：<b id="statLeave">0</b></span>
+</div>
+<div class="classroom-wrap">
+  <div class="bulletin-label">教室後方 ／ 布告欄</div>
+  <div class="seat-area">
+    <div class="side-label">後門</div>
+    <div class="grid" id="seatGrid"></div>
+    <div style="width:32px"></div>
+  </div>
+  <div class="board-label" style="margin-top:12px">講台 ／ 黑板</div>
+</div>
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup">
+    <h3 id="popupTitle">座位操作</h3>
+    <div class="popup-btns" id="popupBtns"></div>
+  </div>
+</div>
+<script>
+var rows = 8, cols = 4;
+var seats = [{"name":"60108陳庭瑋(110169)","status":""},{"name":"60116張子筠(110268)","status":""},{"name":"60124林郁恩(110278)","status":""},{"name":"","status":""},{"name":"60107郭亮哲(110223)","status":""},{"name":"60115劉秝宏(110271)","status":""},{"name":"60123林庭安(110157)","status":""},{"name":"","status":""},{"name":"60106郭孟思(110058)","status":""},{"name":"60114蔡明恆(110094)","status":""},{"name":"60122王翊倫(110209)","status":""},{"name":"","status":""},{"name":"60105洪睿廷(110138)","status":""},{"name":"60113吳柏揚(110229)","status":""},{"name":"60121余逸安(110235)","status":""},{"name":"","status":""},{"name":"60104林宬甫(110312)","status":""},{"name":"60112胡傳熙(110012)","status":""},{"name":"60120鈴木香織(110045)","status":""},{"name":"","status":""},{"name":"60103楊宸錦(110110)","status":""},{"name":"60111周揚政(110145)","status":""},{"name":"60119黃靖荋(110207)","status":""},{"name":"60127莊凱歆(110162)","status":""},{"name":"60102陳宣佑(110055)","status":""},{"name":"60110吳彥廷(110288)","status":""},{"name":"60118齊藤千玲(110070)","status":""},{"name":"60126譚旭筑(110217)","status":""},{"name":"60101李侑宸(110219)","status":""},{"name":"60109梁允杰(110030)","status":""},{"name":"60117黃暐筑(110098)","status":""},{"name":"60125林芮禾(110242)","status":""}];
+var ALL_NAMES = ["60101李侑宸(110219)","60102陳宣佑(110055)","60103楊宸錦(110110)","60104林宬甫(110312)","60105洪睿廷(110138)","60106郭孟思(110058)","60107郭亮哲(110223)","60108陳庭瑋(110169)","60109梁允杰(110030)","60110吳彥廷(110288)","60111周揚政(110145)","60112胡傳熙(110012)","60113吳柏揚(110229)","60114蔡明恆(110094)","60115劉秝宏(110271)","60116張子筠(110268)","60117黃暐筑(110098)","60118齊藤千玲(110070)","60119黃靖荋(110207)","60120鈴木香織(110045)","60121余逸安(110235)","60122王翊倫(110209)","60123林庭安(110157)","60124林郁恩(110278)","60125林芮禾(110242)","60126譚旭筑(110217)","60127莊凱歆(110162)"];
+var CLASS_NAME = "601";
+var swapPending = -1;
+
+document.getElementById('dateRow').textContent = '日期：' + new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
+
+function statusLabel(s) {
+  return {present:'✅ 到課',absent:'❌ 缺席',late:'⏰ 遲到',leave:'📝 請假','':'－'}[s]||'－';
+}
+function renderGrid() {
+  var grid = document.getElementById('seatGrid');
+  grid.style.gridTemplateColumns = 'repeat('+cols+', 1fr)';
+  grid.innerHTML = '';
+  seats.forEach(function(s, i) {
+    var div = document.createElement('div');
+    div.className = 'seat' + (s.name ? ' occupied ' + s.status : ' empty-slot');
+    div.dataset.idx = i;
+    div.innerHTML = '<span class="seat-num">'+(i+1)+'</span>'
+      + (s.name
+        ? '<span class="seat-name">'+s.name+'</span><span class="seat-status">'+statusLabel(s.status)+'</span>'
+        : '<span style="font-size:1.1rem;color:#ddd">空</span>');
+    div.addEventListener('click', function(){ onSeatClick(i); });
+    grid.appendChild(div);
+  });
+  updateStats();
+}
+function onSeatClick(idx) {
+  if (swapPending !== -1) { doSwap(swapPending, idx); swapPending = -1; renderGrid(); return; }
+  if (!seats[idx].name) return;
+  var s = seats[idx];
+  document.getElementById('popupTitle').textContent = '座位'+(idx+1)+'：'+s.name;
+  document.getElementById('popupBtns').innerHTML =
+    '<button class="btn-present" onclick="setStatus('+idx+',\'present\')">✅ 到課</button>'+
+    '<button class="btn-absent"  onclick="setStatus('+idx+',\'absent\')">❌ 缺席</button>'+
+    '<button class="btn-late"    onclick="setStatus('+idx+',\'late\')">⏰ 遲到</button>'+
+    '<button class="btn-leave"   onclick="setStatus('+idx+',\'leave\')">📝 請假</button>'+
+    '<button class="btn-unset"   onclick="setStatus('+idx+',\'\')">－ 清除狀態</button>'+
+    '<button class="btn-swap"    onclick="startSwap('+idx+')">🔀 交換座位</button>'+
+    '<button class="btn-cancel"  onclick="closePopup()">取消</button>';
+  document.getElementById('popupOverlay').classList.add('show');
+}
+function setStatus(idx, st) { seats[idx].status = st; closePopup(); renderGrid(); }
+function startSwap(idx) { swapPending = idx; closePopup(); alert('已選取「'+seats[idx].name+'」，請點選目標座位'); }
+function doSwap(a, b) { var t = seats[a]; seats[a] = seats[b]; seats[b] = t; }
+function closePopup() { document.getElementById('popupOverlay').classList.remove('show'); }
+function clearAllStatus() { seats.forEach(function(s){ s.status=''; }); renderGrid(); }
+function setAll(st) { seats.forEach(function(s){ if(s.name) s.status=st; }); renderGrid(); }
+function updateStats() {
+  var placed=0,present=0,absent=0,late=0,leave=0;
+  seats.forEach(function(s){
+    if(s.name){ placed++;
+      if(s.status==='present') present++;
+      else if(s.status==='absent') absent++;
+      else if(s.status==='late') late++;
+      else if(s.status==='leave') leave++;
+    }
+  });
+  document.getElementById('statPlaced').textContent=placed;
+  document.getElementById('statPresent').textContent=present;
+  document.getElementById('statAbsent').textContent=absent;
+  document.getElementById('statLate').textContent=late;
+  document.getElementById('statLeave').textContent=leave;
+}
+function exportCSV() {
+  var header='座位,姓名,狀態\n';
+  var body=seats.map(function(s,i){ return (i+1)+','+(s.name||'(空)')+','+statusLabel(s.status); }).join('\n');
+  var blob=new Blob(['\uFEFF'+header+body],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='點名_'+new Date().toLocaleDateString('zh-TW').replace(/\//g,'-')+'.csv'; a.click();
+}
+function exportConfig() {
+  var seated = seats.filter(function(s){ return s.name; }).map(function(s){ return s.name; });
+  var nameList = (ALL_NAMES && ALL_NAMES.length) ? ALL_NAMES.slice() : seated;
+  seated.forEach(function(n){ if (nameList.indexOf(n) === -1) nameList.push(n); });
+  var cfg = {
+    type: 'seat-attendance-config',
+    version: 1,
+    className: CLASS_NAME,
+    rows: rows,
+    cols: cols,
+    names: nameList,
+    seats: seats.map(function(s){ return { name: s.name || '' }; }),
+    savedAt: new Date().toISOString()
+  };
+  var blob = new Blob([JSON.stringify(cfg, null, 2)], {type:'application/json;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  var dateStr = new Date().toLocaleDateString('zh-TW').replace(/\//g,'-');
+  var safeName = (CLASS_NAME || '座位設定').replace(/[\\/:*?"<>|]/g, '_');
+  a.download = safeName + '_設定_' + dateStr + '.json';
+  a.click();
+  alert('設定檔已下載，可用「座位點名紀錄表產生器」的「📥 載入設定」開啟並修改座位。');
+}
+document.getElementById('popupOverlay').addEventListener('click', function(e){ if(e.target===this) closePopup(); });
+renderGrid();
+</script>
+</body>
+</html>

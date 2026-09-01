@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>遊戲小天地 ✧ 20260901_HTML遊戲索引產生器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0 0 60px;
+    font-family: 'Nunito', 'M PLUS Rounded 1c', 'Microsoft JhengHei', sans-serif;
+    color: #5D4037;
+    line-height: 1.7;
+    background-color: #FFF0F5;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.9) 2px, transparent 3px),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.7) 2px, transparent 3px),
+      linear-gradient(160deg, #FFF0F5 0%, #E3F2FD 45%, #F0FFF4 100%);
+    background-size: 90px 90px, 130px 130px, 100% 100%;
+    background-attachment: scroll, scroll, fixed;
+  }
+  header {
+    text-align: center;
+    padding: 48px 20px 28px;
+  }
+  h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #FF8FAB;
+    text-shadow: 3px 3px 0 #FFFFFF, 5px 5px 0 rgba(255,182,193,.35);
+    letter-spacing: 2px;
+  }
+  .subtitle { margin: 0; color: #8D6E63; font-size: 1rem; }
+  .badge {
+    display: inline-block;
+    margin-top: 14px;
+    background: #FFFFFF;
+    border: 3px solid #FADADD;
+    border-radius: 50px;
+    padding: 6px 22px;
+    font-weight: 700;
+    color: #FF8FAB;
+    box-shadow: 0 6px 14px rgba(255,182,193,.35);
+  }
+  .search-wrap { text-align: center; margin: 26px auto 10px; padding: 0 20px; }
+  #search {
+    width: min(460px, 100%);
+    padding: 14px 24px;
+    font-size: 1.05rem;
+    font-family: inherit;
+    color: #5D4037;
+    background: #FFFFFF;
+    border: 3px solid #FADADD;
+    border-radius: 50px;
+    outline: none;
+    box-shadow: 0 6px 16px rgba(255,182,193,.3);
+    transition: border-color .2s, transform .2s;
+  }
+  #search:focus { border-color: #FF8FAB; transform: scale(1.02); }
+  #search::placeholder { color: #C5A9A0; }
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: #5D4037;
+    background: #FFFFFF;
+    border: 3px solid #FADADD;
+    border-radius: 26px;
+    padding: 24px 18px 20px;
+    box-shadow: 0 8px 16px rgba(255,182,193,.4);
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px) scale(1.04);
+    border-color: #FF8FAB;
+    box-shadow: 0 14px 26px rgba(255,143,171,.45);
+  }
+  .card:hover .card-emoji { animation: bounce .6s ease infinite alternate; }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-7px); }
+  }
+  .card-emoji {
+    width: 74px; height: 74px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.3rem;
+    background: linear-gradient(145deg, #FFFDE7, #FFE3EC);
+    border: 3px solid #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 6px 12px rgba(255,182,193,.4);
+    margin-bottom: 14px;
+  }
+  .card-body { flex: 1; }
+  .card-title {
+    margin: 0 0 6px;
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #5D4037;
+    word-break: break-word;
+  }
+  .card-file {
+    margin: 0;
+    font-size: .8rem;
+    color: #A1887F;
+    word-break: break-all;
+  }
+  .card-meta { margin: 2px 0 14px; font-size: .75rem; color: #C5A9A0; }
+  .card-go {
+    display: inline-block;
+    background: #FF8FAB;
+    color: #FFFFFF;
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-size: .92rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,143,171,.45);
+    transition: transform .2s;
+  }
+  .card:hover .card-go { transform: scale(1.08); }
+  .empty, .no-result {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #A1887F;
+    background: #FFFFFF;
+    border: 3px dashed #FADADD;
+    border-radius: 26px;
+    padding: 40px 20px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 34px;
+    color: #A1887F;
+    font-size: .85rem;
+  }
+  @media (max-width: 480px) {
+    main { grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px; }
+    .card { padding: 18px 10px 16px; border-radius: 20px; }
+    .card-emoji { width: 58px; height: 58px; font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>✧ 遊戲小天地 ✧</h1>
+  <p class="subtitle">點一下卡片，就能在新視窗開始玩！🌸</p>
+  <div class="badge">共 41 個小遊戲</div>
+</header>
+
+<div class="search-wrap">
+  <input id="search" type="search" placeholder="🔍 搜尋遊戲名稱…" autocomplete="off">
+</div>
+
+<main id="grid">
+    <a class="card" href="像素橫軸開放世界.html" target="_blank" rel="noopener"
+       data-search="2d 像素橫軸開放世界 - 角色與多層地貌優化版 像素橫軸開放世界.html">
+      <div class="card-emoji">🎮</div>
+      <div class="card-body">
+        <h2 class="card-title">2D 像素橫軸開放世界 - 角色與多層地貌優化版</h2>
+        <p class="card-file">像素橫軸開放世界.html</p>
+        <p class="card-meta">2026-06-10 ・ 15 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="KnockOut.html" target="_blank" rel="noopener"
+       data-search="knockout void - vs cpu knockout.html">
+      <div class="card-emoji">🕹️</div>
+      <div class="card-body">
+        <h2 class="card-title">Knockout Void - Vs CPU</h2>
+        <p class="card-file">KnockOut.html</p>
+        <p class="card-meta">2026-06-10 ・ 15 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="S¥SŦ€M_AŦŦACK_M0DE.html" target="_blank" rel="noopener"
+       data-search="s¥sŧ€m_aŧŧack_m0de s¥sŧ€m_aŧŧack_m0de.html">
+      <div class="card-emoji">🎯</div>
+      <div class="card-body">
+        <h2 class="card-title">S¥SŦ€M_AŦŦACK_M0DE</h2>
+        <p class="card-file">S¥SŦ€M_AŦŦACK_M0DE.html</p>
+        <p class="card-meta">2026-06-11 ・ 18 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="S¥SŦ€M_C0RRUPŦI0N.html" target="_blank" rel="noopener"
+       data-search="s¥sŧ€m_c0rrupŧi0n s¥sŧ€m_c0rrupŧi0n.html">
+      <div class="card-emoji">🎨</div>
+      <div class="card-body">
+        <h2 class="card-title">S¥SŦ€M_C0RRUPŦI0N</h2>
+        <p class="card-file">S¥SŦ€M_C0RRUPŦI0N.html</p>
+        <p class="card-meta">2026-06-11 ・ 17 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="原神可愛抽卡模擬器 Pro Max.html" target="_blank" rel="noopener"
+       data-search="✨ 原神可愛抽卡模擬器 pro max ✨ 原神可愛抽卡模擬器 pro max.html">
+      <div class="card-emoji">🚀</div>
+      <div class="card-body">
+        <h2 class="card-title">✨ 原神可愛抽卡模擬器 Pro Max ✨</h2>
+        <p class="card-file">原神可愛抽卡模擬器 Pro Max.html</p>
+        <p class="card-meta">2026-06-11 ・ 13 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="英雄大冒險.html" target="_blank" rel="noopener"
+       data-search="✨ 英雄大冒險 ✨ 英雄大冒險.html">
+      <div class="card-emoji">🌈</div>
+      <div class="card-body">
+        <h2 class="card-title">✨ 英雄大冒險 ✨</h2>
+        <p class="card-file">英雄大冒險.html</p>
+        <p class="card-meta">2026-06-10 ・ 12 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="光速神話賽車小遊戲.html" target="_blank" rel="noopener"
+       data-search="光速神話賽車小遊戲 🌌💨 光速神話賽車小遊戲.html">
+      <div class="card-emoji">⭐</div>
+      <div class="card-body">
+        <h2 class="card-title">光速神話賽車小遊戲 🌌💨</h2>
+        <p class="card-file">光速神話賽車小遊戲.html</p>
+        <p class="card-meta">2026-06-11 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="可愛戰機大冒險-糖果星保衛戰.html" target="_blank" rel="noopener"
+       data-search="可愛戰機大冒險 🚀 可愛戰機大冒險-糖果星保衛戰.html">
+      <div class="card-emoji">🍬</div>
+      <div class="card-body">
+        <h2 class="card-title">可愛戰機大冒險 🚀</h2>
+        <p class="card-file">可愛戰機大冒險-糖果星保衛戰.html</p>
+        <p class="card-meta">2026-06-11 ・ 17 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="可愛戰機大冒險.html" target="_blank" rel="noopener"
+       data-search="可愛戰機大冒險 🚀 可愛戰機大冒險.html">
+      <div class="card-emoji">🎪</div>
+      <div class="card-body">
+        <h2 class="card-title">可愛戰機大冒險 🚀</h2>
+        <p class="card-file">可愛戰機大冒險.html</p>
+        <p class="card-meta">2026-06-11 ・ 19 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="卡哇伊玩偶大對決.html" target="_blank" rel="noopener"
+       data-search="可愛玩偶大對決！ 卡哇伊玩偶大對決.html">
+      <div class="card-emoji">🧩</div>
+      <div class="card-body">
+        <h2 class="card-title">可愛玩偶大對決！</h2>
+        <p class="card-file">卡哇伊玩偶大對決.html</p>
+        <p class="card-meta">2026-06-10 ・ 12 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="可愛籃球機.html" target="_blank" rel="noopener"
+       data-search="可愛籃球機 🏀 可愛籃球機.html">
+      <div class="card-emoji">🐱</div>
+      <div class="card-body">
+        <h2 class="card-title">可愛籃球機 🏀</h2>
+        <p class="card-file">可愛籃球機.html</p>
+        <p class="card-meta">2026-06-11 ・ 8 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="可愛網球小遊戲.html" target="_blank" rel="noopener"
+       data-search="可愛網球小遊戲 🎾 可愛網球小遊戲.html">
+      <div class="card-emoji">🐰</div>
+      <div class="card-body">
+        <h2 class="card-title">可愛網球小遊戲 🎾</h2>
+        <p class="card-file">可愛網球小遊戲.html</p>
+        <p class="card-meta">2026-06-11 ・ 8 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="61015 (2).html" target="_blank" rel="noopener"
+       data-search="喵喵羽球大對決 🏸✨ 61015 (2).html">
+      <div class="card-emoji">🦊</div>
+      <div class="card-body">
+        <h2 class="card-title">喵喵羽球大對決 🏸✨</h2>
+        <p class="card-file">61015 (2).html</p>
+        <p class="card-meta">2026-06-11 ・ 8 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="嘟嘟粉紅賽車.html" target="_blank" rel="noopener"
+       data-search="嘟嘟粉紅賽車 🏎️💨 嘟嘟粉紅賽車.html">
+      <div class="card-emoji">🐼</div>
+      <div class="card-body">
+        <h2 class="card-title">嘟嘟粉紅賽車 🏎️💨</h2>
+        <p class="card-file">嘟嘟粉紅賽車.html</p>
+        <p class="card-meta">2026-06-11 ・ 15 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="地下拳擊.html" target="_blank" rel="noopener"
+       data-search="地下拳擊：絕對相容版 地下拳擊.html">
+      <div class="card-emoji">🌸</div>
+      <div class="card-body">
+        <h2 class="card-title">地下拳擊：絕對相容版</h2>
+        <p class="card-file">地下拳擊.html</p>
+        <p class="card-meta">2026-06-10 ・ 10 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="埃及風雲：金字塔大漠之戰.html" target="_blank" rel="noopener"
+       data-search="埃及風雲：金字塔大漠之戰！ 埃及風雲：金字塔大漠之戰.html">
+      <div class="card-emoji">🍄</div>
+      <div class="card-body">
+        <h2 class="card-title">埃及風雲：金字塔大漠之戰！</h2>
+        <p class="card-file">埃及風雲：金字塔大漠之戰.html</p>
+        <p class="card-meta">2026-06-10 ・ 12 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="俄羅斯方塊.html" target="_blank" rel="noopener"
+       data-search="夢幻馬卡龍 俄羅斯方塊 ✨ 俄羅斯方塊.html">
+      <div class="card-emoji">🎈</div>
+      <div class="card-body">
+        <h2 class="card-title">夢幻馬卡龍 俄羅斯方塊 ✨</h2>
+        <p class="card-file">俄羅斯方塊.html</p>
+        <p class="card-meta">2026-06-10 ・ 14 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="小朋友下樓梯.html" target="_blank" rel="noopener"
+       data-search="小朋友下樓梯 小朋友下樓梯.html">
+      <div class="card-emoji">🔮</div>
+      <div class="card-body">
+        <h2 class="card-title">小朋友下樓梯</h2>
+        <p class="card-file">小朋友下樓梯.html</p>
+        <p class="card-meta">2026-06-10 ・ 6 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="小朋友森林神射手.html" target="_blank" rel="noopener"
+       data-search="森林神射手 🏹 萌萌蘋果大挑戰 小朋友森林神射手.html">
+      <div class="card-emoji">🏆</div>
+      <div class="card-body">
+        <h2 class="card-title">森林神射手 🏹 萌萌蘋果大挑戰</h2>
+        <p class="card-file">小朋友森林神射手.html</p>
+        <p class="card-meta">2026-06-10 ・ 13 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="極簡2D開放世界冒險.html" target="_blank" rel="noopener"
+       data-search="極簡 2d 開放世界冒險 極簡2d開放世界冒險.html">
+      <div class="card-emoji">✨</div>
+      <div class="card-body">
+        <h2 class="card-title">極簡 2D 開放世界冒險</h2>
+        <p class="card-file">極簡2D開放世界冒險.html</p>
+        <p class="card-meta">2026-06-10 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="極速賽道.html" target="_blank" rel="noopener"
+       data-search="極速賽道：方程式爭奪戰 🏎️ 極速賽道.html">
+      <div class="card-emoji">🎮</div>
+      <div class="card-body">
+        <h2 class="card-title">極速賽道：方程式爭奪戰 🏎️</h2>
+        <p class="card-file">極速賽道.html</p>
+        <p class="card-meta">2026-06-11 ・ 16 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="急速閃避.html" target="_blank" rel="noopener"
+       data-search="極速閃避：網頁賽車遊戲 急速閃避.html">
+      <div class="card-emoji">🕹️</div>
+      <div class="card-body">
+        <h2 class="card-title">極速閃避：網頁賽車遊戲</h2>
+        <p class="card-file">急速閃避.html</p>
+        <p class="card-meta">2026-06-10 ・ 7 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="極速閃避賽車 .html" target="_blank" rel="noopener"
+       data-search="極速飆車小遊戲 🏎️💨 極速閃避賽車 .html">
+      <div class="card-emoji">🎯</div>
+      <div class="card-body">
+        <h2 class="card-title">極速飆車小遊戲 🏎️💨</h2>
+        <p class="card-file">極速閃避賽車 .html</p>
+        <p class="card-meta">2026-06-11 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="法老Q版大探險.html" target="_blank" rel="noopener"
+       data-search="法老q版大探險 👑 法老q版大探險.html">
+      <div class="card-emoji">🎨</div>
+      <div class="card-body">
+        <h2 class="card-title">法老Q版大探險 👑</h2>
+        <p class="card-file">法老Q版大探險.html</p>
+        <p class="card-meta">2026-06-10 ・ 16 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="深夜地下室.html" target="_blank" rel="noopener"
+       data-search="深夜的地下室 深夜地下室.html">
+      <div class="card-emoji">🚀</div>
+      <div class="card-body">
+        <h2 class="card-title">深夜的地下室</h2>
+        <p class="card-file">深夜地下室.html</p>
+        <p class="card-meta">2026-06-11 ・ 7 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="61016 (2).html" target="_blank" rel="noopener"
+       data-search="熱血羽球錦標賽 🏸 61016 (2).html">
+      <div class="card-emoji">🌈</div>
+      <div class="card-body">
+        <h2 class="card-title">熱血羽球錦標賽 🏸</h2>
+        <p class="card-file">61016 (2).html</p>
+        <p class="card-meta">2026-06-11 ・ 6 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="61016 (3).html" target="_blank" rel="noopener"
+       data-search="熱血羽球錦標賽 🏸 61016 (3).html">
+      <div class="card-emoji">⭐</div>
+      <div class="card-body">
+        <h2 class="card-title">熱血羽球錦標賽 🏸</h2>
+        <p class="card-file">61016 (3).html</p>
+        <p class="card-meta">2026-06-11 ・ 7 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="牠在後面...別回頭！.html" target="_blank" rel="noopener"
+       data-search="牠在後面...別回頭！ 牠在後面...別回頭！.html">
+      <div class="card-emoji">🍬</div>
+      <div class="card-body">
+        <h2 class="card-title">牠在後面...別回頭！</h2>
+        <p class="card-file">牠在後面...別回頭！.html</p>
+        <p class="card-meta">2026-06-11 ・ 13 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="牠在後面...別回頭！ - 逃避現實版.html" target="_blank" rel="noopener"
+       data-search="牠在後面...別回頭！ - 逃避現實版 牠在後面...別回頭！ - 逃避現實版.html">
+      <div class="card-emoji">🎪</div>
+      <div class="card-body">
+        <h2 class="card-title">牠在後面...別回頭！ - 逃避現實版</h2>
+        <p class="card-file">牠在後面...別回頭！ - 逃避現實版.html</p>
+        <p class="card-meta">2026-06-11 ・ 21 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="馬力歐跳跳.html" target="_blank" rel="noopener"
+       data-search="瑪利歐跳跳 🍄 馬力歐跳跳.html">
+      <div class="card-emoji">🧩</div>
+      <div class="card-body">
+        <h2 class="card-title">瑪利歐跳跳 🍄</h2>
+        <p class="card-file">馬力歐跳跳.html</p>
+        <p class="card-meta">2026-06-11 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="甜點貓咪收集賽.html" target="_blank" rel="noopener"
+       data-search="甜點貓咪收集賽 🐾 甜點貓咪收集賽.html">
+      <div class="card-emoji">🐱</div>
+      <div class="card-body">
+        <h2 class="card-title">甜點貓咪收集賽 🐾</h2>
+        <p class="card-file">甜點貓咪收集賽.html</p>
+        <p class="card-meta">2026-06-10 ・ 14 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="淘金大作戰.html" target="_blank" rel="noopener"
+       data-search="網頁小遊戲：接金幣！ 淘金大作戰.html">
+      <div class="card-emoji">🐰</div>
+      <div class="card-body">
+        <h2 class="card-title">網頁小遊戲：接金幣！</h2>
+        <p class="card-file">淘金大作戰.html</p>
+        <p class="card-meta">2026-06-10 ・ 7 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="網頁版超級瑪利歐.html" target="_blank" rel="noopener"
+       data-search="網頁版超級瑪利歐 - 完整圖片版 網頁版超級瑪利歐.html">
+      <div class="card-emoji">🦊</div>
+      <div class="card-body">
+        <h2 class="card-title">網頁版超級瑪利歐 - 完整圖片版</h2>
+        <p class="card-file">網頁版超級瑪利歐.html</p>
+        <p class="card-meta">2026-06-10 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="荒野競技場_霓虹斬殺者.html" target="_blank" rel="noopener"
+       data-search="荒野競技場：霓虹斬殺者 荒野競技場_霓虹斬殺者.html">
+      <div class="card-emoji">🐼</div>
+      <div class="card-body">
+        <h2 class="card-title">荒野競技場：霓虹斬殺者</h2>
+        <p class="card-file">荒野競技場_霓虹斬殺者.html</p>
+        <p class="card-meta">2026-06-11 ・ 17 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="荒野競技場_霓虹生存戰.html" target="_blank" rel="noopener"
+       data-search="荒野競技場：霓虹生存戰 荒野競技場_霓虹生存戰.html">
+      <div class="card-emoji">🌸</div>
+      <div class="card-body">
+        <h2 class="card-title">荒野競技場：霓虹生存戰</h2>
+        <p class="card-file">荒野競技場_霓虹生存戰.html</p>
+        <p class="card-meta">2026-06-11 ・ 15 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="範例預覽.html" target="_blank" rel="noopener"
+       data-search="遊戲小天地 ✧ idxtest 範例預覽.html">
+      <div class="card-emoji">🍄</div>
+      <div class="card-body">
+        <h2 class="card-title">遊戲小天地 ✧ idxtest</h2>
+        <p class="card-file">範例預覽.html</p>
+        <p class="card-meta">2026-09-01 ・ 7 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="量子崩解賽車小遊戲.html" target="_blank" rel="noopener"
+       data-search="量子崩解賽車小遊戲 🌀⚡ 量子崩解賽車小遊戲.html">
+      <div class="card-emoji">🎈</div>
+      <div class="card-body">
+        <h2 class="card-title">量子崩解賽車小遊戲 🌀⚡</h2>
+        <p class="card-file">量子崩解賽車小遊戲.html</p>
+        <p class="card-meta">2026-06-11 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="閃避賽車小遊戲.html" target="_blank" rel="noopener"
+       data-search="閃避賽車小遊戲 🏎️ 閃避賽車小遊戲.html">
+      <div class="card-emoji">🔮</div>
+      <div class="card-body">
+        <h2 class="card-title">閃避賽車小遊戲 🏎️</h2>
+        <p class="card-file">閃避賽車小遊戲.html</p>
+        <p class="card-meta">2026-06-11 ・ 9 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="鬼抓人_恐怖生存.html" target="_blank" rel="noopener"
+       data-search="鬼抓人 - 恐怖生存 鬼抓人_恐怖生存.html">
+      <div class="card-emoji">🏆</div>
+      <div class="card-body">
+        <h2 class="card-title">鬼抓人 - 恐怖生存</h2>
+        <p class="card-file">鬼抓人_恐怖生存.html</p>
+        <p class="card-meta">2026-06-11 ・ 10 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="點擊紅點反應力測試.html" target="_blank" rel="noopener"
+       data-search="點擊紅點小遊戲 點擊紅點反應力測試.html">
+      <div class="card-emoji">✨</div>
+      <div class="card-body">
+        <h2 class="card-title">點擊紅點小遊戲</h2>
+        <p class="card-file">點擊紅點反應力測試.html</p>
+        <p class="card-meta">2026-06-11 ・ 3 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="祈願模擬器 極限版.html" target="_blank" rel="noopener"
+       data-search="🔥 原神祈願模擬器 極限版 🔥 祈願模擬器 極限版.html">
+      <div class="card-emoji">🎮</div>
+      <div class="card-body">
+        <h2 class="card-title">🔥 原神祈願模擬器 極限版 🔥</h2>
+        <p class="card-file">祈願模擬器 極限版.html</p>
+        <p class="card-meta">2026-06-11 ・ 13 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+  <p class="no-result" id="noResult" style="display:none;">找不到符合的遊戲呢 🫗</p>
+</main>
+
+<footer>最後更新：2026-09-01 08:56　・　資料夾：20260901_HTML遊戲索引產生器</footer>
+
+<script>
+  var input = document.getElementById('search');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var noResult = document.getElementById('noResult');
+  input.addEventListener('input', function () {
+    var kw = input.value.trim().toLowerCase();
+    var shown = 0;
+    cards.forEach(function (c) {
+      var hit = !kw || c.dataset.search.indexOf(kw) !== -1;
+      c.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    noResult.style.display = (shown === 0 && cards.length > 0) ? '' : 'none';
+  });
+</script>
+</body>
+</html>

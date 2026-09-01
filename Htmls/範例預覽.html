@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>遊戲小天地 ✧ idxtest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0 0 60px;
+    font-family: 'Nunito', 'M PLUS Rounded 1c', 'Microsoft JhengHei', sans-serif;
+    color: #5D4037;
+    line-height: 1.7;
+    background-color: #FFF0F5;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.9) 2px, transparent 3px),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.7) 2px, transparent 3px),
+      linear-gradient(160deg, #FFF0F5 0%, #E3F2FD 45%, #F0FFF4 100%);
+    background-size: 90px 90px, 130px 130px, 100% 100%;
+    background-attachment: scroll, scroll, fixed;
+  }
+  header {
+    text-align: center;
+    padding: 48px 20px 28px;
+  }
+  h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    font-weight: 800;
+    color: #FF8FAB;
+    text-shadow: 3px 3px 0 #FFFFFF, 5px 5px 0 rgba(255,182,193,.35);
+    letter-spacing: 2px;
+  }
+  .subtitle { margin: 0; color: #8D6E63; font-size: 1rem; }
+  .badge {
+    display: inline-block;
+    margin-top: 14px;
+    background: #FFFFFF;
+    border: 3px solid #FADADD;
+    border-radius: 50px;
+    padding: 6px 22px;
+    font-weight: 700;
+    color: #FF8FAB;
+    box-shadow: 0 6px 14px rgba(255,182,193,.35);
+  }
+  .search-wrap { text-align: center; margin: 26px auto 10px; padding: 0 20px; }
+  #search {
+    width: min(460px, 100%);
+    padding: 14px 24px;
+    font-size: 1.05rem;
+    font-family: inherit;
+    color: #5D4037;
+    background: #FFFFFF;
+    border: 3px solid #FADADD;
+    border-radius: 50px;
+    outline: none;
+    box-shadow: 0 6px 16px rgba(255,182,193,.3);
+    transition: border-color .2s, transform .2s;
+  }
+  #search:focus { border-color: #FF8FAB; transform: scale(1.02); }
+  #search::placeholder { color: #C5A9A0; }
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+    gap: 22px;
+  }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: #5D4037;
+    background: #FFFFFF;
+    border: 3px solid #FADADD;
+    border-radius: 26px;
+    padding: 24px 18px 20px;
+    box-shadow: 0 8px 16px rgba(255,182,193,.4);
+    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  }
+  .card:hover {
+    transform: translateY(-6px) scale(1.04);
+    border-color: #FF8FAB;
+    box-shadow: 0 14px 26px rgba(255,143,171,.45);
+  }
+  .card:hover .card-emoji { animation: bounce .6s ease infinite alternate; }
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-7px); }
+  }
+  .card-emoji {
+    width: 74px; height: 74px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.3rem;
+    background: linear-gradient(145deg, #FFFDE7, #FFE3EC);
+    border: 3px solid #FFFFFF;
+    border-radius: 50%;
+    box-shadow: 0 6px 12px rgba(255,182,193,.4);
+    margin-bottom: 14px;
+  }
+  .card-body { flex: 1; }
+  .card-title {
+    margin: 0 0 6px;
+    font-size: 1.12rem;
+    font-weight: 800;
+    color: #5D4037;
+    word-break: break-word;
+  }
+  .card-file {
+    margin: 0;
+    font-size: .8rem;
+    color: #A1887F;
+    word-break: break-all;
+  }
+  .card-meta { margin: 2px 0 14px; font-size: .75rem; color: #C5A9A0; }
+  .card-go {
+    display: inline-block;
+    background: #FF8FAB;
+    color: #FFFFFF;
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-size: .92rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(255,143,171,.45);
+    transition: transform .2s;
+  }
+  .card:hover .card-go { transform: scale(1.08); }
+  .empty, .no-result {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #A1887F;
+    background: #FFFFFF;
+    border: 3px dashed #FADADD;
+    border-radius: 26px;
+    padding: 40px 20px;
+  }
+  footer {
+    text-align: center;
+    margin-top: 34px;
+    color: #A1887F;
+    font-size: .85rem;
+  }
+  @media (max-width: 480px) {
+    main { grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px; }
+    .card { padding: 18px 10px 16px; border-radius: 20px; }
+    .card-emoji { width: 58px; height: 58px; font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>✧ 遊戲小天地 ✧</h1>
+  <p class="subtitle">點一下卡片，就能在新視窗開始玩！🌸</p>
+  <div class="badge">共 4 個小遊戲</div>
+</header>
+
+<div class="search-wrap">
+  <input id="search" type="search" placeholder="🔍 搜尋遊戲名稱…" autocomplete="off">
+</div>
+
+<main id="grid">
+    <a class="card" href="notitle.html" target="_blank" rel="noopener"
+       data-search="notitle notitle.html">
+      <div class="card-emoji">🎮</div>
+      <div class="card-body">
+        <h2 class="card-title">notitle</h2>
+        <p class="card-file">notitle.html</p>
+        <p class="card-meta">2026-09-01 ・ 1 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="big5.html" target="_blank" rel="noopener"
+       data-search="大富翁遊戲 big5.html">
+      <div class="card-emoji">🕹️</div>
+      <div class="card-body">
+        <h2 class="card-title">大富翁遊戲</h2>
+        <p class="card-file">big5.html</p>
+        <p class="card-meta">2026-09-01 ・ 1 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="apple.html" target="_blank" rel="noopener"
+       data-search="接蘋果小遊戲 apple.html">
+      <div class="card-emoji">🎯</div>
+      <div class="card-body">
+        <h2 class="card-title">接蘋果小遊戲</h2>
+        <p class="card-file">apple.html</p>
+        <p class="card-meta">2026-09-01 ・ 1 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+    <a class="card" href="snake.html" target="_blank" rel="noopener"
+       data-search="貪吃蛇 &amp; 迷宮 snake.html">
+      <div class="card-emoji">🎨</div>
+      <div class="card-body">
+        <h2 class="card-title">貪吃蛇 &amp; 迷宮</h2>
+        <p class="card-file">snake.html</p>
+        <p class="card-meta">2026-09-01 ・ 1 KB</p>
+      </div>
+      <span class="card-go">開始玩 ▸</span>
+    </a>
+  <p class="no-result" id="noResult" style="display:none;">找不到符合的遊戲呢 🫗</p>
+</main>
+
+<footer>最後更新：2026-09-01 00:47　・　資料夾：idxtest</footer>
+
+<script>
+  var input = document.getElementById('search');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var noResult = document.getElementById('noResult');
+  input.addEventListener('input', function () {
+    var kw = input.value.trim().toLowerCase();
+    var shown = 0;
+    cards.forEach(function (c) {
+      var hit = !kw || c.dataset.search.indexOf(kw) !== -1;
+      c.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    noResult.style.display = (shown === 0 && cards.length > 0) ? '' : 'none';
+  });
+</script>
+</body>
+</html>

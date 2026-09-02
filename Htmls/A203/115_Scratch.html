@@ -447,6 +447,8 @@ tr.off td:last-child,tr.off td:nth-last-child(2){opacity:1;}
         <button class="subtab" data-a="slots" onclick="switchAdmin('slots')">⏰ 培訓時段</button>
         <button class="subtab" data-a="data" onclick="switchAdmin('data')">💾 資料備份</button>
         <button class="subtab" data-a="sys" onclick="switchAdmin('sys')">⚙️ 系統設定</button>
+        <span class="spacer"></span>
+        <button class="subtab hide" id="btnLockNow" onclick="lockNow()">🔒 立即鎖定</button>
       </div>
 
       <!-- 學生名單 -->
@@ -569,6 +571,8 @@ tr.off td:last-child,tr.off td:nth-last-child(2){opacity:1;}
             <select id="sLockOn"><option value="0">關閉（任何人可進入維護模式）</option><option value="1">開啟（需輸入密碼）</option></select>
           </label>
           <label class="fld"><span>管理密碼（開啟保護時使用）</span><input type="text" id="sPin" placeholder="例：1234"></label>
+          <p class="hint">開啟後，只要 <b>切換到點名／查詢模式</b> 或重新開啟頁面，維護模式就會自動上鎖，再次進入需輸入密碼；
+          也可按右上角的 <b>🔒 立即鎖定</b> 馬上鎖定。忘記密碼時，可清除瀏覽器資料重設（資料會一併清空，請先備份）。</p>
           <div class="divider"></div>
           <label class="fld"><span>備份提醒間隔（天）</span><input type="number" id="sBackupDays" min="1" max="60"></label>
           <div class="btn-row">
@@ -762,6 +766,8 @@ function sessionsInRange(from, to){
    ===================================================================== */
 let curView = 'attend';
 function switchView(v){
+  // 離開維護模式時自動上鎖，下次進入需重新輸入密碼
+  if(curView === 'admin' && v !== 'admin' && String(DB.settings.lockOn) === '1') adminUnlocked = false;
   curView = v;
   ['attend','query','admin'].forEach(k => {
     $('view-' + k).classList.toggle('hide', k !== v);
@@ -1176,10 +1182,18 @@ function enterAdmin(){
   if(!need || adminUnlocked){ showAdminBody(); }
   else{ $('adminLock').classList.remove('hide'); $('adminBody').classList.add('hide'); $('pinInput').value = ''; }
 }
+function lockNow(){
+  adminUnlocked = false;
+  $('pinInput').value = '';
+  $('adminBody').classList.add('hide');
+  $('adminLock').classList.remove('hide');
+  toast('🔒 維護模式已鎖定');
+}
 function showAdminBody(){
   adminUnlocked = true;
   $('adminLock').classList.add('hide');
   $('adminBody').classList.remove('hide');
+  $('btnLockNow').classList.toggle('hide', String(DB.settings.lockOn) !== '1');
   if(!editingId && !formSlots.length) formSlots = activeSlots().map(s => s.id);
   renderSlotChips(); renderStudents(); renderSlotTable(); loadSettingsForm(); renderBackupInfo();
   fillSlotSelect('stuSlotFilter', true);
@@ -1354,7 +1368,13 @@ function saveSettings(){
   s.start = $('sStart').value; s.end = $('sEnd').value;
   s.lockOn = $('sLockOn').value; s.pin = $('sPin').value.trim() || '1234';
   s.backupDays = Math.max(1, +$('sBackupDays').value || 7);
-  saveDB(true); applyBranding(); toast('✅ 設定已儲存');
+  saveDB(true); applyBranding();
+  $('btnLockNow').classList.toggle('hide', String(s.lockOn) !== '1');
+  if(String(s.lockOn) === '1'){
+    toast('✅ 已開啟密碼保護（密碼 ' + s.pin + '）；離開維護模式後需重新輸入');
+  }else{
+    toast('✅ 設定已儲存');
+  }
 }
 function applyBranding(){
   $('appTitle').textContent = DB.settings.title;

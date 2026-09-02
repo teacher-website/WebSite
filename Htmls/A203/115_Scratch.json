@@ -1,0 +1,476 @@
+{
+  "v": 1,
+  "settings": {
+    "title": "Scratch 培訓點名系統",
+    "sub": "程式競賽培訓 · 出席管理",
+    "start": "2026-09-02",
+    "end": "2027-02-02",
+    "lockOn": "1",
+    "pin": "343601",
+    "backupDays": 7
+  },
+  "slots": [
+    {
+      "id": "d1_am",
+      "day": 1,
+      "period": "am",
+      "name": "週一 早自習",
+      "time": "08:00-08:35",
+      "on": true
+    },
+    {
+      "id": "d1_pm",
+      "day": 1,
+      "period": "pm",
+      "name": "週一 午休",
+      "time": "12:40-13:15",
+      "on": true
+    },
+    {
+      "id": "d2_am",
+      "day": 2,
+      "period": "am",
+      "name": "週二 早自習",
+      "time": "08:00-08:35",
+      "on": true
+    },
+    {
+      "id": "d2_pm",
+      "day": 2,
+      "period": "pm",
+      "name": "週二 午休",
+      "time": "12:40-13:15",
+      "on": true
+    },
+    {
+      "id": "d3_am",
+      "day": 3,
+      "period": "am",
+      "name": "週三 早自習",
+      "time": "08:00-08:35",
+      "on": true
+    },
+    {
+      "id": "d4_am",
+      "day": 4,
+      "period": "am",
+      "name": "週四 早自習",
+      "time": "08:00-08:35",
+      "on": true
+    },
+    {
+      "id": "d4_pm",
+      "day": 4,
+      "period": "pm",
+      "name": "週四 午休",
+      "time": "12:40-13:15",
+      "on": true
+    },
+    {
+      "id": "d5_am",
+      "day": 5,
+      "period": "am",
+      "name": "週五 早自習",
+      "time": "08:00-08:35",
+      "on": true
+    },
+    {
+      "id": "d5_pm",
+      "day": 5,
+      "period": "pm",
+      "name": "週五 午休",
+      "time": "12:40-13:15",
+      "on": true
+    }
+  ],
+  "students": [
+    {
+      "id": "smtjhbh3kd7e3y",
+      "cls": "501",
+      "seat": "07",
+      "name": "湯子嘉(遊)",
+      "sid": "111122",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3kvsm4q",
+      "cls": "606",
+      "seat": "01",
+      "name": "莫奕德(遊)",
+      "sid": "110260",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3ki2mr0",
+      "cls": "507",
+      "seat": "26",
+      "name": "李希雨(遊)",
+      "sid": "111261",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3ki1kud",
+      "cls": "609",
+      "seat": "23",
+      "name": "周采萱(遊)",
+      "sid": "110241",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3k5m10d",
+      "cls": "603",
+      "seat": "18",
+      "name": "杜昀恩(遊)",
+      "sid": "110048",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d2_am",
+        "d3_am",
+        "d4_am",
+        "d5_am"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3k9ntta",
+      "cls": "603",
+      "seat": "19",
+      "name": "李昀宸(遊)",
+      "sid": "110181",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d2_am",
+        "d3_am",
+        "d4_am",
+        "d5_am"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3kgm4br",
+      "cls": "604",
+      "seat": "05",
+      "name": "王禹尊(遊)",
+      "sid": "110193",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3kxtyj4",
+      "cls": "604",
+      "seat": "01",
+      "name": "張睦辰(遊)",
+      "sid": "110192",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3k8w9x7",
+      "cls": "608",
+      "seat": "04",
+      "name": "李奕勳(遊)",
+      "sid": "110299",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3k94736",
+      "cls": "608",
+      "seat": "07",
+      "name": "曾勗豪(遊)",
+      "sid": "110115",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3k7js4s",
+      "cls": "501",
+      "seat": "12",
+      "name": "廖子巧(遊)",
+      "sid": "111186",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3k8p9mz",
+      "cls": "507",
+      "seat": "01",
+      "name": "蕭云翔(遊)",
+      "sid": "111002",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3kvusa3",
+      "cls": "602",
+      "seat": "12",
+      "name": "呂紹銘(遊)",
+      "sid": "110122",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3k8dpqt",
+      "cls": "602",
+      "seat": "13",
+      "name": "廖允驊(遊)",
+      "sid": "110039",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3kbvp9k",
+      "cls": "502",
+      "seat": "22",
+      "name": "陳宣妤(動)",
+      "sid": "111142",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3kaprs6",
+      "cls": "606",
+      "seat": "11",
+      "name": "陳正運(動)",
+      "sid": "110034",
+      "note": "",
+      "slots": [
+        "d1_pm",
+        "d3_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3k6hhau",
+      "cls": "606",
+      "seat": "05",
+      "name": "李以安(動)",
+      "sid": "110171",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3k89tlr",
+      "cls": "606",
+      "seat": "10",
+      "name": "陳竑安(動)",
+      "sid": "110272",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_am",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": false
+    },
+    {
+      "id": "smtjhbh3ks5okc",
+      "cls": "608",
+      "seat": "20",
+      "name": "李家欣(動)",
+      "sid": "110051",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d1_pm",
+        "d2_pm",
+        "d3_am",
+        "d4_am",
+        "d4_pm",
+        "d5_am",
+        "d5_pm"
+      ],
+      "active": true
+    },
+    {
+      "id": "smtjhbh3kmudhg",
+      "cls": "610",
+      "seat": "13",
+      "name": "吳攸娜(動)",
+      "sid": "110275",
+      "note": "",
+      "slots": [
+        "d1_am",
+        "d2_am",
+        "d3_am",
+        "d5_am",
+        "d4_am"
+      ],
+      "active": true
+    }
+  ],
+  "records": {},
+  "meta": {
+    "lastBackup": "2026-09-02T02:35:21.608Z",
+    "snoozeUntil": null,
+    "changes": 1
+  },
+  "exportedAt": "2026-09-02T02:35:51.534Z",
+  "app": "scratch-rollcall"
+}

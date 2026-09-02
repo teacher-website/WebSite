@@ -220,6 +220,35 @@ td.num{text-align:center;font-weight:700;}
 .switch .txt{font-size:.8rem;font-weight:800;color:#8B807B;}
 .switch .txt.on{color:#2E8B62;}
 tr.off td{opacity:.5;}
+
+/* ---------- 精簡點名卡片 ---------- */
+.stu-list.mini{grid-template-columns:repeat(auto-fill,minmax(172px,1fr));gap:9px;}
+.stu-mini{
+  display:flex;align-items:center;gap:9px;background:var(--card2);
+  border:3px solid var(--pink-s);border-radius:16px;padding:8px 10px;cursor:pointer;
+  transition:transform .16s, border-color .18s, background .18s;min-height:56px;
+}
+.stu-mini:hover{transform:scale(1.05);}
+.stu-mini:active{transform:scale(.97);}
+.stu-mini .avatar{width:34px;height:34px;border-radius:12px;font-size:.9rem;}
+.mini-body{min-width:0;flex:1;}
+.mini-name{font-weight:800;font-size:.95rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mini-sub{font-size:.7rem;color:var(--ink3);font-weight:700;line-height:1.3;}
+.stu-mini.s-present{border-color:var(--mint);background:var(--mint-s);}
+.stu-mini.s-late{border-color:var(--cream);background:var(--cream-s);}
+.stu-mini.s-leave{border-color:var(--sky);background:var(--sky-s);}
+.stu-mini.s-absent{border-color:var(--red);background:var(--red-s);}
+.stu-mini.s-skip{border-color:var(--purple);background:var(--purple-s);}
+.stu-mini .tick{font-size:1.1rem;flex:none;}
+
+/* 點名彈窗 */
+.rc-modal-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.rc-modal-head .avatar{width:54px;height:54px;border-radius:18px;font-size:1.3rem;}
+.rc-modal-name{font-size:1.3rem;font-weight:800;line-height:1.3;}
+.rc-modal-meta{font-size:.8rem;color:var(--ink3);font-weight:700;}
+.rc-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.rc-btns .stbtn{padding:16px 4px;font-size:1rem;border-radius:16px;min-height:60px;}
+@media (max-width:420px){ .rc-btns{grid-template-columns:repeat(2,1fr);} }
 tr.off td:last-child,tr.off td:nth-last-child(2){opacity:1;}
 .modal-bg{
   position:fixed;inset:0;background:rgba(93,64,55,.4);backdrop-filter:blur(3px);
@@ -317,6 +346,7 @@ tr.off td:last-child,tr.off td:nth-last-child(2){opacity:1;}
 
     <div class="card mint" id="rcPanel">
       <h2><span id="rcPanelTitle">👋 應到學生</span><span class="spacer"></span>
+        <button class="btn ghost sm" id="btnViewMode" onclick="toggleCompact()">🔳 精簡卡片</button>
         <button class="btn mint sm" onclick="bulkSet('present')">全部出席</button>
         <button class="btn ghost sm" onclick="bulkSet('pending')">全部重設</button>
       </h2>
@@ -601,6 +631,7 @@ function defaultDB(){
       sub:'程式競賽培訓 · 出席管理',
       start: iso(y),
       end: iso(new Date(y.getFullYear(), y.getMonth()+5, y.getDate())),
+      compact: true,
       lockOn: 0,
       pin: '1234',
       backupDays: 7
@@ -802,26 +833,50 @@ function countDone(date, slotId){
   return list.filter(s => statusOf(date, slotId, s.id) !== 'pending').length;
 }
 
+function isCompact(){ return DB.settings.compact !== false; }
+function toggleCompact(){
+  DB.settings.compact = !isCompact();
+  saveDB(false); renderRollcall();
+  toast(isCompact() ? '🔳 已切換為精簡卡片' : '📋 已切換為詳細卡片');
+}
+
 function renderRcList(){
   const list = studentsForSlot(rcSlot);
   const box = $('rcList');
+  const compact = isCompact();
+  $('btnViewMode').textContent = compact ? '🔳 精簡卡片' : '📋 詳細卡片';
+  box.className = 'stu-list' + (compact ? ' mini' : '');
   if(!list.length){
+    box.className = 'stu-list';
     box.innerHTML = '<div class="empty"><span class="big">🌸</span>此時段目前沒有應到學生<br><span class="hint">請至「維護模式 → 學生名單」勾選學生的可出席時段</span></div>';
     $('rcStats').innerHTML = '';
     return;
   }
   const tally = {present:0, late:0, leave:0, absent:0, skip:0, pending:0};
-  box.innerHTML = list.map(stu => {
+
+  box.innerHTML = list.map((stu, i) => {
     const st = statusOf(rcDate, rcSlot, stu.id);
     tally[st] = (tally[st] || 0) + 1;
     const rec = getRec(rcDate, rcSlot, stu.id);
+
+    if(compact){
+      return '<div class="stu-mini s-' + st + '" onclick="openStuModal(' + i + ')" title="點一下選擇狀態">' +
+        avatarHTML(stu.name) +
+        '<div class="mini-body">' +
+          '<div class="mini-name">' + esc(pureName(stu.name) || stu.name) + '</div>' +
+          '<div class="mini-sub">' + esc(stu.cls) + '-' + esc(stu.seat) + '　<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span></div>' +
+        '</div>' +
+        (rec && rec.n ? '<span class="tick" title="' + esc(rec.n) + '">📝</span>' : '') +
+      '</div>';
+    }
+
     const cls = st === 'pending' ? '' : (st === 'absent' ? 'warn' : 'done');
     const btns = ['present','late','leave','absent','skip','pending'].map(k =>
       '<button class="stbtn ' + (st === k ? STATUS[k].btn : '') + '" onclick="mark(\'' + stu.id + '\',\'' + k + '\')">' + STATUS[k].label + '</button>'
     ).join('');
     return '<div class="stu ' + cls + '">' +
       '<div class="stu-head">' +
-        '<div class="avatar" style="background:' + avatarColor(stu.name) + '">' + esc(String(stu.name || '?').slice(-2)) + '</div>' +
+        avatarHTML(stu.name) +
         '<div><div class="stu-name">' + esc(stu.name) + '　<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span></div>' +
         '<div class="stu-meta">' + esc(stu.cls) + ' 班　' + esc(stu.seat) + ' 號　學號 ' + esc(stu.sid) + (rec && rec.t ? '　⏱ ' + esc(rec.t) : '') + '</div></div>' +
       '</div>' +
@@ -835,11 +890,96 @@ function renderRcList(){
     STATUS_ORDER.map(k => '<span class="statpill"><span class="st ' + STATUS[k].cls + '">' + STATUS[k].label + '</span><b>' + (tally[k] || 0) + '</b></span>').join('');
 }
 
+/* ---------- 點名彈窗 ---------- */
+let rcModalIdx = -1;
+function openStuModal(i){ rcModalIdx = i; renderStuModal(); }
+function renderStuModal(){
+  const list = studentsForSlot(rcSlot);
+  const stu = list[rcModalIdx];
+  if(!stu){ closeModal(); return; }
+  const st = statusOf(rcDate, rcSlot, stu.id);
+  const rec = getRec(rcDate, rcSlot, stu.id);
+  const g = groupOf(stu.name);
+  const slot = slotById(rcSlot) || {name:''};
+  const btns = ['present','late','leave','absent','skip','pending'].map(k =>
+    '<button class="stbtn ' + (st === k ? STATUS[k].btn : '') + '" onclick="markFromModal(\'' + k + '\')">' + STATUS[k].label + '</button>'
+  ).join('');
+  $('modalHost').innerHTML =
+    '<div class="modal-bg" onclick="if(event.target===this)closeStuModal()">' +
+      '<div class="modal" style="max-width:460px">' +
+        '<div class="rc-modal-head">' + avatarHTML(stu.name) +
+          '<div><div class="rc-modal-name">' + esc(pureName(stu.name) || stu.name) +
+            (g ? '　<span class="st" style="background:' + avatarColor(stu.name) + ';color:#fff">' + esc(g) + '</span>' : '') + '</div>' +
+            '<div class="rc-modal-meta">' + esc(stu.cls) + ' 班 ' + esc(stu.seat) + ' 號　學號 ' + esc(stu.sid) +
+            '<br>' + esc(rcDate) + '　' + esc(slot.name) + (rec && rec.t ? '　⏱ ' + esc(rec.t) : '') + '</div></div>' +
+          '<span class="spacer"></span>' +
+          '<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span>' +
+        '</div>' +
+        '<div class="rc-btns">' + btns + '</div>' +
+        '<label class="fld" style="margin-top:14px;"><span>備註（選填，切換學生時自動保存）</span>' +
+          '<input type="text" id="mNote" placeholder="例：校隊集訓" value="' + esc(rec ? rec.n : '') + '"></label>' +
+        '<div class="btn-row" style="justify-content:space-between;align-items:center">' +
+          '<button class="btn ghost sm" onclick="modalNav(-1)"' + (rcModalIdx <= 0 ? ' disabled style="opacity:.4"' : '') + '>◀ 上一位</button>' +
+          '<span class="hint">' + (rcModalIdx + 1) + ' / ' + list.length + '</span>' +
+          '<button class="btn ghost sm" onclick="modalNav(1)"' + (rcModalIdx >= list.length - 1 ? ' disabled style="opacity:.4"' : '') + '>下一位 ▶</button>' +
+        '</div>' +
+        '<button class="btn grey block" style="margin-top:12px" onclick="closeStuModal()">關閉</button>' +
+      '</div></div>';
+}
+function saveModalNote(){
+  const list = studentsForSlot(rcSlot);
+  const stu = list[rcModalIdx];
+  const el = $('mNote');
+  if(!stu || !el) return;
+  const cur = statusOf(rcDate, rcSlot, stu.id);
+  const old = (getRec(rcDate, rcSlot, stu.id) || {}).n || '';
+  if(el.value !== old) setRec(rcDate, rcSlot, stu.id, cur, el.value);
+}
+function markFromModal(k){
+  const list = studentsForSlot(rcSlot);
+  const stu = list[rcModalIdx];
+  if(!stu) return;
+  const note = $('mNote') ? $('mNote').value : null;
+  setRec(rcDate, rcSlot, stu.id, k, note);
+  closeModal(); rcModalIdx = -1;
+  renderRollcall(); checkBackupReminder();
+  toast(pureName(stu.name) + ' → ' + STATUS[k].label);
+}
+function modalNav(d){
+  saveModalNote();
+  const list = studentsForSlot(rcSlot);
+  const n = rcModalIdx + d;
+  if(n < 0 || n >= list.length) return;
+  rcModalIdx = n; renderStuModal(); renderRcList();
+}
+function closeStuModal(){ saveModalNote(); closeModal(); rcModalIdx = -1; renderRollcall(); }
+
+/* 從姓名末端括號取出組別，例如「王小明(動)」→「動」 */
+function groupOf(name){
+  const m = String(name || '').match(/[（(]\s*([^）)]{1,4})\s*[)）]\s*$/);
+  return m ? m[1].trim() : '';
+}
+function pureName(name){ return String(name || '').replace(/[（(]\s*[^）)]{1,4}\s*[)）]\s*$/, '').trim(); }
+function avatarText(name){
+  const g = groupOf(name);
+  if(g) return g;
+  const n = pureName(name) || String(name || '?');
+  return n.slice(-2);
+}
 function avatarColor(name){
+  const g = groupOf(name);
+  if(/^動/.test(g)) return '#4CAF7D';   // 動畫組 → 綠
+  if(/^遊/.test(g)) return '#4A9FE0';   // 遊戲組 → 藍
   const palette = ['#FF8FAB','#8CC7F0','#8FD9B6','#FFC46B','#B9A6E5','#F49AC1','#7FD1C8'];
   let h = 0; const s = String(name || '');
   for(let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 9973;
   return palette[h % palette.length];
+}
+function avatarHTML(name, cls){
+  const g = groupOf(name);
+  const txt = avatarText(name);
+  const fs = txt.length >= 3 ? 'font-size:.7rem;' : (txt.length === 2 && !g ? 'font-size:.85rem;' : '');
+  return '<div class="avatar' + (cls ? ' ' + cls : '') + '" style="background:' + avatarColor(name) + ';' + fs + '">' + esc(txt) + '</div>';
 }
 
 function mark(stuId, status){
@@ -1134,7 +1274,9 @@ function renderStudents(){
     list.map(s => {
       const names = (s.slots || []).map(id => { const sl = slotById(id); return sl ? sl.name.replace('週','').replace(' ','') : ''; }).filter(Boolean);
       const on = s.active !== false;
-      return '<tr class="' + (on ? '' : 'off') + '"><td>' + esc(s.cls) + '</td><td class="num">' + esc(s.seat) + '</td><td><b>' + esc(s.name) + '</b></td><td>' + esc(s.sid) + '</td>' +
+      const gg = groupOf(s.name);
+      return '<tr class="' + (on ? '' : 'off') + '"><td>' + esc(s.cls) + '</td><td class="num">' + esc(s.seat) + '</td>' +
+        '<td><b>' + esc(pureName(s.name) || s.name) + '</b>' + (gg ? ' <span class="st" style="background:' + avatarColor(s.name) + ';color:#fff">' + esc(gg) + '</span>' : '') + '</td><td>' + esc(s.sid) + '</td>' +
         '<td style="white-space:normal;max-width:320px;">' + (names.length ? names.map(n => '<span class="st st-leave" style="margin:1px">' + esc(n) + '</span>').join(' ') : '<span class="hint">未設定</span>') + '（' + names.length + '）</td>' +
         '<td><span class="switch" onclick="toggleActive(\'' + s.id + '\')" title="點一下切換啟用／停用">' +
           '<span class="track' + (on ? ' on' : '') + '"><span class="knob"></span></span>' +

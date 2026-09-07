@@ -249,15 +249,6 @@ tr.off td{opacity:.5;}
 .stu-mini.s-skip{border-color:var(--purple);background:var(--purple-s);}
 .stu-mini .tick{font-size:1.1rem;flex:none;}
 
-/* 其他學生（未排此時段） */
-.rc-body{display:block;}
-.group-title{
-  margin:16px 0 9px;font-size:.86rem;font-weight:800;color:var(--ink2);
-  padding-top:12px;border-top:2px dashed var(--pink-s);
-}
-.stu-mini.extra,.stu.extra{opacity:.72;border-style:dashed;}
-.stu-mini.extra:not(.s-skip),.stu.extra:not(.s-skip){opacity:1;border-style:solid;box-shadow:0 4px 12px rgba(185,166,229,.3);}
-
 /* 點名彈窗 */
 .rc-modal-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
 .rc-modal-head .avatar{width:54px;height:54px;border-radius:18px;font-size:1.3rem;}
@@ -363,7 +354,6 @@ tr.off td:last-child,tr.off td:nth-last-child(2){opacity:1;}
 
     <div class="card mint" id="rcPanel">
       <h2><span id="rcPanelTitle">👋 應到學生</span><span class="spacer"></span>
-        <button class="btn ghost sm" id="btnExtra" onclick="toggleExtra()">👥 其他學生：顯示中</button>
         <button class="btn ghost sm" id="btnViewMode" onclick="toggleCompact()">🔳 精簡卡片</button>
         <button class="btn mint sm" onclick="bulkSet('present')">全部出席</button>
         <button class="btn ghost sm" onclick="bulkSet('pending')">全部重設</button>
@@ -659,7 +649,6 @@ function defaultDB(){
       start: iso(y),
       end: iso(new Date(y.getFullYear(), y.getMonth()+5, y.getDate())),
       compact: true,
-      showExtra: true,
       lockOn: 0,
       pin: '1234',
       backupDays: 7
@@ -747,8 +736,7 @@ function setRec(date, slotId, stuId, status, note){
   if(!DB.records[date]) DB.records[date] = {};
   if(!DB.records[date][slotId]) DB.records[date][slotId] = {};
   const cur = DB.records[date][slotId][stuId] || {};
-  const def = defaultStatusOf(stuId, slotId);
-  if((status === def || (status == null && (cur.s || def) === def)) && !note){
+  if(status === 'pending' && note == null){
     delete DB.records[date][slotId][stuId];
   }else{
     DB.records[date][slotId][stuId] = {
@@ -761,16 +749,10 @@ function setRec(date, slotId, stuId, status, note){
   if(DB.records[date] && !Object.keys(DB.records[date]).length) delete DB.records[date];
   saveDB(true);
 }
-/* 未排此時段的學生，預設狀態為「不出席」 */
-function defaultStatusOf(stuId, slotId){
-  const s = studentById(stuId);
-  return (s && shouldAttend(s, slotId)) ? 'pending' : 'skip';
-}
 function statusOf(date, slotId, stuId){
   const r = getRec(date, slotId, stuId);
-  return r ? (r.s || 'pending') : defaultStatusOf(stuId, slotId);
+  return r ? (r.s || 'pending') : 'pending';
 }
-function hasRec(date, slotId, stuId){ return !!getRec(date, slotId, stuId); }
 /* 該生是否於此時段應到 */
 function shouldAttend(stu, slotId){
   return Array.isArray(stu.slots) && stu.slots.indexOf(slotId) >= 0;
@@ -778,14 +760,6 @@ function shouldAttend(stu, slotId){
 function studentsForSlot(slotId){
   return sortStudents(DB.students.filter(s => s.active !== false && shouldAttend(s, slotId)));
 }
-/* 該時段完整名冊：main = 應到、extra = 未排此時段（預設不出席，可臨時改狀態） */
-function rosterForSlot(slotId){
-  const all = DB.students.filter(s => s.active !== false);
-  const main = sortStudents(all.filter(s => shouldAttend(s, slotId)));
-  const extra = sortStudents(all.filter(s => !shouldAttend(s, slotId)));
-  return {main:main, extra:extra, all:main.concat(extra)};
-}
-function showExtra(){ return DB.settings.showExtra !== false; }
 
 /* 日期區間內的所有 (date, slotId) 場次 */
 function sessionsInRange(from, to){
@@ -885,91 +859,61 @@ function toggleCompact(){
   toast(isCompact() ? '🔳 已切換為精簡卡片' : '📋 已切換為詳細卡片');
 }
 
-function stuCardHTML(stu, idx, compact, isExtra){
-  const st = statusOf(rcDate, rcSlot, stu.id);
-  const rec = getRec(rcDate, rcSlot, stu.id);
-  if(compact){
-    return '<div class="stu-mini s-' + st + (isExtra ? ' extra' : '') + '" onclick="openStuModal(' + idx + ')" title="點一下選擇狀態">' +
-      avatarHTML(stu.name) +
-      '<div class="mini-body">' +
-        '<div class="mini-name">' + esc(pureName(stu.name) || stu.name) + '</div>' +
-        '<div class="mini-sub">' + esc(stu.cls) + '-' + esc(stu.seat) + '　<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span></div>' +
-      '</div>' +
-      (rec && rec.n ? '<span class="tick" title="' + esc(rec.n) + '">📝</span>' : '') +
-    '</div>';
-  }
-  const cls = st === 'pending' ? '' : (st === 'absent' ? 'warn' : (st === 'skip' ? '' : 'done'));
-  const btns = ['present','late','leave','absent','skip','pending'].map(k =>
-    '<button class="stbtn ' + (st === k ? STATUS[k].btn : '') + '" onclick="mark(\'' + stu.id + '\',\'' + k + '\')">' + STATUS[k].label + '</button>'
-  ).join('');
-  return '<div class="stu ' + cls + (isExtra ? ' extra' : '') + '">' +
-    '<div class="stu-head">' +
-      avatarHTML(stu.name) +
-      '<div><div class="stu-name">' + esc(stu.name) + '　<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span></div>' +
-      '<div class="stu-meta">' + esc(stu.cls) + ' 班　' + esc(stu.seat) + ' 號　學號 ' + esc(stu.sid) + (rec && rec.t ? '　⏱ ' + esc(rec.t) : '') + '</div></div>' +
-    '</div>' +
-    '<div class="stbtns">' + btns + '</div>' +
-    '<input class="note-in" type="text" placeholder="備註（選填）" value="' + esc(rec ? rec.n : '') + '" onchange="markNote(\'' + stu.id + '\', this.value)">' +
-  '</div>';
-}
-
-function toggleExtra(){
-  DB.settings.showExtra = !showExtra();
-  saveDB(false); renderRollcall();
-  toast(showExtra() ? '👥 已顯示其他學生' : '🙈 已隱藏其他學生');
-}
-
 function renderRcList(){
-  const r = rosterForSlot(rcSlot);
+  const list = studentsForSlot(rcSlot);
   const box = $('rcList');
   const compact = isCompact();
-  const wantExtra = showExtra();
   $('btnViewMode').textContent = compact ? '🔳 精簡卡片' : '📋 詳細卡片';
-  $('btnExtra').textContent = wantExtra ? '👥 其他學生：顯示中' : '🙈 其他學生：隱藏';
-
-  if(!r.main.length && !(wantExtra && r.extra.length)){
+  box.className = 'stu-list' + (compact ? ' mini' : '');
+  if(!list.length){
     box.className = 'stu-list';
-    box.innerHTML = '<div class="empty"><span class="big">🌸</span>此時段目前沒有學生<br><span class="hint">請至「維護模式 → 學生名單」新增學生</span></div>';
+    box.innerHTML = '<div class="empty"><span class="big">🌸</span>此時段目前沒有應到學生<br><span class="hint">請至「維護模式 → 學生名單」勾選學生的可出席時段</span></div>';
     $('rcStats').innerHTML = '';
     return;
   }
-
-  const gridCls = 'stu-list' + (compact ? ' mini' : '');
   const tally = {present:0, late:0, leave:0, absent:0, skip:0, pending:0};
-  r.main.forEach(stu => { const k = statusOf(rcDate, rcSlot, stu.id); tally[k] = (tally[k] || 0) + 1; });
 
-  let html = '';
-  if(r.main.length){
-    html += '<div class="' + gridCls + '">' + r.main.map((stu, i) => stuCardHTML(stu, i, compact, false)).join('') + '</div>';
-  }else{
-    html += '<div class="empty" style="padding:18px"><span class="hint">此時段沒有排定應到學生</span></div>';
-  }
+  box.innerHTML = list.map((stu, i) => {
+    const st = statusOf(rcDate, rcSlot, stu.id);
+    tally[st] = (tally[st] || 0) + 1;
+    const rec = getRec(rcDate, rcSlot, stu.id);
 
-  let extraOn = 0;
-  r.extra.forEach(stu => { if(statusOf(rcDate, rcSlot, stu.id) !== 'skip') extraOn++; });
+    if(compact){
+      return '<div class="stu-mini s-' + st + '" onclick="openStuModal(' + i + ')" title="點一下選擇狀態">' +
+        avatarHTML(stu.name) +
+        '<div class="mini-body">' +
+          '<div class="mini-name">' + esc(pureName(stu.name) || stu.name) + '</div>' +
+          '<div class="mini-sub">' + esc(stu.cls) + '-' + esc(stu.seat) + '　<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span></div>' +
+        '</div>' +
+        (rec && rec.n ? '<span class="tick" title="' + esc(rec.n) + '">📝</span>' : '') +
+      '</div>';
+    }
 
-  if(wantExtra && r.extra.length){
-    html += '<div class="group-title">👥 其他學生（未排此時段，預設不出席）' +
-            (extraOn ? '　<span class="st st-present">臨時出席 ' + extraOn + ' 人</span>' : '') + '</div>' +
-            '<div class="' + gridCls + '">' +
-            r.extra.map((stu, i) => stuCardHTML(stu, r.main.length + i, compact, true)).join('') + '</div>';
-  }
-
-  box.className = 'rc-body';
-  box.innerHTML = html;
+    const cls = st === 'pending' ? '' : (st === 'absent' ? 'warn' : 'done');
+    const btns = ['present','late','leave','absent','skip','pending'].map(k =>
+      '<button class="stbtn ' + (st === k ? STATUS[k].btn : '') + '" onclick="mark(\'' + stu.id + '\',\'' + k + '\')">' + STATUS[k].label + '</button>'
+    ).join('');
+    return '<div class="stu ' + cls + '">' +
+      '<div class="stu-head">' +
+        avatarHTML(stu.name) +
+        '<div><div class="stu-name">' + esc(stu.name) + '　<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span></div>' +
+        '<div class="stu-meta">' + esc(stu.cls) + ' 班　' + esc(stu.seat) + ' 號　學號 ' + esc(stu.sid) + (rec && rec.t ? '　⏱ ' + esc(rec.t) : '') + '</div></div>' +
+      '</div>' +
+      '<div class="stbtns">' + btns + '</div>' +
+      '<input class="note-in" type="text" placeholder="備註（選填）" value="' + esc(rec ? rec.n : '') + '" onchange="markNote(\'' + stu.id + '\', this.value)">' +
+    '</div>';
+  }).join('');
 
   $('rcStats').innerHTML =
-    '<span class="statpill">應到<b>' + r.main.length + '</b></span>' +
-    STATUS_ORDER.filter(k => k !== 'skip').map(k => '<span class="statpill"><span class="st ' + STATUS[k].cls + '">' + STATUS[k].label + '</span><b>' + (tally[k] || 0) + '</b></span>').join('') +
-    '<span class="statpill"><span class="st st-skip">不出席</span><b>' + (tally.skip || 0) + '</b></span>' +
-    (extraOn ? '<span class="statpill" style="border-color:var(--purple)">臨時出席<b>' + extraOn + '</b></span>' : '');
+    '<span class="statpill">應到<b>' + list.length + '</b></span>' +
+    STATUS_ORDER.map(k => '<span class="statpill"><span class="st ' + STATUS[k].cls + '">' + STATUS[k].label + '</span><b>' + (tally[k] || 0) + '</b></span>').join('');
 }
 
 /* ---------- 點名彈窗 ---------- */
 let rcModalIdx = -1;
 function openStuModal(i){ rcModalIdx = i; renderStuModal(); }
 function renderStuModal(){
-  const list = rosterForSlot(rcSlot).all;
+  const list = studentsForSlot(rcSlot);
   const stu = list[rcModalIdx];
   if(!stu){ closeModal(); return; }
   const st = statusOf(rcDate, rcSlot, stu.id);
@@ -986,9 +930,7 @@ function renderStuModal(){
           '<div><div class="rc-modal-name">' + esc(pureName(stu.name) || stu.name) +
             (g ? '　<span class="st" style="background:' + avatarColor(stu.name) + ';color:#fff">' + esc(g) + '</span>' : '') + '</div>' +
             '<div class="rc-modal-meta">' + esc(stu.cls) + ' 班 ' + esc(stu.seat) + ' 號　學號 ' + esc(stu.sid) +
-            '<br>' + esc(rcDate) + '　' + esc(slot.name) +
-            (shouldAttend(stu, rcSlot) ? '' : '　<span class="st st-skip">未排此時段</span>') +
-            (rec && rec.t ? '　⏱ ' + esc(rec.t) : '') + '</div></div>' +
+            '<br>' + esc(rcDate) + '　' + esc(slot.name) + (rec && rec.t ? '　⏱ ' + esc(rec.t) : '') + '</div></div>' +
           '<span class="spacer"></span>' +
           '<span class="st ' + STATUS[st].cls + '">' + STATUS[st].label + '</span>' +
         '</div>' +
@@ -1004,7 +946,7 @@ function renderStuModal(){
       '</div></div>';
 }
 function saveModalNote(){
-  const list = rosterForSlot(rcSlot).all;
+  const list = studentsForSlot(rcSlot);
   const stu = list[rcModalIdx];
   const el = $('mNote');
   if(!stu || !el) return;
@@ -1013,7 +955,7 @@ function saveModalNote(){
   if(el.value !== old) setRec(rcDate, rcSlot, stu.id, cur, el.value);
 }
 function markFromModal(k){
-  const list = rosterForSlot(rcSlot).all;
+  const list = studentsForSlot(rcSlot);
   const stu = list[rcModalIdx];
   if(!stu) return;
   const note = $('mNote') ? $('mNote').value : null;
@@ -1024,7 +966,7 @@ function markFromModal(k){
 }
 function modalNav(d){
   saveModalNote();
-  const list = rosterForSlot(rcSlot).all;
+  const list = studentsForSlot(rcSlot);
   const n = rcModalIdx + d;
   if(n < 0 || n >= list.length) return;
   rcModalIdx = n; renderStuModal(); renderRcList();
@@ -1069,7 +1011,7 @@ function markNote(stuId, note){
   setRec(rcDate, rcSlot, stuId, cur, note);
 }
 function bulkSet(status){
-  const list = rosterForSlot(rcSlot).main;
+  const list = studentsForSlot(rcSlot);
   if(!list.length) return;
   const label = status === 'pending' ? '全部重設為「未點名」' : '全部標記為「' + STATUS[status].label + '」';
   confirmBox('確定要將本時段 ' + list.length + ' 位學生' + label + '嗎？', () => {
@@ -1122,8 +1064,7 @@ function fillSlotSelect(id, allowAll){
 function statsFor(stu, from, to){
   const st = {total:0, present:0, late:0, leave:0, absent:0, skip:0, pending:0, seq:0, maxSeq:0};
   sessionsInRange(from, to).forEach(s => {
-    // 應排時段，或雖未排但當次有留下紀錄（臨時出席）者，皆納入統計
-    if(!shouldAttend(stu, s.slotId) && !hasRec(s.date, s.slotId, stu.id)) return;
+    if(!shouldAttend(stu, s.slotId)) return;
     st.total++;
     const k = statusOf(s.date, s.slotId, stu.id);
     st[k] = (st[k] || 0) + 1;
@@ -1161,16 +1102,10 @@ function dailyRows(){
   const day = parseISO(date).getDay();
   const slots = slotsOfDay(day).filter(s => !slotFilter || s.id === slotFilter);
   const out = [];
-  slots.forEach(sl => {
-    const r = rosterForSlot(sl.id);
-    const list = r.main.concat(r.extra.filter(stu => hasRec(date, sl.id, stu.id)));
-    sortStudents(list).forEach(stu => {
-      const rec = getRec(date, sl.id, stu.id);
-      out.push({date:date, slot:sl, stu:stu, st:statusOf(date, sl.id, stu.id),
-                note:rec ? rec.n : '', time:rec ? rec.t : '',
-                extra: !shouldAttend(stu, sl.id)});
-    });
-  });
+  slots.forEach(sl => studentsForSlot(sl.id).forEach(stu => {
+    const rec = getRec(date, sl.id, stu.id);
+    out.push({date:date, slot:sl, stu:stu, st:statusOf(date, sl.id, stu.id), note:rec ? rec.n : '', time:rec ? rec.t : ''});
+  }));
   return out;
 }
 function renderDaily(){
@@ -1188,7 +1123,7 @@ function renderDaily(){
     STATUS_ORDER.map(k => '<span class="statpill"><span class="st ' + STATUS[k].cls + '">' + STATUS[k].label + '</span><b>' + (tally[k] || 0) + '</b></span>').join('');
   t.innerHTML = '<thead><tr><th>時段</th><th>班級</th><th>座號</th><th>姓名</th><th>學號</th><th>狀態</th><th>記錄時間</th><th>備註</th></tr></thead><tbody>' +
     rows.map(r => '<tr><td>' + esc(r.slot.name) + '</td><td>' + esc(r.stu.cls) + '</td><td class="num">' + esc(r.stu.seat) + '</td>' +
-      '<td><b>' + esc(r.stu.name) + '</b>' + (r.extra ? ' <span class="st st-skip">臨時</span>' : '') + '</td><td>' + esc(r.stu.sid) + '</td>' +
+      '<td><b>' + esc(r.stu.name) + '</b></td><td>' + esc(r.stu.sid) + '</td>' +
       '<td><span class="st ' + STATUS[r.st].cls + '">' + STATUS[r.st].label + '</span></td>' +
       '<td>' + esc(r.time || '—') + '</td><td>' + esc(r.note || '') + '</td></tr>').join('') + '</tbody>';
 }
@@ -1211,11 +1146,9 @@ function renderRange(){
     const st = statsFor(stu, from, to);
     return '<tr><td>' + esc(stu.cls) + '</td><td class="num">' + esc(stu.seat) + '</td><td><b>' + esc(stu.name) + '</b></td>' +
       ses.map(s => {
-        const rec = hasRec(s.date, s.slotId, stu.id);
-        if(!shouldAttend(stu, s.slotId) && !rec) return '<td class="num" style="color:#DDD">-</td>';
+        if(!shouldAttend(stu, s.slotId)) return '<td class="num" style="color:#DDD">-</td>';
         const k = statusOf(s.date, s.slotId, stu.id);
-        return '<td class="num"><span class="st ' + STATUS[k].cls + '">' + STATUS[k].short + '</span>' +
-               (rec && !shouldAttend(stu, s.slotId) ? '<sup style="color:#B9A6E5">＋</sup>' : '') + '</td>';
+        return '<td class="num"><span class="st ' + STATUS[k].cls + '">' + STATUS[k].short + '</span></td>';
       }).join('') +
       '<td class="num rate ' + rateCls(st.rate) + '">' + rateTxt(st.rate) + '</td></tr>';
   }).join('');
@@ -1558,7 +1491,7 @@ function exportCSV(kind){
     students.forEach(stu => {
       const st = statsFor(stu, from, to);
       rows.push([stu.cls, stu.seat, stu.name, stu.sid].concat(
-        ses.map(s => (shouldAttend(stu, s.slotId) || hasRec(s.date, s.slotId, stu.id)) ? STATUS[statusOf(s.date, s.slotId, stu.id)].label : '')
+        ses.map(s => shouldAttend(stu, s.slotId) ? STATUS[statusOf(s.date, s.slotId, stu.id)].label : '')
       ).concat([st.rate == null ? '' : st.rate]));
     });
   }else if(kind === 'alert'){

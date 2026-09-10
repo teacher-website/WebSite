@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>604 點名單</title>
+<title>115-1課後社團-程式冒險王 點名單</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI','Microsoft JhengHei',sans-serif; background:#fce4ec; min-height:100vh; padding:20px; }
@@ -56,7 +56,7 @@ button:hover { opacity:.82; }
 </style>
 </head>
 <body>
-<h1>📋 604 點名單</h1>
+<h1>📋 115-1課後社團-程式冒險王 點名單</h1>
 <div class="date-row" id="dateRow"></div>
 <div class="toolbar">
   <button style="background:#ef9a9a;color:#fff" onclick="clearAllStatus()">🧹 清除出缺席</button>
@@ -89,9 +89,9 @@ button:hover { opacity:.82; }
 </div>
 <script>
 var rows = 8, cols = 4;
-var seats = [{"name":"60408周子恩(110117)","status":""},{"name":"60416洪葳倢(110075)","status":""},{"name":"60424陳潁媗(110185)","status":""},{"name":"","status":""},{"name":"60407張璿(110113)","status":""},{"name":"60415黎采容(110126)","status":""},{"name":"60423蔡妤萱(110184)","status":""},{"name":"","status":""},{"name":"60406佘昀宸(110166)","status":""},{"name":"60414彭芮宜(110294)","status":""},{"name":"60422僧容萱(110265)","status":""},{"name":"","status":""},{"name":"60405王禹尊(110193)","status":""},{"name":"60413陸正國(110232)","status":""},{"name":"60421陳姸蓁(110049)","status":""},{"name":"","status":""},{"name":"60404黃士瑜(110165)","status":""},{"name":"60412李品毅(110176)","status":""},{"name":"60420左鈺慈(110076)","status":""},{"name":"","status":""},{"name":"60403李承愷(110007)","status":""},{"name":"60411林子硯(110060)","status":""},{"name":"60419邱于芯(110023)","status":""},{"name":"","status":""},{"name":"60402徐華霖(110004)","status":""},{"name":"60410莊承硯(110033)","status":""},{"name":"","status":""},{"name":"60426何佳蓁(110025)","status":""},{"name":"60401張睦辰(110192)班","status":""},{"name":"60409劉耘菘(110091)","status":""},{"name":"60417林衣宸(110127)","status":""},{"name":"60425穆妍析(110052)","status":""}];
-var ALL_NAMES = ["60401張睦辰(110192)班","60402徐華霖(110004)","60403李承愷(110007)","60404黃士瑜(110165)","60405王禹尊(110193)","60406佘昀宸(110166)","60407張璿(110113)","60408周子恩(110117)","60409劉耘菘(110091)","60410莊承硯(110033)","60411林子硯(110060)","60412李品毅(110176)","60413陸正國(110232)","60414彭芮宜(110294)","60415黎采容(110126)","60416洪葳倢(110075)","60417林衣宸(110127)","60419邱于芯(110023)","60420左鈺慈(110076)","60421陳姸蓁(110049)","60422僧容萱(110265)","60423蔡妤萱(110184)","60424陳潁媗(110185)","60425穆妍析(110052)","60426何佳蓁(110025)"];
-var CLASS_NAME = "604";
+var seats = [{"name":"40507陳宗德(112111)","status":""},{"name":"30612劉宥呈(113206)","status":""},{"name":"50903陳垣光(111209)","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"50808呂紹語(111213)","status":""},{"name":"60802田禮維(110084)","status":""},{"name":"60304莊翔堤(110222)","status":""},{"name":"","status":""},{"name":"30316呂韋緯(113040)","status":""},{"name":"60812蔣鎧昀(110063)","status":""},{"name":"30407李銘洋(113031)","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"50310王尹謙(111244)","status":""},{"name":"40710陳定逵(112163)","status":""},{"name":"30802沈翊峰(113025)","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"","status":""},{"name":"50109林祥諺(111183)","status":""},{"name":"50609林昶安(111043)","status":""},{"name":"40221魏婕玲(112152)","status":""},{"name":"60714吳秉鴻(110291)","status":""}];
+var ALL_NAMES = ["30316呂韋緯(113040)","30407李銘洋(113031)","30612劉宥呈(113206)","30802沈翊峰(113025)","40221魏婕玲(112152)","40507陳宗德(112111)","40710陳定逵(112163)","50109林祥諺(111183)","50310王尹謙(111244)","50609林昶安(111043)","50808呂紹語(111213)","50903陳垣光(111209)","60304莊翔堤(110222)","60714吳秉鴻(110291)","60802田禮維(110084)","60812蔣鎧昀(110063)"];
+var CLASS_NAME = "115-1課後社團-程式冒險王";
 var swapPending = -1;
 
 document.getElementById('dateRow').textContent = '日期：' + new Date().toLocaleDateString('zh-TW', {year:'numeric',month:'long',day:'numeric',weekday:'long'});

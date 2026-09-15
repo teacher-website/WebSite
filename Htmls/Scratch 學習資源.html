@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch 學習資源</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap');
+        
+        body {
+            font-family: 'Nunito', 'Microsoft JhengHei', sans-serif;
+            background-color: #fdf2f8;
+            background-image: radial-gradient(#fbcfe8 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+
+        .cute-card {
+            border: 4px solid #fff;
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.4);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .cute-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 35px rgba(255, 182, 193, 0.6);
+            border-color: #fce7f3;
+        }
+
+        .icon-bounce {
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .cute-card:hover .icon-bounce {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        .announcement-box {
+            box-shadow: 0 15px 30px -5px rgba(234, 179, 8, 0.3);
+            border-left-width: 12px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-16 px-6">
+
+    <header class="mb-10 text-center w-full max-w-7xl">
+        <h1 class="text-4xl md:text-5xl font-black text-pink-500 tracking-wide drop-shadow-sm mb-3">
+            Scratch 學習資源
+        </h1>
+        <div class="h-2 w-24 bg-pink-300 rounded-full mx-auto"></div>
+    </header>
+
+    
+
+    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl w-full">
+
+        <a href="https://teacher-website.github.io/WebSite/Htmls/Scratch/ScratchBasic/index.html" target="_blank" rel="noopener noreferrer" class="cute-card bg-white rounded-3xl overflow-hidden group flex flex-col no-underline">
+            <div class="h-48 bg-yellow-100 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://www.w3.org/2000/svg'><circle cx='10' cy='10' r='2' fill='%23eab308'/></svg>')"></div>
+                <div class="text-yellow-500">
+                    <svg class="w-24 h-24 icon-bounce relative z-10" fill="none" stroke="#eab308" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5"></path><path d="M9 18h6"></path><path d="M10 22h4"></path></svg>
+                </div>
+            </div>
+            <div class="p-6 flex-1 flex items-center justify-center bg-white text-center">
+                <h2 class="text-2xl font-extrabold text-yellow-500 opacity-90 group-hover:opacity-100 transition-opacity leading-tight">
+                    Scratch 積木教室
+                </h2>
+            </div>
+        </a>
+        
+        <a href="https://teacher-website.github.io/WebSite/Htmls/Scratch/HP2S_Stu.html" target="_blank" rel="noopener noreferrer" class="cute-card bg-white rounded-3xl overflow-hidden group flex flex-col no-underline">
+            <div class="h-48 bg-pink-100 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://www.w3.org/2000/svg'><circle cx='10' cy='10' r='2' fill='%23ec4899'/></svg>')"></div>
+                <div class="text-pink-500">
+                    <svg class="w-24 h-24 icon-bounce relative z-10" fill="none" stroke="#ec4899" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v1H6a3 3 0 0 0-3 3v3h1a3 3 0 0 1 0 6H3v3a3 3 0 0 0 3 3h3v-1a3 3 0 0 1 6 0v1h3a3 3 0 0 0 3-3v-3h-1a3 3 0 0 1 0-6h1V9a3 3 0 0 0-3-3h-3V5a3 3 0 0 0-3-3z"></path></svg>
+                </div>
+            </div>
+            <div class="p-6 flex-1 flex items-center justify-center bg-white text-center">
+                <h2 class="text-2xl font-extrabold text-pink-500 opacity-90 group-hover:opacity-100 transition-opacity leading-tight">
+                    HandPose2Scratch
+                </h2>
+            </div>
+        </a>
+        
+        <a href="https://teacher-website.github.io/WebSite/Htmls/Scratch/FM2S_Stu.html" target="_blank" rel="noopener noreferrer" class="cute-card bg-white rounded-3xl overflow-hidden group flex flex-col no-underline">
+            <div class="h-48 bg-blue-100 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://www.w3.org/2000/svg'><circle cx='10' cy='10' r='2' fill='%233b82f6'/></svg>')"></div>
+                <div class="text-blue-500">
+                    <svg class="w-24 h-24 icon-bounce relative z-10" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+                </div>
+            </div>
+            <div class="p-6 flex-1 flex items-center justify-center bg-white text-center">
+                <h2 class="text-2xl font-extrabold text-blue-500 opacity-90 group-hover:opacity-100 transition-opacity leading-tight">
+                    Facemesh2Scratch
+                </h2>
+            </div>
+        </a>
+        
+        <a href="https://teacher-website.github.io/WebSite/Htmls/Scratch/ML2S_Stu.html" target="_blank" rel="noopener noreferrer" class="cute-card bg-white rounded-3xl overflow-hidden group flex flex-col no-underline">
+            <div class="h-48 bg-purple-100 flex items-center justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml;utf8,<svg width='20' height='20' xmlns='http://www.w3.org/2000/svg'><circle cx='10' cy='10' r='2' fill='%23a855f7'/></svg>')"></div>
+                <div class="text-purple-500">
+                    <svg class="w-24 h-24 icon-bounce relative z-10" fill="none" stroke="#a855f7" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                </div>
+            </div>
+            <div class="p-6 flex-1 flex items-center justify-center bg-white text-center">
+                <h2 class="text-2xl font-extrabold text-purple-500 opacity-90 group-hover:opacity-100 transition-opacity leading-tight">
+                    ML2Scratch
+                </h2>
+            </div>
+        </a>
+    </main>
+
+    
+
+</body>
+</html>

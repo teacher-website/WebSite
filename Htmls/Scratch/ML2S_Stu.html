@@ -185,12 +185,12 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
     <button data-k="3"><div class="ic">✨</div><b>4. 判斷</b><span>看到新的就猜</span></button>
   </div>
   <div class="flowbody" id="flowbody"></div>
-  <div class="warn" style="margin-top:14px">⚠️ 在 ML2Scratch 裡，<b>「蒐集」和「貼標籤」是同一個動作</b>：你擺好姿勢，然後按「學習 標籤1」，它就把現在看到的畫面存成「標籤1」的範例。按一次存一張，要按大約 <b>20 次</b>才夠！</div>
+  <div class="warn" style="margin-top:14px">⚠️ 在 ML2Scratch 裡，<b>「蒐集」和「貼標籤」是同一個動作</b>：你擺好姿勢，然後按「學習標籤1」，它就把現在看到的畫面存成「標籤1」的範例。按一次存一張，要按大約 <b>20 次</b>才夠！</div>
 </section>
 
 <section id="lab">
   <div class="sec-head"><span class="dot" style="background:var(--sky);box-shadow:0 0 0 5px color-mix(in srgb,var(--sky) 22%,transparent)"></span><h2>③ KNN 小實驗室：AI 是怎麼「猜」的</h2></div>
-  <p style="margin:0 0 14px;color:var(--ink2)">ML2Scratch 用的方法叫 <b>KNN</b>，意思是「<b>看最靠近的幾個鄰居</b>」。KNN（K個最近鄰居，K-Nearest Neighbors）是機器學習中最簡單且直觀的監督式學習（Supervised Learning）演算法之一，核心概念就是「近朱者赤，近墨者黑」或「物以類聚」。下面這個實驗室把照片簡化成平面上的點，<b>點一下白色區域</b>就可以放資料點，親自試試看 AI 是怎麼判斷的！</p>
+  <p style="margin:0 0 14px;color:var(--ink2)">ML2Scratch 用的方法叫 <b>KNN</b>，意思是「<b>看最靠近的幾個鄰居</b>」。KNN（K 個最近鄰居，<span style="font-family:var(--f-num)">K-Nearest Neighbors</span>）是機器學習中最簡單且直觀的<b>監督式學習</b>（<span style="font-family:var(--f-num)">Supervised Learning</span>）演算法之一，核心概念就是「<b>近朱者赤，近墨者黑</b>」或「<b>物以類聚</b>」。下面這個實驗室把照片簡化成平面上的點，<b>點一下白色區域</b>就可以放資料點，親自試試看 AI 是怎麼判斷的！</p>
   <div class="lab">
     <div>
       <div class="labbox">
@@ -227,13 +227,13 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
   <div class="grid2">
     <div class="blkcard">
       <span class="grp">🧠 教它｜最重要</span>
-      <h3><span class="blk">學習 標籤1</span> <span class="blk">學習 標籤2</span></h3>
+      <h3><span class="blk">學習標籤1</span> <span class="blk">學習標籤2</span> <span class="blk">學習標籤3</span></h3>
       <p>👉 按一下，就把<b>現在攝影機看到的畫面</b>存成那個標籤的一張範例。標籤 1、2、3 有專屬積木，第 4～10 個要用下面那塊。</p>
     </div>
     <div class="blkcard">
       <span class="grp">🧠 教它</span>
-      <h3><span class="blk">學習 標籤 <span class="drop">4 ▾</span></span></h3>
-      <p>👉 要教第 4 到第 10 個標籤時用這一塊，先選編號再按。</p>
+      <h3><span class="blk">學習標籤 <span class="drop">4 ▾</span></span></h3>
+      <p>👉 要教第 4 到第 10 個標籤時用這一塊，先選編號再按。旁邊還有一塊 <span class="blk">學習標籤 <span class="num">11</span></span>，可以直接打字輸入編號。</p>
     </div>
     <div class="blkcard">
       <span class="grp">✨ 用它｜最重要</span>
@@ -242,18 +242,18 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
     </div>
     <div class="blkcard">
       <span class="grp">✨ 用它｜最重要</span>
-      <h3><span class="blk hat">當接收到 標籤 <span class="drop">1 ▾</span></span></h3>
-      <p>👉 AI 判斷成這個標籤時，下面的積木就會執行。<b>做作品幾乎都靠這一塊！</b></p>
+      <h3><span class="blk hat">接收到類別 <span class="drop">任何 ▾</span> 時</span></h3>
+      <p>👉 AI 判斷成這個類別時，下面的積木就會執行。下拉可以選「任何」或 1～10。<b>做作品幾乎都靠這一塊！</b></p>
     </div>
     <div class="blkcard">
       <span class="grp">📊 檢查</span>
-      <h3><span class="blk rep">標籤1 的張數</span></h3>
-      <p>👉 這個標籤已經學了幾張照片。打勾顯示在舞台上，就能確認每個標籤是不是都有 20 張。</p>
+      <h3><span class="blk rep">標籤數量1</span> … <span class="blk rep">標籤數量10</span></h3>
+      <p>👉 這個標籤已經學了幾張照片。標籤 1～10 各有一塊，打勾顯示在舞台上，就能確認每個標籤是不是都有 20 張。</p>
     </div>
     <div class="blkcard">
       <span class="grp">🗑️ 重來</span>
-      <h3><span class="blk">重設 標籤 <span class="drop">全部 ▾</span> 的學習</span></h3>
-      <p>👉 教錯了就重設！可以只清掉某一個標籤，或選「全部」重新開始。</p>
+      <h3><span class="blk">重置 <span class="drop">所有量 ▾</span></span></h3>
+      <p>👉 教錯了就重來！下拉選「所有量」會全部清空，也可以只選某一個標籤編號清掉。</p>
     </div>
     <div class="blkcard">
       <span class="grp">💾 存檔｜超級重要</span>
@@ -262,27 +262,27 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
     </div>
     <div class="blkcard">
       <span class="grp">⚙️ 設定</span>
-      <h3><span class="blk">每 <span class="drop">1 ▾</span> 秒判斷一次標籤</span></h3>
-      <p>👉 AI 多久猜一次。想反應快一點就改成 0.2 或 0.1 秒，但電腦會比較累。</p>
+      <h3><span class="blk">每隔 <span class="drop">1 ▾</span> 秒標記一次</span></h3>
+      <p>👉 AI 多久猜一次（「標記」就是判斷的意思）。想反應快一點就改成 0.2 或 0.1 秒，但電腦會比較累。</p>
     </div>
     <div class="blkcard">
       <span class="grp">⚙️ 設定</span>
-      <h3><span class="blk">將標籤判斷 <span class="drop">關閉 ▾</span></span></h3>
-      <p>👉 暫停判斷。教新標籤的時候先關掉，畫面才不會一直跳。</p>
+      <h3><span class="blk"><span class="drop">關閉 ▾</span> 分類</span></h3>
+      <p>👉 這塊就是「暫停／開始判斷」的開關（下拉選 <b>關閉</b> 或 <b>開啟</b>）。教新標籤的時候先關掉，舞台上的答案才不會一直跳。</p>
     </div>
     <div class="blkcard">
       <span class="grp">⚙️ 設定</span>
-      <h3><span class="blk">學習／判斷 <span class="drop">攝影機 ▾</span> 的影像</span></h3>
-      <p>👉 可以改成「舞台」，變成讓 AI 看<b>你在舞台上畫的圖</b>，不用攝影機也能玩！</p>
+      <h3><span class="blk">學習/分類 <span class="drop">網路攝影機 ▾</span> 影像</span></h3>
+      <p>👉 可以把「網路攝影機」改成「舞台」，變成讓 AI 看<b>你在舞台上畫的圖</b>，不用攝影機也能玩！</p>
     </div>
     <div class="blkcard">
       <span class="grp">⚙️ 設定</span>
-      <h3><span class="blk">將攝影機 <span class="drop">開啟 ▾</span></span> <span class="blk">將攝影機的透明度設為 <span class="num">50</span></span></h3>
-      <p>👉 和前面兩個擴充功能一樣：控制畫面顯示與清楚程度。</p>
+      <h3><span class="blk">視訊設為 <span class="drop">開啟 ▾</span></span> <span class="blk">視訊透明度設為 <span class="num">50</span></span></h3>
+      <p>👉 和前面兩個擴充功能一樣：控制攝影機畫面的顯示與清楚程度（這裡叫「視訊」）。</p>
     </div>
     <div class="blkcard">
       <span class="grp">⚙️ 設定</span>
-      <h3><span class="blk">將攝影機切換為 <span class="drop">… ▾</span></span></h3>
+      <h3><span class="blk">網路攝影機切換到 <span class="drop">… ▾</span></span></h3>
       <p>👉 電腦有兩支以上的攝影機時，可以切換要用哪一支。</p>
     </div>
   </div>
@@ -295,13 +295,13 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
       <h3>✌️ 作品 1：猜拳辨識機</h3>
       <p style="font-size:.93rem;color:var(--ink2)">第一個作品：教 AI 認出石頭、剪刀、布。</p>
       <ol style="font-size:.93rem;padding-left:1.2em">
-        <li>出「石頭」對著鏡頭，按 <span class="blk">學習 標籤1</span> 約 20 次（手要稍微移動、轉一下角度）。</li>
-        <li>出「剪刀」，按 <span class="blk">學習 標籤2</span> 約 20 次。</li>
-        <li>出「布」，按 <span class="blk">學習 標籤3</span> 約 20 次。</li>
+        <li>出「石頭」對著鏡頭，按 <span class="blk">學習標籤1</span> 約 20 次（手要稍微移動、轉一下角度）。</li>
+        <li>出「剪刀」，按 <span class="blk">學習標籤2</span> 約 20 次。</li>
+        <li>出「布」，按 <span class="blk">學習標籤3</span> 約 20 次。</li>
         <li>把手放下，試試看舞台上的「標籤」有沒有跟著變！</li>
       </ol>
       <div class="code">
-        <div><span class="blk hat">當接收到 標籤 <span class="drop">1 ▾</span></span></div>
+        <div><span class="blk hat">接收到類別 <span class="drop">1 ▾</span> 時</span></div>
         <div class="ind1"><span class="blk ctl">說出「你出石頭！」</span></div>
       </div>
     </div>
@@ -309,7 +309,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
       <h3>🗑️ 作品 2：垃圾分類小幫手</h3>
       <p style="font-size:.93rem;color:var(--ink2)">拿真的物品來教：標籤1＝紙類、標籤2＝塑膠、標籤3＝鐵鋁罐。</p>
       <div class="code">
-        <div><span class="blk hat">當接收到 標籤 <span class="drop">2 ▾</span></span></div>
+        <div><span class="blk hat">接收到類別 <span class="drop">2 ▾</span> 時</span></div>
         <div class="ind1"><span class="blk ctl">切換造型到「塑膠桶」</span></div>
         <div class="ind1"><span class="blk ctl">說出「請丟塑膠類！」</span></div>
         <div class="ind1"><span class="blk ctl">播放音效「叮」</span></div>
@@ -320,11 +320,11 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
       <h3>🎮 作品 3：用動作控制角色</h3>
       <p style="font-size:.93rem;color:var(--ink2)">標籤1＝手舉左邊、標籤2＝手舉右邊、標籤3＝不動。</p>
       <div class="code">
-        <div><span class="blk hat">當接收到 標籤 <span class="drop">1 ▾</span></span></div>
+        <div><span class="blk hat">接收到類別 <span class="drop">1 ▾</span> 時</span></div>
         <div class="ind1"><span class="blk mot">面向 -90 度</span></div>
         <div class="ind1"><span class="blk mot">移動 <span class="num">10</span> 點</span></div>
       </div>
-      <p style="font-size:.92rem">把「每幾秒判斷一次」改成 <b>0.2 秒</b>，操作起來會順很多。</p>
+      <p style="font-size:.92rem">把「每隔幾秒標記一次」改成 <b>0.2 秒</b>，操作起來會順很多。</p>
     </div>
     <div class="card">
       <h3>💾 作品 4：把 AI 存起來</h3>
@@ -354,11 +354,11 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.86rem}
 
 <section id="help">
   <div class="sec-head"><span class="dot"></span><h2>求救區</h2></div>
-  <details open><summary>「標籤」一直是空白</summary><div class="body">AI 還沒學過任何東西，或是「標籤判斷」被關掉了。先確認每個標籤都有張數，再檢查 <span class="blk">將標籤判斷 <span class="drop">開啟 ▾</span></span>。</div></details>
-  <details><summary>不管做什麼動作，答案都一樣</summary><div class="body">通常是<b>張數不平均</b>，或兩個標籤的畫面太像。先用「標籤N的張數」看看是不是差太多，把少的補到一樣多；或把兩個動作做得更不一樣。</div></details>
+  <details open><summary>「標籤」一直是空白</summary><div class="body">AI 還沒學過任何東西，或是「分類」開關被關掉了。先確認每個標籤都有張數，再檢查 <span class="blk"><span class="drop">開啟 ▾</span> 分類</span>。</div></details>
+  <details><summary>不管做什麼動作，答案都一樣</summary><div class="body">通常是<b>張數不平均</b>，或兩個標籤的畫面太像。先用「標籤數量N」看看是不是差太多，把少的補到一樣多；或把兩個動作做得更不一樣。</div></details>
   <details><summary>剛剛還很準，現在都猜錯</summary><div class="body">可能是<b>光線或背景變了</b>，或你換了位置。解法：在新環境再補教幾張，AI 就會適應。</div></details>
   <details><summary>重新整理後 AI 就忘光了</summary><div class="body">對，AI 的記憶不會自動儲存。每次做完都要按 <span class="blk">下載學習資料</span>，下次再 <span class="blk">上傳學習資料</span>。</div></details>
-  <details><summary>電腦很卡</summary><div class="body">把「每幾秒判斷一次」改成 1 秒、關掉其他分頁，會順很多。教完之後也可以先把「標籤判斷」關掉。</div></details>
+  <details><summary>電腦很卡</summary><div class="body">把「每隔幾秒標記一次」改成 1 秒、關掉其他分頁，會順很多。教完之後也可以先把「分類」開關關掉。</div></details>
 </section>
 
 <footer>🔮 ML2Scratch 學生實作單　·　AI 有多聰明，取決於你教得多好！</footer>
@@ -376,10 +376,10 @@ items.forEach(function(it){
 });
 /* ---------- flow ---------- */
 var FLOW=[
- ['📸 蒐集資料','想教 AI 認出幾種東西，就要幫每一種<b>拍很多張照片</b>。照片越多、變化越多，AI 學得越好。在 ML2Scratch 裡，你按一次「學習 標籤1」，就等於拍一張照片存進去。','要準備：攝影機、想教的東西（手勢、物品、表情都可以）'],
- ['🏷️ 貼上標籤','光有照片不夠，還要告訴 AI「這張是什麼」。<b>標籤就是答案</b>：標籤1＝石頭、標籤2＝剪刀……這個叫做「<b>監督式學習</b>」，就像有老師在旁邊改答案。','用到的積木：學習 標籤1 / 標籤2 / 標籤3 / 標籤 (4▾)'],
- ['🧠 讓它學習','ML2Scratch 會自動把每張照片變成一串數字（<b>特徵</b>），記在腦袋裡。你按下學習的那一刻，它就記住了，不用等。','可以用「標籤N的張數」確認它到底記了幾張'],
- ['✨ 開始判斷','看到新畫面時，AI 會把它也變成數字，然後找<b>最像的幾張舊照片</b>，看它們大多是哪個標籤，就回答那個標籤。這就是下一段的 KNN！','用到的積木：標籤 / 當接收到 標籤 (1▾)']
+ ['📸 蒐集資料','想教 AI 認出幾種東西，就要幫每一種<b>拍很多張照片</b>。照片越多、變化越多，AI 學得越好。在 ML2Scratch 裡，你按一次「學習標籤1」，就等於拍一張照片存進去。','要準備：攝影機、想教的東西（手勢、物品、表情都可以）'],
+ ['🏷️ 貼上標籤','光有照片不夠，還要告訴 AI「這張是什麼」。<b>標籤就是答案</b>：標籤1＝石頭、標籤2＝剪刀……這個叫做「<b>監督式學習</b>」，就像有老師在旁邊改答案。','用到的積木：學習標籤1 / 學習標籤2 / 學習標籤3 / 學習標籤 (4▾)'],
+ ['🧠 讓它學習','ML2Scratch 會自動把每張照片變成一串數字（<b>特徵</b>），記在腦袋裡。你按下學習的那一刻，它就記住了，不用等。','可以用「標籤數量N」確認它到底記了幾張'],
+ ['✨ 開始判斷','看到新畫面時，AI 會把它也變成數字，然後找<b>最像的幾張舊照片</b>，看它們大多是哪個標籤，就回答那個標籤。這就是下一段的 KNN！','用到的積木：標籤 / 接收到類別 (1▾) 時']
 ];
 var fb=document.getElementById('flowbody');
 function showFlow(k){

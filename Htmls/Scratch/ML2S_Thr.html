@@ -198,12 +198,12 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <caption>① 訓練類</caption>
       <thead><tr><th>積木</th><th>類型</th><th>說明與教學提醒</th></tr></thead>
       <tbody>
-        <tr><td><span class="blk">學習 標籤1</span><br><span class="blk">學習 標籤2</span><span class="blk">學習 標籤3</span></td><td>執行</td>
+        <tr><td><span class="blk">學習標籤1</span><br><span class="blk">學習標籤2</span><span class="blk">學習標籤3</span></td><td>執行</td>
           <td>將<b>當下畫面</b>存為該標籤的一筆範例。按一次存一張，建議每標籤 <b>20 張以上</b>。前三個標籤有獨立積木，方便低年段操作。</td></tr>
-        <tr><td><span class="blk">學習 標籤 <span class="drop">4 ▾</span></span></td><td>執行</td>
-          <td>選單提供標籤 <b>4–10</b>。另有可接變數／輸入值的版本，適合做「自動連拍 20 張」的迴圈。</td></tr>
-        <tr><td><span class="blk">學習／判斷 <span class="drop">攝影機 ▾</span> 的影像</span></td><td>執行</td>
-          <td>切換學習來源：<b>攝影機</b>或<b>舞台</b>。選「舞台」可做「手繪圖形辨識」，沒有攝影機的電腦也能上課。</td></tr>
+        <tr><td><span class="blk">學習標籤 <span class="drop">4 ▾</span></span></td><td>執行</td>
+          <td>選單提供標籤 <b>4–10</b>。另有可直接輸入編號的 <span class="blk">學習標籤 <span class="num">11</span></span>，可接變數，適合做「自動連拍 20 張」或多標籤迴圈。</td></tr>
+        <tr><td><span class="blk">學習/分類 <span class="drop">網路攝影機 ▾</span> 影像</span></td><td>執行</td>
+          <td>切換學習與判斷的影像來源：<b>網路攝影機</b>或<b>舞台</b>。選「舞台」可做「手繪圖形辨識」，沒有攝影機的電腦也能上課。</td></tr>
       </tbody>
     </table>
   </div>
@@ -215,12 +215,12 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <tbody>
         <tr><td><span class="blk rep">標籤</span></td><td>數值</td>
           <td>目前的判斷結果。<b>務必請學生勾選顯示在舞台</b>，這是全課最重要的回饋來源。尚未訓練時為空白。</td></tr>
-        <tr><td><span class="blk hat">當接收到 標籤 <span class="drop">1 ▾</span></span></td><td>事件（帽子）</td>
-          <td>判斷結果變為該標籤時觸發。選單含 <b>any</b> 與 1–10。這是本擴充唯一的事件積木，也是作品的主結構。</td></tr>
-        <tr><td><span class="blk">將標籤判斷 <span class="drop">開啟 ▾</span></span></td><td>執行</td>
-          <td>開／關即時判斷。<b>建議訓練時先關閉</b>，避免畫面跳動干擾；訓練完再開啟。</td></tr>
-        <tr><td><span class="blk">每 <span class="drop">1 ▾</span> 秒判斷一次標籤</span></td><td>執行</td>
-          <td>可選 1／0.5／0.2／0.1 秒，<b>預設 1 秒</b>。遊戲類作品建議 0.2 秒；老舊電腦維持 1 秒。</td></tr>
+        <tr><td><span class="blk hat">接收到類別 <span class="drop">1 ▾</span> 時</span></td><td>事件（帽子）</td>
+          <td>判斷結果變為該類別時觸發。選單含 <b>任何</b> 與 1–10；另有可輸入編號的 <span class="blk hat">接收到類別 <span class="num">11</span> 時</span>。這是本擴充唯一的事件積木，也是作品的主結構。</td></tr>
+        <tr><td><span class="blk"><span class="drop">開啟 ▾</span> 分類</span></td><td>執行</td>
+          <td>開／關即時判斷（英文原文 turn classification on/off，中文介面顯示為「〔關閉▾〕分類」）。<b>建議訓練時先關閉</b>，避免畫面跳動干擾；訓練完再開啟。</td></tr>
+        <tr><td><span class="blk">每隔 <span class="drop">1 ▾</span> 秒標記一次</span></td><td>執行</td>
+          <td>「標記」即判斷。可選 1／0.5／0.2／0.1 秒，<b>預設 1 秒</b>。遊戲類作品建議 0.2 秒；老舊電腦維持 1 秒。</td></tr>
       </tbody>
     </table>
   </div>
@@ -230,10 +230,10 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <caption>③ 資料管理類</caption>
       <thead><tr><th>積木</th><th>類型</th><th>說明與教學提醒</th></tr></thead>
       <tbody>
-        <tr><td><span class="blk rep">標籤1 的張數</span><br><span class="blk rep">標籤 <span class="drop">4 ▾</span> 的張數</span></td><td>數值</td>
-          <td>該標籤已收集的範例數。<b>請學生全部勾選顯示</b>，一眼就能看出資料是否平衡，是最好的自我檢核工具。</td></tr>
-        <tr><td><span class="blk">重設 標籤 <span class="drop">全部 ▾</span> 的學習</span></td><td>執行</td>
-          <td>清除指定標籤或全部的學習資料。選單含 <b>all</b> 與 1–10。教錯了重設比硬修有效。</td></tr>
+        <tr><td><span class="blk rep">標籤數量1</span> … <span class="blk rep">標籤數量10</span><br><span class="blk rep">標籤數量 <span class="num">11</span></span></td><td>數值</td>
+          <td>該標籤已收集的範例數。標籤 1–10 各有獨立積木（可勾選顯示於舞台），另有可輸入編號的版本。<b>請學生全部勾選顯示</b>，一眼就能看出資料是否平衡，是最好的自我檢核工具。</td></tr>
+        <tr><td><span class="blk">重置 <span class="drop">所有量 ▾</span></span></td><td>執行</td>
+          <td>清除學習資料。選單的 <b>所有量</b> 代表全部清空，也可選單一標籤；另有可輸入編號的 <span class="blk">重置 <span class="num">11</span></span>。教錯了重置比硬修有效。</td></tr>
         <tr><td><span class="blk">下載學習資料</span><br><span class="blk">上傳學習資料</span></td><td>執行</td>
           <td>匯出／匯入 JSON。<b class="">.sb3 專案檔不包含學習資料</b>，兩個檔案都要存，這是本單元最常見的災難。</td></tr>
       </tbody>
@@ -245,9 +245,9 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <caption>④ 攝影機設定類</caption>
       <thead><tr><th>積木</th><th>類型</th><th>說明與教學提醒</th></tr></thead>
       <tbody>
-        <tr><td><span class="blk">將攝影機 <span class="drop">開啟 ▾</span></span></td><td>執行</td><td>關閉／開啟／鏡像開啟，預設鏡像開啟。</td></tr>
-        <tr><td><span class="blk">將攝影機的透明度設為 <span class="num">50</span></span></td><td>執行</td><td>0（清楚）～100（全透明），<b>預設 50</b>。訓練階段建議調低，讓學生看清楚自己入鏡的樣子。</td></tr>
-        <tr><td><span class="blk">將攝影機切換為 <span class="drop">… ▾</span></span></td><td>執行</td><td>多鏡頭裝置可切換來源（例如外接 USB 視訊鏡頭）。</td></tr>
+        <tr><td><span class="blk">視訊設為 <span class="drop">開啟 ▾</span></span></td><td>執行</td><td>選單為關閉／開啟／鏡像開啟，預設鏡像開啟。介面用詞為「視訊」而非「攝影機」。</td></tr>
+        <tr><td><span class="blk">視訊透明度設為 <span class="num">50</span></span></td><td>執行</td><td>0（清楚）～100（全透明），<b>預設 50</b>。訓練階段建議調低，讓學生看清楚自己入鏡的樣子。</td></tr>
+        <tr><td><span class="blk">網路攝影機切換到 <span class="drop">… ▾</span></span></td><td>執行</td><td>多鏡頭裝置可切換來源（例如外接 USB 視訊鏡頭），下拉會列出系統偵測到的裝置。</td></tr>
       </tbody>
     </table>
   </div>
@@ -328,7 +328,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
   <div class="sec-head"><span class="dot"></span><h2>五、教學流程（建議 2–3 節）</h2></div>
   <div class="lesson">
     <div class="row"><div class="t">第 1 節<br>0–10′</div><div><b>引起動機</b>：對比前兩個擴充「電腦本來就會」與本單元「要你教它」。提問：「你要怎麼教一個從沒看過貓的人認出貓？」</div></div>
-    <div class="row"><div class="t">10–20′</div><div><b>環境設定＋認識回饋</b>：加入擴充、允許攝影機，<b>勾選「標籤」與「標籤N的張數」顯示在舞台</b>。此步驟決定後續學生能否自我除錯。</div></div>
+    <div class="row"><div class="t">10–20′</div><div><b>環境設定＋認識回饋</b>：加入擴充、允許攝影機，<b>勾選「標籤」與「標籤數量N」顯示在舞台</b>。此步驟決定後續學生能否自我除錯。</div></div>
     <div class="row"><div class="t">20–40′</div><div><b>第一次訓練</b>：石頭／剪刀／布各 20 張，觀察「標籤」變化。<b>下課前務必完成一次「下載學習資料」。</b></div></div>
     <div class="row"><div class="t">第 2 節<br>0–10′</div><div><b>KNN 原理</b>：用本頁的互動示範講解「找最近的鄰居投票」，並現場示範資料太少與不平衡的後果。</div></div>
     <div class="row"><div class="t">10–30′</div><div><b>做出作品</b>：以「當接收到標籤」串接動作，完成猜拳機或垃圾分類小幫手。提早完成者調整判斷間隔、增加標籤。</div></div>
@@ -343,11 +343,11 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
     <div class="card">
       <h3>✌️ 範例 1：猜拳辨識機</h3>
       <div class="code">
-        <div><span class="blk hat">當接收到 標籤 <span class="drop">1 ▾</span></span></div>
+        <div><span class="blk hat">接收到類別 <span class="drop">1 ▾</span> 時</span></div>
         <div class="ind1"><span class="blk ctl">說出「石頭」</span></div>
         <div class="ind1"><span class="blk ctl">切換造型到「布」</span></div>
       </div>
-      <p style="font-size:.92rem"><b>易錯點：</b>三個手勢都在同一位置、同一角度拍攝，導致換個姿勢就失準；訓練時忘記關閉「標籤判斷」，畫面跳動讓學生誤以為壞掉。</p>
+      <p style="font-size:.92rem"><b>易錯點：</b>三個手勢都在同一位置、同一角度拍攝，導致換個姿勢就失準；訓練時忘記把「分類」關閉，畫面跳動讓學生誤以為壞掉。</p>
     </div>
     <div class="card">
       <h3>🔁 範例 2：自動連拍 20 張</h3>
@@ -355,7 +355,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <div class="code">
         <div><span class="blk ctl">當按下 <span class="drop">空白 ▾</span> 鍵</span></div>
         <div class="ind1"><span class="blk ctl">重複 <span class="num">20</span> 次</span></div>
-        <div class="ind2"><span class="blk">學習 標籤1</span></div>
+        <div class="ind2"><span class="blk">學習標籤1</span></div>
         <div class="ind2"><span class="blk ctl">等待 <span class="num">0.2</span> 秒</span></div>
       </div>
       <p style="font-size:.92rem"><b>教學重點：</b>中間的「等待」很關鍵 —— 讓學生在 4 秒內緩慢移動手部，自然產生變異，比連按 20 下同一畫面好得多。</p>
@@ -363,14 +363,14 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
     <div class="card">
       <h3>🗑️ 範例 3：垃圾分類小幫手</h3>
       <div class="code">
-        <div><span class="blk hat">當接收到 標籤 <span class="drop">4 ▾</span></span></div>
+        <div><span class="blk hat">接收到類別 <span class="drop">4 ▾</span> 時</span></div>
         <div class="ind1"><span class="blk ctl">說出「請把物品放到鏡頭前」</span></div>
       </div>
       <p style="font-size:.92rem"><b>設計重點：</b>標籤4 設為「空背景」負樣本。<b>易錯點：</b>沒有負樣本時，鏡頭空著也會一直觸發某個分類，學生會以為程式壞了。</p>
     </div>
     <div class="card">
       <h3>🎨 範例 4：不用攝影機的玩法</h3>
-      <p style="font-size:.92rem;color:var(--ink2)">用 <span class="blk">學習／判斷 <span class="drop">舞台 ▾</span> 的影像</span> 改成辨識學生在舞台上用畫筆畫的圖形。</p>
+      <p style="font-size:.92rem;color:var(--ink2)">用 <span class="blk">學習/分類 <span class="drop">舞台 ▾</span> 影像</span> 改成辨識學生在舞台上用畫筆畫的圖形。</p>
       <ul class="tidy" style="font-size:.92rem">
         <li>適合攝影機不足或不便入鏡的班級。</li>
         <li>可教「圓形／三角形／正方形」辨識，與數學課圖形單元結合。</li>
@@ -395,12 +395,12 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
 
 <section id="faq">
   <div class="sec-head"><span class="dot"></span><h2>八、常見問題排除</h2></div>
-  <details open><summary>「標籤」一直空白</summary><div class="body">① 尚未有任何學習資料；② 「標籤判斷」被關閉；③ 模型載入未完成。請先用「標籤N的張數」確認資料存在，再開啟判斷。</div></details>
+  <details open><summary>「標籤」一直空白</summary><div class="body">① 尚未有任何學習資料；② 「分類」開關被關閉；③ 模型載入未完成。請先用「標籤數量N」確認資料存在，再開啟判斷。</div></details>
   <details><summary>不論輸入什麼，永遠回答同一個標籤</summary><div class="body">最常見原因是<b>資料不平衡</b>。請學生比對各標籤張數並補齊。其次是兩類畫面差異太小，或缺少負樣本。</div></details>
   <details><summary>剛才很準，換位置或換人就失準</summary><div class="body">模型學到了背景或個人特徵（捷徑學習）。在新條件下補充樣本即可改善，並藉此帶出「訓練資料涵蓋範圍」的概念。</div></details>
   <details><summary>重新整理後學習資料全部消失</summary><div class="body">這是設計如此，資料僅存在於瀏覽器記憶體。務必使用「下載學習資料／上傳學習資料」。<b>提醒：.sb3 不含學習資料。</b></div></details>
-  <details><summary>上傳學習資料後沒有反應</summary><div class="body">請確認上傳的是本擴充下載的 JSON 檔（非 .sb3），且標籤編號與程式中使用的一致。上傳後可用「標籤N的張數」確認是否載入成功。</div></details>
-  <details><summary>電腦效能不足、畫面延遲</summary><div class="body">將判斷間隔改為 1 秒、訓練期間關閉判斷、關閉其他分頁。ML2Scratch 的負擔低於 Facemesh，若連此也吃力，建議改用舞台影像模式。</div></details>
+  <details><summary>上傳學習資料後沒有反應</summary><div class="body">請確認上傳的是本擴充下載的 JSON 檔（非 .sb3），且標籤編號與程式中使用的一致。上傳後可用「標籤數量N」確認是否載入成功。</div></details>
+  <details><summary>電腦效能不足、畫面延遲</summary><div class="body">將「每隔幾秒標記一次」改為 1 秒、訓練期間關閉判斷、關閉其他分頁。ML2Scratch 的負擔低於 Facemesh，若連此也吃力，建議改用舞台影像模式。</div></details>
   <details><summary>擴充功能載入失敗</summary><div class="body">其他 Chrome 擴充（廣告攔截、隱私保護）可能衝突，可用<b>無痕／訪客模式</b>測試。首次載入需連網下載模型。</div></details>
 </section>
 

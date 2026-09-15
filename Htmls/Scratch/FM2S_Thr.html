@@ -151,7 +151,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
   <h1>Facemesh2Scratch 教師手冊</h1>
   <p>本手冊整理 Facemesh2Scratch 的完整技術規格、常用臉部關鍵點編號速查、兩節課教學流程、學生易錯點與問題排除。臉部偵測涉及生物特徵，教學前請一併閱讀第一節的隱私提醒。</p>
   <div class="facts">
-    <div class="fact"><div class="k">關鍵點數</div><div class="v">468 點／每張臉</div></div>
+    <div class="fact"><div class="k">關鍵點數</div><div class="v">468 點／選單 32 部位</div></div>
     <div class="fact"><div class="k">可偵測人數</div><div class="v">多人（選單 1–10）</div></div>
     <div class="fact"><div class="k">積木總數</div><div class="v">6 個（無 z 座標）</div></div>
     <div class="fact"><div class="k">建議時數</div><div class="v">2 節（各 40 分鐘）</div></div>
@@ -165,7 +165,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
   <div class="grid2">
     <div class="card">
       <h3>這是什麼</h3>
-      <p style="font-size:.94rem">Facemesh2Scratch 是 Junya Ishihara（champierre）開發的開源 Scratch 3 擴充功能，使用 <b>TensorFlow.js 的 facemesh 模型</b>（源自 MediaPipe Face Mesh），只用一支網路攝影機就能在每張臉上取得 <b>468 個關鍵點</b>的座標。</p>
+      <p style="font-size:.94rem">Facemesh2Scratch 是 Junya Ishihara（champierre）開發的開源 Scratch 3 擴充功能，使用 <b>TensorFlow.js 的 facemesh 模型</b>（源自 MediaPipe Face Mesh），只用一支網路攝影機就能在每張臉上取得 <b>468 個關鍵點</b>的座標，其中 <b>32 個常用部位</b>已在積木選單中命名，可直接以名稱選取。</p>
       <ul class="tidy" style="font-size:.93rem">
         <li>使用平台：<b>stretch3.github.io</b>，非 Scratch 官方網站。</li>
         <li>模型在<b>瀏覽器本機執行</b>，影像不會上傳伺服器。</li>
@@ -180,7 +180,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
           <thead><tr><th></th><th>Handpose</th><th>Facemesh</th></tr></thead>
           <tbody>
             <tr><td>關鍵點</td><td>21 點</td><td><b>468 點</b></td></tr>
-            <tr><td>選取方式</td><td>下拉部位名稱</td><td><b>下拉編號 1–468</b></td></tr>
+            <tr><td>選取方式</td><td>下拉部位名稱<br>21 個</td><td>下拉部位名稱<br><b>32 個</b></td></tr>
             <tr><td>多人</td><td>實質單手</td><td><b>支援多人</b></td></tr>
             <tr><td>z 座標</td><td>有</td><td><b>沒有</b></td></tr>
             <tr><td>人數積木</td><td>無</td><td><b>有</b></td></tr>
@@ -188,7 +188,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
           </tbody>
         </table>
       </div>
-      <p style="font-size:.92rem;margin-top:10px">已教過 Handpose2Scratch 的班級，可直接從「選單從名稱變成編號」與「多了人數積木」兩點切入，學習遷移很快。</p>
+      <p style="font-size:.92rem;margin-top:10px">已教過 Handpose2Scratch 的班級，操作方式幾乎一致，可直接從「部位變成臉部五官」與「多了人數積木、可多人」兩點切入，學習遷移很快。</p>
     </div>
   </div>
 </section>
@@ -201,12 +201,12 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <thead><tr><th>積木</th><th>類型</th><th>回傳／參數</th><th>教學提醒</th></tr></thead>
       <tbody>
         <tr>
-          <td><span class="blk rep">第 (1) 人的第 (2) 個部位的 x 座標</span></td><td>數值</td>
+          <td><span class="blk rep">第 (1) 人的 (鼻尖 (2)) 的 x 座標</span></td><td>數值</td>
           <td>舞台左右座標<br><b>約 −240 ～ 240</b></td>
-          <td>兩個下拉：人數 1–10、部位編號 1–468。偵測不到時回傳空白。</td>
+          <td>兩個下拉：人數 1–10、部位選單 32 個命名部位（括號內為原始編號）。偵測不到時回傳空白。</td>
         </tr>
         <tr>
-          <td><span class="blk rep">第 (1) 人的第 (2) 個部位的 y 座標</span></td><td>數值</td>
+          <td><span class="blk rep">第 (1) 人的 (鼻尖 (2)) 的 y 座標</span></td><td>數值</td>
           <td>舞台上下座標<br><b>約 −180 ～ 180</b></td>
           <td>臉抬高 y 變大。比較兩點 y 值即可偵測張嘴、眨眼。</td>
         </tr>
@@ -238,7 +238,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
 
 <section id="face">
   <div class="sec-head"><span class="dot"></span><h2>三、常用部位編號速查</h2></div>
-  <p style="margin:0 0 14px;color:var(--ink2)">468 點無法逐一記憶，教學上只需掌握下列 27 個高頻點。點選圖上圓點或右側表格可查看用途；也可直接輸入編號查詢。</p>
+  <p style="margin:0 0 14px;color:var(--ink2)">模型每張臉輸出 468 點，但積木的下拉選單已挑出 <b>32 個命名部位</b>（鼻尖 (2) 起、臉部左緣 (455) 止），下表即為完整清單。點選圖上圓點或表格可查看用途，也可直接輸入編號查詢。</p>
   <div class="face-layout">
     <div>
       <div class="face-box">
@@ -257,7 +257,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
           <g id="kps"></g>
         </svg>
         <div class="legend">
-          <span style="background:var(--c-out)">臉輪廓</span>
+          <span style="background:var(--c-out)">額頭與輪廓</span>
           <span style="background:var(--c-brow)">眉毛</span>
           <span style="background:var(--c-eye)">眼睛</span>
           <span style="background:var(--c-nose)">鼻子</span>
@@ -285,7 +285,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
           <tbody id="kbody"></tbody>
         </table>
       </div>
-      <p style="font-size:.84rem;color:var(--ink2);margin-top:8px">※ 積木編號為 <b>1 起算</b>；TensorFlow／MediaPipe 官方文件為 <b>0 起算</b>，兩者相差 1。</p>
+      <p style="font-size:.84rem;color:var(--ink2);margin-top:8px">※ 括號內數字為積木選單顯示的編號（<b>1 起算</b>）；TensorFlow／MediaPipe 官方文件為 <b>0 起算</b>，兩者相差 1。</p>
     </div>
   </div>
 </section>
@@ -309,7 +309,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <div class="code">
         <div><span class="blk ctl">重複無限次</span></div>
         <div class="ind1"><span class="blk ctl">如果 <span class="blk op" style="box-shadow:none;padding:2px 10px">(人數) &gt; 0</span> 那麼</span></div>
-        <div class="ind2"><span class="blk mot">定位到 x: <span class="num">1人・2號 x</span> y: <span class="num">1人・2號 y</span></span></div>
+        <div class="ind2"><span class="blk mot">定位到 x: <span class="num">1人・鼻尖 x</span> y: <span class="num">1人・鼻尖 y</span></span></div>
       </div>
       <p style="font-size:.9rem;margin-top:8px">兩人對戰的專案則寫成「如果（人數）＞ 1 才讀第 2 人」。這是本單元最重要的程式習慣。</p>
     </div>
@@ -321,8 +321,8 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
   <div class="lesson">
     <div class="row"><div class="t">第 1 節<br>0–10′</div><div><b>引起動機</b>：示範手機的臉部貼圖或濾鏡，提問「電腦怎麼知道鼻子在哪裡？」引出 468 個關鍵點的概念，並說明這是「找特徵點」不是「認識你是誰」。</div></div>
     <div class="row"><div class="t">10–20′</div><div><b>環境設定</b>：開 stretch3 → 添加擴展 → 允許攝影機 → 用「人數」積木驗證是否偵測成功。<span style="color:var(--ink2)">（此段最易卡關，預留緩衝時間。）</span></div></div>
-    <div class="row"><div class="t">20–40′</div><div><b>完成範例 1</b>：角色定位到鼻尖（第 2 號）。延伸讓學生改用眉心（169）做眼鏡、額頭（11）做帽子。</div></div>
-    <div class="row"><div class="t">第 2 節<br>0–10′</div><div><b>複習編號</b>：用學生版的「臉部點點小測驗」搶答，熟悉常用編號。</div></div>
+    <div class="row"><div class="t">20–40′</div><div><b>完成範例 1</b>：角色定位到鼻尖。延伸讓學生改用眉心 (10) 做眼鏡、額頭頂端 (11) 做帽子。</div></div>
+    <div class="row"><div class="t">第 2 節<br>0–10′</div><div><b>複習部位</b>：用學生版的「臉部點點小測驗」搶答，熟悉 32 個部位的位置。</div></div>
     <div class="row"><div class="t">10–30′</div><div><b>完成範例 2 或 3</b>：張嘴偵測（14 與 15）或眨眼偵測（160 與 146），帶入「兩點距離」與閾值調整的概念。</div></div>
     <div class="row"><div class="t">30–40′</div><div><b>分享與省思</b>：作品展示，討論臉部辨識的應用與隱私界線（手機解鎖、監視器、濾鏡），完成 AI 倫理討論。</div></div>
   </div>
@@ -337,22 +337,22 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
         <div><span class="blk ctl">當 🏳 被點擊</span></div>
         <div><span class="blk">將攝影機的透明度設為 <span class="num">50</span></span></div>
         <div><span class="blk ctl">重複無限次</span></div>
-        <div class="ind1"><span class="blk mot">定位到 x: <span class="num">1人・2號 x</span> y: <span class="num">1人・2號 y</span></span></div>
+        <div class="ind1"><span class="blk mot">定位到 x: <span class="num">1人・鼻尖 x</span> y: <span class="num">1人・鼻尖 y</span></span></div>
       </div>
-      <p style="font-size:.92rem"><b>易錯點：</b>把編號填成 0（沒有第 0 號，最小是 1）；或忘記加「重複無限次」。</p>
+      <p style="font-size:.92rem"><b>易錯點：</b>忘記加「重複無限次」，角色只動一次就停住；或誤以為要自己記編號 —— 選單直接選名稱即可。</p>
     </div>
     <div class="card">
       <h3>😮 範例 2：張嘴偵測</h3>
       <div class="code">
-        <div><span class="blk ctl">將 [嘴巴開合] 設為（14 號 y − 15 號 y）</span></div>
+        <div><span class="blk ctl">將 [嘴巴開合] 設為（上唇內緣中央 y − 下唇內緣中央 y）</span></div>
         <div><span class="blk ctl">如果 <span class="blk op" style="box-shadow:none;padding:2px 10px">嘴巴開合 &gt; 15</span> 那麼 …</span></div>
       </div>
-      <p style="font-size:.92rem"><b>教學重點：</b>閾值必須實測，並提醒臉離鏡頭遠近會改變數值。<b>進階：</b>除以「臉高度（11 號 y − 153 號 y）」做正規化，就不受遠近影響 —— 很好的比例教學素材。</p>
+      <p style="font-size:.92rem"><b>教學重點：</b>閾值必須實測，並提醒臉離鏡頭遠近會改變數值。<b>進階：</b>除以「臉高度（額頭頂端 y − 下巴 y）」做正規化，就不受遠近影響 —— 很好的比例教學素材。</p>
     </div>
     <div class="card">
       <h3>😉 範例 3：眨眼偵測</h3>
       <div class="code">
-        <div><span class="blk ctl">如果 <span class="blk op" style="box-shadow:none;padding:2px 10px">(160 號 y − 146 號 y) &lt; 4</span> 那麼 …</span></div>
+        <div><span class="blk ctl">如果 <span class="blk op" style="box-shadow:none;padding:2px 10px">(右眼上緣 y − 右眼下緣 y) &lt; 4</span> 那麼 …</span></div>
       </div>
       <p style="font-size:.92rem"><b>易錯點：</b>沿用張嘴的閾值（15）導致永遠不成立。眼睛開合的數值遠小於嘴巴，約 3～6，需要學生自己觀察數值後決定。</p>
     </div>
@@ -360,7 +360,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
       <h3>👥 範例 4：多人應用</h3>
       <div class="code">
         <div><span class="blk ctl">如果 <span class="blk op" style="box-shadow:none;padding:2px 10px">(人數) &gt; 1</span> 那麼</span></div>
-        <div class="ind1"><span class="blk mot">角色 2 定位到 x: <span class="num">2人・2號 x</span> y: <span class="num">2人・2號 y</span></span></div>
+        <div class="ind1"><span class="blk mot">角色 2 定位到 x: <span class="num">2人・鼻尖 x</span> y: <span class="num">2人・鼻尖 y</span></span></div>
       </div>
       <p style="font-size:.92rem"><b>提醒：</b>人的編號會隨偵測順序改變，兩人交換位置時角色可能互換，這是模型限制，適合作為「AI 的不確定性」討論素材。</p>
     </div>
@@ -395,7 +395,7 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
   <div class="sec-head"><span class="dot"></span><h2>九、評量指標與跨域延伸</h2></div>
   <div class="grid3">
     <div class="card"><h3>📝 評量指標</h3><ul class="tidy" style="font-size:.92rem">
-      <li><b>知識</b>：能說出至少 5 個常用部位編號及其位置。</li>
+      <li><b>知識</b>：能說出至少 5 個常用部位的名稱及其位置。</li>
       <li><b>理解</b>：能說明為何要先用「人數」判斷再讀座標。</li>
       <li><b>技能</b>：能自行實測並決定張嘴／眨眼的閾值。</li>
       <li><b>態度</b>：能說明臉部資料的隱私風險與使用界線。</li>
@@ -423,35 +423,40 @@ footer{margin-top:50px;text-align:center;color:var(--ink2);font-size:.85rem}
 
 <script>
 var C={o:'var(--c-out)',b:'var(--c-brow)',e:'var(--c-eye)',n:'var(--c-nose)',m:'var(--c-mouth)',c:'var(--c-cheek)'};
-var GN={o:'臉輪廓',b:'眉毛',e:'眼睛',n:'鼻子',m:'嘴巴',c:'臉頰'};
+var GN={o:'額頭與輪廓',b:'眉毛',e:'眼睛',n:'鼻子',m:'嘴巴',c:'臉頰'};
 var KP=[
- [11,'額頭頂',200,82,'o',0,-14,'帽子、皇冠等頭頂配件的定位點；與下巴合用可算臉高。'],
- [153,'下巴尖',200,404,'o',0,17,'臉的最下緣；(11 y − 153 y) 可作為臉高度，用於正規化。'],
- [235,'右臉外緣',328,252,'o',17,4,'臉右側輪廓；與 455 合用可算臉寬，亦可估測遠近。'],
- [455,'左臉外緣',72,252,'o',-17,4,'臉左側輪廓。'],
- [106,'右眉中央',250,166,'b',18,-8,'挑眉偵測：與右上眼皮 160 的距離變大即為挑眉。'],
- [335,'左眉中央',150,166,'b',-18,-8,'左眉中央，用途同右眉。'],
- [34,'右眼外角',282,205,'e',18,4,'右眼外眥；與 134 合用可算眼睛寬度。'],
- [134,'右眼內角',222,207,'e',4,17,'右眼內眥，靠近鼻梁側。'],
- [160,'右上眼皮',252,191,'e',0,-11,'眨眼偵測主力：與 146 的 y 差值小於約 4 即判定閉眼。'],
- [146,'右下眼皮',252,219,'e',0,17,'右眼下眼瞼中央。'],
- [264,'左眼外角',118,205,'e',-18,4,'左眼外眥。'],
- [363,'左眼內角',178,207,'e',-4,17,'左眼內眥。'],
- [387,'左上眼皮',148,191,'e',0,-11,'左眼上眼瞼，與 375 合用偵測左眼眨眼。'],
- [375,'左下眼皮',148,219,'e',0,17,'左眼下眼瞼。'],
- [169,'眉心（兩眼中間）',200,188,'n',0,-12,'鼻梁上方兩眼正中；AR 眼鏡最佳定位點。'],
  [2,'鼻尖',200,262,'n',17,-4,'全臉最穩定的追蹤點，適合作為「整張臉在哪裡」的代表。'],
- [3,'鼻子下方',200,282,'n',-17,4,'鼻基底、人中上方。'],
+ [3,'鼻子下緣',200,282,'n',-17,4,'鼻基底、人中上方。'],
  [99,'右鼻翼',224,274,'n',17,10,'右側鼻翼；與 328 合用可估鼻寬。'],
  [328,'左鼻翼',176,274,'n',-17,10,'左側鼻翼。'],
- [206,'右臉頰',268,290,'c',18,8,'右頰中央；微笑時相對上抬，可做笑容偵測。'],
- [426,'左臉頰',132,290,'c',-18,8,'左頰中央。'],
+ [34,'右眼外角',282,205,'e',18,4,'右眼外眥；與 134 合用可算眼睛寬度。'],
+ [134,'右眼內角',222,207,'e',4,17,'右眼內眥，靠近鼻梁側。'],
+ [160,'右眼上緣',252,191,'e',0,-11,'眨眼偵測主力：與 146 的 y 差值小於約 4 即判定閉眼。'],
+ [146,'右眼下緣',252,219,'e',0,17,'右眼下眼瞼中央。'],
+ [363,'左眼內角',178,207,'e',-4,17,'左眼內眥。'],
+ [264,'左眼外角',118,205,'e',-18,4,'左眼外眥。'],
+ [387,'左眼上緣',148,191,'e',0,-11,'左眼上眼瞼，與 375 合用偵測左眼眨眼。'],
+ [375,'左眼下緣',148,219,'e',0,17,'左眼下眼瞼。'],
+ [71,'右眉外側',276,168,'b',16,-6,'眉尾；與眉心 10 合用可判斷眉毛角度。'],
+ [106,'右眉中央',250,157,'b',0,-11,'挑眉偵測：與右眼上緣 160 的距離變大即為挑眉。'],
+ [108,'右眉內側',226,165,'b',8,-12,'眉頭；皺眉時兩側眉頭會互相靠近（108 與 337 的 x 差變小）。'],
+ [337,'左眉內側',174,165,'b',-8,-12,'左側眉頭，與 108 成對使用。'],
+ [335,'左眉中央',150,157,'b',0,-11,'左眉中央，用途同右眉。'],
+ [301,'左眉外側',124,168,'b',-16,-6,'左側眉尾。'],
+ [10,'眉心',200,180,'b',0,-10,'兩眉正中；AR 眼鏡與額飾的最佳定位點。'],
  [62,'右嘴角',248,330,'m',18,2,'右嘴角；(62 x − 292 x) 變大代表嘴角橫向拉開＝微笑。'],
  [292,'左嘴角',152,330,'m',-18,2,'左嘴角。'],
- [1,'上唇外緣',200,306,'m',0,-10,'上唇最上緣。'],
- [14,'上唇內側',200,318,'m',-18,0,'張嘴偵測主力：與 15 的 y 差值即嘴巴開合程度。'],
- [15,'下唇內側',200,338,'m',18,6,'下唇內緣，與 14 成對使用。'],
- [18,'下唇外緣',200,350,'m',0,16,'下唇最下緣。']
+ [1,'上唇中央',200,306,'m',0,-10,'上唇最上緣（外緣）。'],
+ [18,'下唇中央',200,350,'m',0,16,'下唇最下緣（外緣）；與 1 合用可算嘴唇整體厚度。'],
+ [14,'上唇內緣中央',200,318,'m',-18,0,'張嘴偵測主力：與 15 的 y 差值即嘴巴開合程度。'],
+ [15,'下唇內緣中央',200,338,'m',18,6,'下唇內緣，與 14 成對使用。'],
+ [11,'額頭頂端',200,82,'o',0,-14,'帽子、皇冠等頭頂配件的定位點；與下巴合用可算臉高。'],
+ [152,'額頭中央',200,124,'o',0,-13,'額頭中心；適合貼額飾，或作為頭部傾斜的參考點。'],
+ [153,'下巴',200,404,'o',0,17,'臉的最下緣；(11 y − 153 y) 可作為臉高度，用於正規化。'],
+ [206,'右臉頰',268,290,'c',18,8,'右頰中央；微笑時相對上抬，可做笑容偵測。'],
+ [426,'左臉頰',132,290,'c',-18,8,'左頰中央。'],
+ [235,'臉部右緣',328,252,'o',17,4,'臉右側輪廓；與 455 合用可算臉寬，亦可估測遠近。'],
+ [455,'臉部左緣',72,252,'o',-17,4,'臉左側輪廓。']
 ];
 var NS='http://www.w3.org/2000/svg';
 function at(el,o){for(var k in o){el.setAttribute(k,o[k]);}return el;}
@@ -499,7 +504,7 @@ function find(){
   var v=parseInt(qEl.value,10);
   if(!v||v<1||v>468){msg.textContent='請輸入 1 到 468 之間的編號。';return;}
   if(idx(v)>=0){pick(v);msg.textContent='已定位到第 '+v+' 號。';}
-  else{msg.textContent='第 '+v+' 號不在常用清單中（仍可在 Scratch 直接使用）。';}
+  else{msg.textContent='第 '+v+' 號不在積木的部位選單中。';}
 }
 document.getElementById('go').addEventListener('click',find);
 qEl.addEventListener('keydown',function(e){if(e.key==='Enter')find();});

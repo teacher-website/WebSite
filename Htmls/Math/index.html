@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>數學出題小幫手</title>
+<title>翰翰數學</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&family=Noto+Sans+TC:wght@400;700&family=Noto+Serif+TC:wght@400;700&family=LXGW+WenKai+TC:wght@400;700&family=Iansui&display=swap" rel="stylesheet">
@@ -24,6 +24,15 @@ button{font-family:inherit}
 .logo{font-weight:700;font-size:19px;white-space:nowrap;display:flex;align-items:center;gap:6px}
 .logo .mascot{display:inline-flex;width:30px;height:30px;border-radius:10px;background:var(--pink);color:#fff;align-items:center;justify-content:center;font-size:16px;box-shadow:0 3px 8px rgba(255,143,171,.5);animation:bob 3s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.verbadge{border:none;background:#fff;color:var(--txt2);border-radius:50px;padding:2px 9px;font:inherit;font-size:11px;font-weight:700;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.08);transition:transform .2s,color .2s}
+.verbadge:hover{transform:scale(1.08);color:var(--pink)}
+.verlog{max-height:52vh;overflow:auto;font-size:13px;line-height:1.75}
+.verlog h4{margin:12px 0 4px;font-size:14px;display:flex;align-items:center;gap:7px}
+.verlog h4:first-child{margin-top:0}
+.verlog .vtag{background:var(--pink);color:#fff;border-radius:50px;padding:1px 9px;font-size:11px;flex:none}
+.verlog h4 small{color:var(--txt2);font-weight:400;font-size:11px}
+.verlog ul{margin:0 0 6px;padding-left:20px}
+.verlog li{margin:2px 0}
 #docname{border:3px solid var(--pink2);border-radius:50px;padding:3px 14px;font:inherit;font-size:14px;color:var(--txt);background:#fff;width:210px;max-width:40vw}
 #saveState{font-size:12px;color:var(--txt2)}
 #tabs{display:flex;gap:5px;flex-wrap:wrap;margin-left:6px}
@@ -244,6 +253,12 @@ select.ts{border:2px solid var(--pink2);border-radius:12px;padding:2px 4px;font:
 .work{border:1px dashed #bbb;margin:1mm 0}
 .wline{display:block;margin-top:1mm}
 
+.as-sec{font-weight:700;margin:1.5mm 0 .5mm}
+.as-tbl td{text-align:left;padding:.8mm 2mm;vertical-align:top;word-break:break-word}
+.as-plain{row-gap:1.2mm}
+.as-q{display:inline-block;min-width:2.2em}
+.as-a{font-weight:700}
+
 /* widgets */
 .mw{display:inline-block;vertical-align:middle;cursor:pointer;border-radius:3px;line-height:1.25;text-indent:0;user-select:none}
 .mw:hover{box-shadow:0 0 0 1px rgba(255,143,171,.7)}
@@ -255,7 +270,8 @@ select.ts{border:2px solid var(--pink2);border-radius:12px;padding:2px 4px;font:
 .frac>.fn{border-bottom:1px solid currentColor;padding:0 .18em .05em}
 .frac>.fd{padding:.05em .18em 0}
 .frac .bx{height:1.25em;min-width:1.25em}
-.mixw{vertical-align:middle;margin-right:.03em}
+.mixw{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;margin-right:.1em;line-height:1}
+.mixw .bx{height:1.35em;min-width:1.35em;margin:0}
 .mw-frac,.mw-pow,.mw-sqrt,.mw-rep,.mw-blank,.mw-cmp,.mw-qno,.mw-sec,.mw-latex{vertical-align:middle}
 .mw-qno,.mw-sec{vertical-align:baseline;line-height:inherit}
 .mw-blank{vertical-align:baseline;line-height:inherit}
@@ -347,7 +363,7 @@ select.ts{border:2px solid var(--pink2);border-radius:12px;padding:2px 4px;font:
 </head>
 <body>
 <header id="appbar">
-  <div class="logo"><span class="mascot">∑</span>數學出題小幫手</div>
+  <div class="logo"><span class="mascot">∑</span>翰翰數學<button class="verbadge" id="verBadge" data-act="verlog" title="點一下看版本紀錄">v1.8</button></div>
   <input id="docname" type="text" value="數學試卷" title="文件名稱（匯出時使用）">
   <nav id="tabs"></nav>
   <div class="appbar-right">
@@ -988,6 +1004,7 @@ const dpOf = v => { const s = String(v); const i = s.indexOf('.'); return i < 0 
 const ARITH = ['calc', 'missing', 'cmp', 'dec'];
 const NUMKIND = ['factor', 'multiple', 'isprime', 'gcd', 'lcm', 'prime', 'round'];
 const inKind = (...ks) => v => ks.includes(v.kind);
+const FTYPES = [['proper', '真分數（小於 1）'], ['mixed', '帶分數'], ['improper', '假分數'], ['int', '整數'], ['any', '真分數或帶分數（隨機）']];
 const opOn = (v, k) => (v.kind === 'calc' || v.kind === 'missing') && v[k];
 
 function genOne(p) {
@@ -1034,7 +1051,8 @@ function genItemHTML(p, g) {
   }
   if (p.fmt === 'vert') {
     if (op === '÷') return mwHTML('ldiv', { divisor: String(b), dividend: String(a), q: String(ans), r: rem != null ? String(rem) : '', mode: 'box', work: Math.min(8, String(ans).length * 2) });
-    return mwHTML('vert', { a: String(a), op, b: String(b), ans: String(ans), mode: 'box' });
+    const mid = (op === '×' && p.mulMid && b >= 10) ? `${a * (b % 10)}\n${a * Math.floor(b / 10)}` : '';
+    return mwHTML('vert', { a: String(a), op, b: String(b), mid, ans: String(ans), mode: 'box' });
   }
   const ansTxt = rem != null ? `${ans} 餘 ${rem}` : ans;
   return `${a} ${op} ${b} ＝ ${genBlank(p, ansTxt, rem != null)}`;
@@ -1044,6 +1062,8 @@ function genSpecial(p, idx) {
   const lo = Math.max(1, +p.nmin || 1), hi = Math.max(lo + 1, +p.nmax || 100);
   const ops = Object.keys(OPSYM).filter(k => p[k] && (k === 'add' || k === 'sub'));
   switch (p.kind) {
+    case 'unit': return genUnit(p);
+    case 'time': return genTime(p);
     case 'factor': {
       const x = rnd(lo, hi), fs = factorsOf(x);
       if (p.skipPrime && isPrimeN(x)) return null;
@@ -1089,18 +1109,53 @@ function genSpecial(p, idx) {
       return { key: 'r' + x, html: `${x} 四捨五入到${name}是 ${genBlank(p, fmtNum(out))}` };
     }
     case 'frac': {
-      const dmax = Math.max(2, +p.dmax || 12), op = pick(ops.length ? ops : ['add']) === 'sub' ? '−' : '＋';
-      let d1 = rnd(2, dmax), d2 = p.fmode === 'diff' ? rnd(2, dmax) : d1;
-      if (p.fmode === 'diff' && d1 === d2) return null;
-      let n1 = rnd(1, d1 - 1), n2 = rnd(1, d2 - 1);
-      let num = op === '＋' ? n1 * d2 + n2 * d1 : n1 * d2 - n2 * d1, den = d1 * d2;
-      if (op === '−' && num < 0) { [n1, d1, n2, d2] = [n2, d2, n1, d1]; num = n1 * d2 - n2 * d1; den = d1 * d2; }
-      if (num === 0) return null;
-      const g = gcd2(Math.abs(num), den) || 1; num /= g; den /= g;
-      if (p.needReduce && g === 1) return null;
-      if (p.properOnly && num > den) return null;
-      const ansH = den === 1 ? genBlank(p, num) : (p.fmix && num > den ? mwHTML('frac', { w: `[${Math.floor(num / den)}]`, n: `[${num % den}]`, d: `[${den}]` }) : fracHTML(num, den, true));
-      return { key: `${n1}/${d1}${op}${n2}/${d2}`, html: `${fracHTML(n1, d1)} ${op} ${fracHTML(n2, d2)} ＝ ${ansH}` };
+      const dmin = Math.max(1, +p.dmin || 2), dmax = Math.max(dmin + 1, +p.dmax || 12);
+      const fops = Object.keys(OPSYM).filter(k => p[k]);
+      const opk = pick(fops.length ? fops : ['add']);
+      const op = { add: '＋', sub: '－', mul: '×', div: '÷' }[opk];
+      /* 分母關係：同分母／異分母／倍數關係（只需擴分一個）／隨機 */
+      let d1 = rnd(Math.max(2, dmin), dmax), d2;
+      if (p.fmode === 'same') d2 = d1;
+      else if (p.fmode === 'multiple') { const k = rnd(2, 3); if (d1 * k <= dmax && Math.random() < .5) d2 = d1 * k; else if (d1 % k === 0 && d1 / k >= 2) d2 = d1 / k; else return null; }
+      else if (p.fmode === 'diff') { d2 = rnd(Math.max(2, dmin), dmax); if (d1 === d2) return null; }
+      else d2 = rnd(Math.max(2, dmin), dmax);
+      const wlo = Math.max(1, +p.wmin || 1), whi = Math.max(wlo, +p.wmax || 4);
+      const mkOp = (type, d) => {
+        const t = type === 'any' ? pick(['proper', 'mixed']) : type;
+        if (t === 'int') return { w: rnd(wlo, whi), n: 0, d: 1 };
+        if (t === 'mixed') return { w: rnd(wlo, whi), n: rnd(1, d - 1), d };
+        if (t === 'improper') return { w: 0, n: rnd(d + 1, d * (whi + 1)), d };
+        return { w: 0, n: rnd(1, d - 1), d };
+      };
+      const A = mkOp(p.f1 || 'proper', d1), B = mkOp(p.f2 || 'proper', d2);
+      const imp = o => ({ n: o.w * o.d + o.n, d: o.d });
+      const ia = imp(A), ib = imp(B);
+      if (!ia.n || !ib.n) return null;
+      let num, den;
+      if (op === '＋') { num = ia.n * ib.d + ib.n * ia.d; den = ia.d * ib.d; }
+      else if (op === '－') { num = ia.n * ib.d - ib.n * ia.d; den = ia.d * ib.d; if (p.noneg && num < 0) return null; if (num === 0) return null; }
+      else if (op === '×') { num = ia.n * ib.n; den = ia.d * ib.d; }
+      else { num = ia.n * ib.d; den = ia.d * ib.n; }
+      const g = gcd2(Math.abs(num), den) || 1;
+      const rn = num / g, rd = den / g;
+      /* 答案條件 */
+      if (p.redCond === 'yes' && g === 1) return null;
+      if (p.redCond === 'no' && g > 1) return null;
+      if (p.properOnly && Math.abs(rn) > rd) return null;
+      if (p.noIntAns && rd === 1) return null;
+      if (+p.ansDmax > 0 && rd > +p.ansDmax) return null;
+      /* 題目中的分數是否要已經是最簡分數 */
+      if (p.opSimple && (gcd2(A.n, A.d) > 1 || gcd2(B.n, B.d) > 1)) return null;
+      /* 不出現 ×1、÷1 這類送分題 */
+      if (p.noTrivial && (op === '×' || op === '÷') && ((ia.n === ia.d) || (ib.n === ib.d))) return null;
+      /* 乘法交叉約分：分子與另一個分母有公因數 */
+      if (p.crossReduce && op === '×' && gcd2(ia.n, ib.d) === 1 && gcd2(ib.n, ia.d) === 1) return null;
+      const opHTML = o => o.d === 1 || o.n === 0 ? String(o.w || o.n) : (o.w ? mwHTML('frac', { w: String(o.w), n: String(o.n), d: String(o.d) }) : mwHTML('frac', { n: String(o.n), d: String(o.d) }));
+      let ansH;
+      if (rd === 1) ansH = genBlank(p, rn);
+      else if (p.fmix && Math.abs(rn) > rd) ansH = mwHTML('frac', { w: `[${Math.trunc(rn / rd)}]`, n: `[${Math.abs(rn) % rd}]`, d: `[${rd}]` });
+      else ansH = fracHTML(rn, rd, true);
+      return { key: `${A.w}_${A.n}/${A.d}${op}${B.w}_${B.n}/${B.d}`, html: `${opHTML(A)} ${op} ${opHTML(B)} ＝ ${ansH}` };
     }
     case 'dec': {
       const dp = Math.max(1, Math.min(2, +p.dp || 1)), f = Math.pow(10, dp);
@@ -1119,6 +1174,136 @@ function genSpecial(p, idx) {
   }
   return null;
 }
+/* ================= ⑬ 單位換算 ================= */
+/* 每個單位：[中文, 符號, 以最小單位計的大小]；時間的中文依「小時／分鐘」或「時／分」設定 */
+const UNITFAM = {
+  len: { n: '長度', u: [['公里', 'km', 1e6], ['公尺', 'm', 1e3], ['公分', 'cm', 10], ['毫米', 'mm', 1]] },
+  wt: { n: '重量', u: [['公噸', 't', 1e6], ['公斤', 'kg', 1e3], ['公克', 'g', 1]] },
+  cap: { n: '容量', u: [['公升', 'L', 1e3], ['毫公升', 'mL', 1]] },
+  area: { n: '面積', u: [['平方公里', 'km²', 1e10], ['公頃', 'ha', 1e8], ['公畝', 'a', 1e6], ['平方公尺', 'm²', 1e4], ['平方公分', 'cm²', 1]] },
+  vol: { n: '體積與容積', u: [['立方公尺', 'm³', 1e6], ['公升', 'L', 1e3], ['立方公分', 'cm³', 1]] },
+  time: { n: '時間', u: [['日', '日', 86400], ['小時', '時', 3600], ['分鐘', '分', 60], ['秒', '秒', 1]] },
+};
+const UFAMS = Object.keys(UNITFAM);
+/* 數字＋單位不拆行（避免「公\n斤」這種斷法） */
+const nw = h => `<span style="white-space:nowrap">${h}</span>`;
+const tWords = p => p.tword === 'short' ? { d: '日', h: '時', m: '分', s: '秒' } : { d: '日', h: '小時', m: '分鐘', s: '秒' };
+function unitName(fam, u, p) {
+  if (fam === 'time') { const w = tWords(p); return { 86400: w.d, 3600: w.h, 60: w.m, 1: w.s }[u[2]]; }
+  return p.usym ? u[1] : u[0];
+}
+/* 千分位：10000 以上加逗號 */
+const nfmt = (v, p) => { const s = fmtNum(v); if (!p.ucomma || Math.abs(v) < 10000) return s; const [i, d] = s.split('.'); return i.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (d ? '.' + d : ''); };
+function genUnit(p) {
+  const fams = UFAMS.filter(f => p['u_' + f]), fam = pick(fams.length ? fams : ['len']), us = UNITFAM[fam].u;
+  const i = rnd(0, us.length - 2), j = p.uadj ? i + 1 : rnd(i + 1, us.length - 1);
+  const r = us[i][2] / us[j][2]; if (r > 1e6) return null;
+  const B = unitName(fam, us[i], p), Sm = unitName(fam, us[j], p), N = v => nfmt(v, p);
+  const forms = ['simple', 'comp', 'split', 'dec', 'cmp'].filter(f => p['uf_' + f]);
+  let form = pick(forms.length ? forms : ['simple']);
+  if ((form === 'comp' || form === 'split' || form === 'cmp') && r < 10) form = 'simple';
+  const hi = Math.max(1, +p.unmax || 20), down = p.udir === 'down' ? true : p.udir === 'up' ? false : Math.random() < .5;
+  const bl = a => genBlank(p, N(a)), qt = (v, u) => nw(`${N(v)} ${u}`), qb = (v, u) => nw(`${bl(v)} ${u}`);
+  /* 複名數的小單位：三成機率刻意取小一點，練習「中間補 0」（3 公里 50 公尺 ＝ 3050 公尺） */
+  const smallPart = () => r >= 100 && Math.random() < .3 ? rnd(1, Math.max(1, Math.floor(r / 10) - 1)) : rnd(1, r - 1);
+  if (form === 'simple') {
+    const a = rnd(1, hi);
+    return down ? { key: `u${fam}${i}${j}d${a}`, html: `${qt(a, B)} ＝ ${qb(a * r, Sm)}` } : { key: `u${fam}${i}${j}u${a}`, html: `${qt(a * r, Sm)} ＝ ${qb(a, B)}` };
+  }
+  if (form === 'comp' || form === 'split') {
+    const a = rnd(1, hi), b = smallPart(), t = a * r + b;
+    return form === 'comp' ? { key: `uc${fam}${i}${j}${a}_${b}`, html: `${qt(a, B)} ${qt(b, Sm)} ＝ ${qb(t, Sm)}` }
+      : { key: `us${fam}${i}${j}${t}`, html: `${qt(t, Sm)} ＝ ${qb(a, B)} ${qb(b, Sm)}` };
+  }
+  if (form === 'dec') {
+    /* 小數換算：挑選讓答案一定是整數的小數（時間用 0.1、0.25、0.5 這類） */
+    const q = fam === 'time' ? [10, 4, 2].find(x => r % x === 0) : Math.pow(10, Math.min(Math.max(1, +p.udp || 2), Math.round(Math.log10(r))));
+    if (!q) return null;
+    const k = rnd(1, hi * q); if (k % q === 0) return null;
+    const v = k / q, s = k * r / q;
+    return down ? { key: `ud${fam}${i}${j}${k}`, html: `${qt(v, B)} ＝ ${qb(s, Sm)}` } : { key: `uu${fam}${i}${j}${k}`, html: `${qt(s, Sm)} ＝ ${qb(v, B)}` };
+  }
+  /* 比大小：複名數 vs 單名數，常見陷阱是「把數字直接接在一起」 */
+  const a = rnd(1, hi), b = smallPart(), t = a * r + b;
+  const cands = [t, t + rnd(1, 9), Math.max(1, t - rnd(1, 9))];
+  const glue = +(String(a) + String(b)); if (glue !== t) cands.push(glue);
+  if (b * 10 < r) cands.push(a * r + b * 10);
+  let rv = pick(cands); if (!p.allowEq && rv === t) rv = t + pick([-1, 1]) * rnd(1, 9);
+  const L = `${N(a)} ${B} ${N(b)} ${Sm}`, R = `${N(rv)} ${Sm}`, sw = Math.random() < .5;
+  const ans = t > rv ? '>' : t < rv ? '<' : '=', flip = { '>': '<', '<': '>', '=': '=' };
+  return { key: `ux${fam}${i}${j}${a}_${b}_${rv}`, html: mwHTML('cmp', sw ? { l: R, r: L, ans: flip[ans], style: 'circle' } : { l: L, r: R, ans, style: 'circle' }) };
+}
+
+/* ================= ⑭ 時間計算 ================= */
+const TPAIRS = { hm: ['h', 'm', 60], ms: ['m', 's', 60], dh: ['d', 'h', 24] };
+function genTime(p) {
+  const W2 = tWords(p), step = Math.max(1, +p.tstep || 5), hmax = Math.max(1, +p.thmax || 5), is12 = p.tclock !== '24';
+  const forms = ['add', 'sub', 'mul', 'div', 'later', 'before', 'elapsed', 'conv'].filter(f => p['tf_' + f]);
+  const form = pick(forms.length ? forms : ['add']);
+  const carryOK = c => !p.tcarry || (p.tcarry === 'yes' ? c : !c);
+  const smallRnd = r => step * rnd(1, Math.max(1, Math.floor((r - 1) / step)));
+  const bl = a => genBlank(p, a);
+  /* ---- 時間量（加減乘除） ---- */
+  if (['add', 'sub', 'mul', 'div'].includes(form)) {
+    const pk = p.tpair && TPAIRS[p.tpair] ? p.tpair : pick(Object.keys(TPAIRS)), [U1, U2, r] = TPAIRS[pk];
+    const u1 = W2[U1], u2 = W2[U2];
+    const amt = (a, b) => `${nw(`${a} ${u1}`)} ${nw(`${b} ${u2}`)}`, ansH = t => `${nw(`${bl(Math.floor(t / r))} ${u1}`)} ${nw(`${bl(t % r)} ${u2}`)}`;
+    const a1 = rnd(1, hmax), b1 = smallRnd(r), t1 = a1 * r + b1;
+    if (form === 'add' || form === 'sub') {
+      const a2 = rnd(1, hmax), b2 = smallRnd(r), t2 = a2 * r + b2;
+      if (form === 'add') { if (!carryOK(b1 + b2 >= r)) return null; return { key: `ta${pk}${t1}_${t2}`, html: `${amt(a1, b1)} ＋ ${amt(a2, b2)} ＝ ${ansH(t1 + t2)}` }; }
+      const [x, y] = t1 >= t2 ? [[a1, b1, t1], [a2, b2, t2]] : [[a2, b2, t2], [a1, b1, t1]];
+      if (x[2] - y[2] < r || !carryOK(x[1] < y[1])) return null; /* 差至少 1 個大單位，避免「0 小時」 */
+      return { key: `ts${pk}${x[2]}_${y[2]}`, html: `${amt(x[0], x[1])} － ${amt(y[0], y[1])} ＝ ${ansH(x[2] - y[2])}` };
+    }
+    const k = rnd(2, Math.max(2, +p.tkmax || 5));
+    if (form === 'mul') { if (!carryOK(b1 * k >= r)) return null; return { key: `tm${pk}${t1}_${k}`, html: `${amt(a1, b1)} × ${k} ＝ ${ansH(t1 * k)}` }; }
+    /* 除法：先定答案再乘回去，保證整除 */
+    const qa = rnd(1, Math.max(1, Math.ceil(hmax / 2))), qb = smallRnd(r), q = qa * r + qb, t = q * k, ta = Math.floor(t / r), tb2 = t % r;
+    if (!q || ta < 1 || !carryOK(ta % k !== 0)) return null;
+    return { key: `td${pk}${t}_${k}`, html: `${amt(ta, tb2)} ÷ ${k} ＝ ${ansH(q)}` };
+  }
+  /* ---- 時刻 ---- */
+  /* 生活化的時刻：上午 6 時到晚上 10 時多；12 時制避開中午 12 時（上午／下午容易混淆） */
+  const bad = m => m < 360 || m > 1379 || (is12 && Math.floor(m / 60) === 12);
+  const half = m => m < 720 ? '上午' : '下午';
+  const hh = m => { const h = Math.floor(m / 60); return is12 ? (h > 12 ? h - 12 : h) : h; };
+  const clockTxt = (m, forceFmt) => {
+    const h = hh(m), mi = m % 60, f = forceFmt || p.tfmt;
+    const core = f === 'colon' ? `${h}:${String(mi).padStart(2, '0')}` : mi ? `${h} 時 ${mi} 分` : `${h} 時`;
+    return nw(is12 && !forceFmt ? `${half(m)} ${core}` : core);
+  };
+  const sp = t => /\d<\/span>$/.test(t) ? t + ' ' : t;
+  const durTxt = d => { const h = Math.floor(d / 60), mi = d % 60; return [h ? nw(`${h} ${W2.h}`) : '', mi ? nw(`${mi} ${W2.m}`) : ''].filter(Boolean).join(' '); };
+  const halfBlank = m => mwHTML('blank', { style: 'paren', w: 3.4, ans: half(m) });
+  /* 答案時刻：12 時制且可跨中午時，上午／下午也要作答 */
+  const clockAns = m => nw(`${is12 ? (p.tcross ? halfBlank(m) + ' ' : half(m) + ' ') : ''}${bl(hh(m))} 時 ${bl(m % 60)} 分`);
+  const sameHalf = (a, b) => !is12 || p.tcross || (a < 720) === (b < 720);
+  const start = step * rnd(Math.ceil(360 / step), Math.floor(1379 / step));
+  const dur = step * rnd(1, Math.floor((hmax * 60 + 59) / step));
+  if (form === 'later' || form === 'before') {
+    const end = form === 'later' ? start + dur : start - dur;
+    if (bad(start) || bad(end) || !sameHalf(start, end)) return null;
+    if (!carryOK(form === 'later' ? (start % 60) + (dur % 60) >= 60 : (start % 60) < (dur % 60))) return null;
+    return form === 'later' ? { key: `tl${start}_${dur}`, html: `${sp(clockTxt(start))}再過 ${durTxt(dur)}，是 ${clockAns(end)}` }
+      : { key: `tb${start}_${dur}`, html: `${sp(clockTxt(start))}的 ${durTxt(dur)}前，是 ${clockAns(end)}` };
+  }
+  if (form === 'elapsed') {
+    const end = start + dur;
+    if (bad(start) || bad(end) || !sameHalf(start, end)) return null;
+    if (!carryOK((end % 60) < (start % 60))) return null;
+    return { key: `te${start}_${dur}`, html: `從 ${clockTxt(start)} 到 ${clockTxt(end)}，經過了 ${dur < 60 ? nw(`${bl(dur)} ${W2.m}`) : `${nw(`${bl(Math.floor(dur / 60))} ${W2.h}`)} ${nw(`${bl(dur % 60)} ${W2.m}`)}`}` };
+  }
+  /* 12 時制 ↔ 24 時制 */
+  const m = start; if (bad(m) || Math.floor(m / 60) === 12) return null;
+  const h24 = Math.floor(m / 60), h12 = h24 > 12 ? h24 - 12 : h24, mi = m % 60, hf = half(m);
+  const t12 = p.tfmt === 'colon' ? `${hf} ${h12}:${String(mi).padStart(2, '0')}` : `${hf} ${h12} 時${mi ? ` ${mi} 分` : ''}`;
+  const t24 = p.tfmt === 'colon' ? `${h24}:${String(mi).padStart(2, '0')}` : `${h24} 時${mi ? ` ${mi} 分` : ''}`;
+  if (h24 < 12 && Math.random() < .6) return null; /* 多出下午的題目，才有換算的意義 */
+  return Math.random() < .5 ? { key: `tc1_${m}`, html: `${nw(t12)} 用 24 時制表示是 ${nw(`${bl(h24)} 時 ${bl(mi)} 分`)}` }
+    : { key: `tc2_${m}`, html: `${nw(t24)}（24 時制）是 ${nw(`${mwHTML('blank', { style: 'paren', w: 3.4, ans: hf })} ${bl(h12)} 時 ${bl(mi)} 分`)}` };
+}
+
 function genItems(p) {
   const out = [], seen = new Set(), want = +p.count || 1; let tries = 0, dup = false;
   const limit = want * 400 + 800, dupAfter = want * 250 + 400;
@@ -1143,33 +1328,41 @@ function genItems(p) {
 const KIND_PRESET = {
   factor: { nmin: 10, nmax: 100, bw: 16 }, multiple: { nmin: 2, nmax: 20, mcount: 5, bw: 16 }, isprime: { nmin: 2, nmax: 60, bw: 5 },
   gcd: { nmin: 4, nmax: 60, bw: 3.5 }, lcm: { nmin: 2, nmax: 24, bw: 4 }, prime: { nmin: 12, nmax: 120, bw: 14 },
-  round: { nmin: 100, nmax: 9999, bw: 5 }, frac: { bw: 4 }, dec: { amin: 1, amax: 50, bmin: 1, bmax: 30, bw: 5 },
+  round: { nmin: 100, nmax: 9999, bw: 5 }, frac: { bw: 4, dmin: 2, dmax: 12 }, dec: { amin: 1, amax: 50, bmin: 1, bmax: 30, bw: 5 },
+  unit: { bw: 4.5, cols: '2' }, time: { bw: 2.5, cols: '2' },
   calc: { amin: 10, amax: 99, bmin: 1, bmax: 50, bw: 3.5 }, missing: { amin: 10, amax: 99, bmin: 1, bmax: 50, bw: 3.5 }, cmp: { amin: 10, amax: 60, bmin: 1, bmax: 30 },
 };
 const GEN = {
   name: '快速出題',
   def: {
     kind: 'calc', add: true, sub: true, mul: false, div: false, amin: 10, amax: 99, bmin: 1, bmax: 50,
-    noneg: true, intdiv: true, carry: '', borrow: '', noTrivial: true, divrem: false, ansMax: 0, allowEq: true,
+    noneg: true, intdiv: true, carry: '', borrow: '', noTrivial: true, divrem: false, ansMax: 0, allowEq: true, mulMid: true,
     dp: 1, sameDp: false, noInt: false, ansDp2: true,
     nmin: 10, nmax: 60, skipPrime: true, minFactors: 0, evenOnly: false,
     mcount: 5, skipOne: true, mulPrimeOnly: false,
     noCoprime: false, coprimeOnly: false, noMultiple: false, lcmMax: 0,
     pfmt: 'mul', compositeOnly: true, smallPrimes: false, minPF: 0,
     balance: false, rplace: '100', skipExact: true, balanceRound: false,
-    dmax: 12, fmode: 'same', fmix: false, needReduce: false, properOnly: false,
+    f1: 'proper', f2: 'proper', dmin: 2, dmax: 12, fmode: 'same', wmin: 1, wmax: 4,
+    redCond: '', properOnly: false, fmix: true, noIntAns: false, ansDmax: 0, crossReduce: false, opSimple: true,
+    u_len: true, u_wt: true, u_cap: true, u_area: false, u_vol: false, u_time: false,
+    uf_simple: true, uf_comp: true, uf_split: true, uf_dec: false, uf_cmp: false,
+    uadj: true, udir: '', unmax: 20, udp: 2, usym: false, ucomma: true,
+    tf_add: true, tf_sub: true, tf_mul: false, tf_div: false, tf_later: true, tf_before: false, tf_elapsed: true, tf_conv: false,
+    tpair: 'hm', tcarry: '', thmax: 5, tstep: 5, tkmax: 5, tclock: '12', tcross: true, tfmt: 'zh', tword: 'long',
     count: 12, fmt: 'h', cols: '3', bstyle: 'box', bw: 3.5, fs: '', qno: true, qs: 'paren', target: 'here'
   },
   fields: [
-    F.sel('kind', '題型', [['calc', '① 四則計算題'], ['missing', '② 填入未知數 □'], ['cmp', '③ 比大小（算式 vs 數）'], ['dec', '④ 小數計算'], ['frac', '⑤ 分數加減'],
+    F.sel('kind', '題型', [['calc', '① 四則計算題'], ['missing', '② 填入未知數 □'], ['cmp', '③ 比大小（算式 vs 數）'], ['dec', '④ 小數計算'], ['frac', '⑤ 分數四則運算'],
       ['factor', '⑥ 因數（列出所有因數）'], ['multiple', '⑦ 倍數（列出前幾個）'], ['gcd', '⑧ 最大公因數'], ['lcm', '⑨ 最小公倍數'],
-      ['prime', '⑩ 質因數分解'], ['isprime', '⑪ 判斷質數／合數'], ['round', '⑫ 四捨五入（概數）']]),
+      ['prime', '⑩ 質因數分解'], ['isprime', '⑪ 判斷質數／合數'], ['round', '⑫ 四捨五入（概數）'],
+      ['unit', '⑬ 單位換算（長度、重量、容量、面積…）'], ['time', '⑭ 時間計算（時間量、時刻、經過時間）']]),
     F.chk('add', '加法 ＋'), F.chk('sub', '減法 －'), F.chk('mul', '乘法 ×'), F.chk('div', '除法 ÷'),
     F.num('amin', '第一個數 最小'), F.num('amax', '第一個數 最大'), F.num('bmin', '第二個數 最小'), F.num('bmax', '第二個數 最大'),
     F.chk('noneg', '減法不出現負數'), F.chk('intdiv', '除法整除'),
     F.sel('carry', '加法進位條件', [['', '不限'], ['yes', '一定要進位'], ['no', '不進位']]),
     F.sel('borrow', '減法借位條件', [['', '不限'], ['yes', '一定要借位'], ['no', '不借位']]),
-    F.chk('noTrivial', '乘除不出現 ×1、÷1'), F.chk('divrem', '除法出現餘數（答案寫「商…餘…」）'),
+    F.chk('noTrivial', '乘除不出現 ×1、÷1'), F.chk('divrem', '除法出現餘數（答案寫「商…餘…」）'), F.chk('mulMid', '直式乘法顯示部分積的空格'),
     F.num('ansMax', '答案上限（0＝不限）', 0, 1000000, 1),
     F.chk('allowEq', '可以出現「＝」的題目'),
     F.num('dp', '小數位數（1～2）', 1, 2, 1), F.chk('sameDp', '兩數小數位數相同'), F.chk('noInt', '兩數都要有小數（不出整數）'), F.chk('ansDp2', '答案最多兩位小數'),
@@ -1182,8 +1375,37 @@ const GEN = {
     F.chk('compositeOnly', '只出合數（略過質數）'), F.chk('smallPrimes', '質因數只用 2、3、5、7'), F.num('minPF', '至少幾個質因數（0＝不限）', 0, 10, 1),
     F.chk('balance', '質數與合數各半'),
     F.sel('rplace', '四捨五入到', PLACES), F.chk('skipExact', '略過本身已是整十／整百的數'), F.chk('balanceRound', '進位與捨去各半'),
-    F.num('dmax', '分母最大值', 2, 30, 1), F.sel('fmode', '分母', [['same', '同分母'], ['diff', '異分母']]),
-    F.chk('needReduce', '答案一定要約分'), F.chk('properOnly', '答案不超過 1（真分數）'), F.chk('fmix', '答案化成帶分數'),
+    F.sel('f1', '第一個數的型態', FTYPES), F.sel('f2', '第二個數的型態', FTYPES),
+    F.num('dmin', '分母最小值', 2, 40, 1), F.num('dmax', '分母最大值', 2, 40, 1),
+    F.sel('fmode', '兩個分母的關係', [['same', '同分母（不用通分）'], ['diff', '異分母（要通分）'], ['multiple', '倍數關係（只要擴分一個）'], ['any', '隨機']]),
+    F.num('wmin', '帶分數／整數部分 最小', 1, 50, 1), F.num('wmax', '帶分數／整數部分 最大', 1, 50, 1),
+    F.chk('opSimple', '題目的分數都要是最簡分數'),
+    F.sel('redCond', '答案約分條件', [['', '不限'], ['yes', '答案一定要約分'], ['no', '答案已是最簡（不用約分）']]),
+    F.chk('properOnly', '答案不超過 1（真分數）'), F.chk('fmix', '答案化成帶分數'), F.chk('noIntAns', '答案不出現整數'),
+    F.num('ansDmax', '答案分母上限（0＝不限）', 0, 200, 1),
+    F.chk('crossReduce', '乘法要能先約分（交叉約分）'),
+    { type: 'html', html: '<div style="margin-top:6px"><b>📏 單位類別</b>（可複選，會隨機混合）</div>', showIf: inKind('unit') },
+    F.chk('u_len', '長度（公里、公尺、公分、毫米）'), F.chk('u_wt', '重量（公噸、公斤、公克）'), F.chk('u_cap', '容量（公升、毫公升）'),
+    F.chk('u_area', '面積（平方公里、公頃、公畝、平方公尺、平方公分）'), F.chk('u_vol', '體積與容積（立方公尺、公升、立方公分）'), F.chk('u_time', '時間（日、小時、分鐘、秒）'),
+    { type: 'html', html: '<div style="margin-top:6px"><b>📝 出題形式</b>（可複選）</div>', showIf: inKind('unit') },
+    F.chk('uf_simple', '單名數互換（3 公尺 ＝ □ 公分）'), F.chk('uf_comp', '複名數化成單名數（3 公尺 25 公分 ＝ □ 公分）'), F.chk('uf_split', '單名數化成複名數（325 公分 ＝ □ 公尺 □ 公分）'),
+    F.chk('uf_dec', '小數換算（2.5 公斤 ＝ □ 公克、350 公尺 ＝ □ 公里）'), F.chk('uf_cmp', '比大小（3 公尺 5 公分 ○ 350 公分）'),
+    F.chk('uadj', '只換相鄰單位（公尺↔公分；取消則也會出公里↔公分、公頃↔平方公尺）'),
+    F.sel('udir', '換算方向（單名數、小數）', [['', '隨機'], ['down', '大單位 → 小單位'], ['up', '小單位 → 大單位']]),
+    F.num('unmax', '大單位的數字最大', 1, 999, 1), F.num('udp', '小數最多幾位', 1, 3, 1),
+    F.chk('usym', '用符號表示單位（m、cm、kg、L…）'), F.chk('ucomma', '一萬以上的數加千分位逗號'),
+    { type: 'html', html: '<div style="margin-top:6px"><b>🕒 時間題型</b>（可複選）</div>', showIf: inKind('time') },
+    F.chk('tf_add', '時間量加法（2 小時 35 分鐘 ＋ 1 小時 40 分鐘）'), F.chk('tf_sub', '時間量減法'), F.chk('tf_mul', '時間量乘法（1 小時 25 分鐘 × 3）'), F.chk('tf_div', '時間量除法（7 小時 30 分鐘 ÷ 3）'),
+    F.chk('tf_later', '經過一段時間後是幾時幾分'), F.chk('tf_before', '一段時間以前是幾時幾分'), F.chk('tf_elapsed', '兩個時刻之間經過多久'), F.chk('tf_conv', '12 時制 ↔ 24 時制'),
+    F.sel('tpair', '時間量的單位', [['hm', '小時與分鐘'], ['ms', '分鐘與秒'], ['dh', '日與小時'], ['', '隨機']]),
+    F.sel('tcarry', '進位／借位條件', [['', '不限'], ['yes', '一定要進位（借位）'], ['no', '不進位（不借位）']]),
+    F.num('thmax', '小時（大單位）最大', 1, 23, 1),
+    F.sel('tstep', '分鐘／秒的刻度', [['1', '每 1 分'], ['5', '每 5 分'], ['10', '每 10 分'], ['15', '每 15 分']]),
+    F.num('tkmax', '乘數／除數最大', 2, 12, 1),
+    F.sel('tclock', '時刻表示法', [['12', '12 時制（上午、下午）'], ['24', '24 時制']]),
+    F.chk('tcross', '可以跨過中午（上午 → 下午，需作答上午／下午）'),
+    F.sel('tfmt', '時刻寫法', [['zh', '9 時 5 分'], ['colon', '9:05']]),
+    F.sel('tword', '時間量用字', [['long', '小時、分鐘'], ['short', '時、分']]),
     F.num('count', '題數', 1, 300, 1),
     F.sel('fmt', '格式', [['h', '橫式'], ['vert', '直式']]),
     F.sel('cols', '每列題數', [['1', '1'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'], ['6', '6']]),
@@ -1202,10 +1424,22 @@ GEN.fields.forEach(f => {
   if (f.k === 'intdiv') f.showIf = v => ['calc', 'missing', 'cmp'].includes(v.kind) && v.div && !v.divrem;
   if (f.k === 'carry') f.showIf = v => opOn(v, 'add');
   if (f.k === 'borrow') f.showIf = v => opOn(v, 'sub');
-  if (f.k === 'noTrivial') f.showIf = v => opOn(v, 'mul') || opOn(v, 'div');
+  if (f.k === 'noTrivial') f.showIf = v => opOn(v, 'mul') || opOn(v, 'div') || (v.kind === 'frac' && (v.mul || v.div));
   if (f.k === 'divrem') f.showIf = v => v.kind === 'calc' && v.div;
+  if (f.k === 'mulMid') f.showIf = v => v.kind === 'calc' && v.mul && v.fmt === 'vert';
   if (f.k === 'ansMax') f.showIf = v => ['calc', 'missing', 'dec'].includes(v.kind);
-  if (f.k === 'allowEq') f.showIf = inKind('cmp');
+  if (f.k === 'allowEq') f.showIf = v => v.kind === 'cmp' || (v.kind === 'unit' && v.uf_cmp);
+  if (f.k && f.k.startsWith('u')) {
+    if (/^u(_|f_)|^uadj$|^unmax$|^usym$|^ucomma$/.test(f.k)) f.showIf = inKind('unit');
+    if (f.k === 'udir') f.showIf = v => v.kind === 'unit' && (v.uf_simple || v.uf_dec);
+    if (f.k === 'udp') f.showIf = v => v.kind === 'unit' && v.uf_dec;
+  }
+  if (f.k && /^t(f_|pair$|carry$|hmax$|step$|kmax$|clock$|cross$|fmt$|word$)/.test(f.k)) f.showIf = inKind('time');
+  if (f.k === 'tpair') f.showIf = v => v.kind === 'time' && (v.tf_add || v.tf_sub || v.tf_mul || v.tf_div);
+  if (f.k === 'tkmax') f.showIf = v => v.kind === 'time' && (v.tf_mul || v.tf_div);
+  if (['tclock', 'tfmt'].includes(f.k)) f.showIf = v => v.kind === 'time' && (v.tf_later || v.tf_before || v.tf_elapsed || v.tf_conv);
+  if (f.k === 'tcross') f.showIf = v => v.kind === 'time' && v.tclock !== '24' && (v.tf_later || v.tf_before || v.tf_elapsed);
+  if (f.k === 'tword') f.showIf = v => v.kind === 'time' || (v.kind === 'unit' && v.u_time);
   if (['dp', 'sameDp', 'noInt', 'ansDp2'].includes(f.k)) f.showIf = inKind('dec');
   if (['nmin', 'nmax'].includes(f.k)) f.showIf = v => NUMKIND.includes(v.kind);
   if (['skipPrime', 'minFactors', 'evenOnly'].includes(f.k)) f.showIf = inKind('factor');
@@ -1215,13 +1449,17 @@ GEN.fields.forEach(f => {
   if (['pfmt', 'compositeOnly', 'smallPrimes', 'minPF'].includes(f.k)) f.showIf = inKind('prime');
   if (f.k === 'balance') f.showIf = inKind('isprime');
   if (['rplace', 'skipExact', 'balanceRound'].includes(f.k)) f.showIf = inKind('round');
-  if (['dmax', 'fmode', 'fmix', 'needReduce', 'properOnly'].includes(f.k)) f.showIf = inKind('frac');
+  if (['f1', 'f2', 'dmin', 'dmax', 'fmode', 'opSimple', 'redCond', 'properOnly', 'fmix', 'noIntAns', 'ansDmax'].includes(f.k)) f.showIf = inKind('frac');
+  if (['wmin', 'wmax'].includes(f.k)) f.showIf = v => v.kind === 'frac' && ['mixed', 'int', 'improper', 'any'].some(t => v.f1 === t || v.f2 === t);
+  if (f.k === 'crossReduce') f.showIf = v => v.kind === 'frac' && v.mul;
   if (f.k === 'fmt') f.showIf = inKind('calc');
   const plain = v => !(v.kind === 'calc' && v.fmt === 'vert') && !(v.kind === 'prime' && v.pfmt === 'sdiv') && v.kind !== 'cmp';
   if (f.k === 'bstyle') f.showIf = v => plain(v) && v.kind !== 'missing';
   if (f.k === 'bw') f.showIf = plain;
 });
-const genGrid = (items, p) => `<div class="qgrid" style="grid-template-columns:repeat(${p.cols},minmax(0,1fr));row-gap:${p.fmt === 'vert' || (p.kind === 'prime' && p.pfmt === 'sdiv') ? '5mm' : '3mm'}${p.fs ? `;font-size:${p.fs}pt` : ''}">${items.map(h => `<div>${qnoH(p.qno, p.qs)}${h}</div>`).join('')}</div><div><br></div>`;
+/* 題組會記住出題參數（data-gen），之後可以「重新洗題」產生新數字 */
+const genAttrs = p => `data-gen="${esc(JSON.stringify(p))}" data-genid="${uid()}"`;
+const genGrid = (items, p) => `<div class="qgrid" ${genAttrs(p)} style="grid-template-columns:repeat(${p.cols},minmax(0,1fr));row-gap:${p.fmt === 'vert' || (p.kind === 'prime' && p.pfmt === 'sdiv') ? '5mm' : '3mm'}${p.fs ? `;font-size:${p.fs}pt` : ''}">${items.map(h => `<div>${qnoH(p.qno, p.qs)}${h}</div>`).join('')}</div><div><br></div>`;
 
 /* ================= 自由繪製（複合圖形） ================= */
 const DRAW_DEF = { els: [], wu: 200, hu: 150, w: 55, grid: 10 };
@@ -1420,9 +1658,34 @@ function openDraw(props, onOK) {
   setTimeout(render, 30);
 }
 
+/* ================= 版本資訊 ================= */
+const APP_NAME = '翰翰數學', APP_VER = 'v1.8';
+/* 每次改版都在最前面新增一筆，並同步更新 APP_VER 與 使用說明.md */
+const VERLOG = [
+  { v: 'v1.8', d: '2026-09-21', t: '新增「單位換算」與「時間計算」題型', items: ['快速出題新增 ⑬ 單位換算：長度、重量、容量、面積、體積與容積、時間，可複選混合。', '單位換算可出單名數互換、複名數↔單名數、小數換算、比大小（含「數字接在一起」的常見陷阱），可設定只換相鄰單位、換算方向、用符號（m、kg、L）表示、千分位逗號。', '快速出題新增 ⑭ 時間計算：時間量加減乘除、經過一段時間後／前是幾時幾分、兩個時刻經過多久、12 時制 ↔ 24 時制。', '時間可設定進位／借位條件、分鐘刻度、12 或 24 時制、是否跨過中午（上午／下午也要作答）、「9 時 5 分」或「9:05」寫法、「小時、分鐘」或「時、分」用字。', '「題型」分頁新增「📏 單位換算」「🕒 時間計算」快捷鈕；範本庫新增「單位換算練習」「時間計算練習」。'] },
+  { v: 'v1.7', d: '2026-09-21', t: '改名「翰翰數學」與版本機制', items: ['系統名稱改為「翰翰數學」，標題列與瀏覽器分頁同步更新。', '標題旁新增版本標籤，點一下可看完整「版本紀錄」（也可從「檔案 → 版本紀錄」開啟）。', '專案檔會記錄建立時的版本，開啟舊專案時若版本較舊會在狀態列提示。'] },
+  { v: 'v1.6', d: '2026-09-21', t: '資料保護', items: ['貼上圖片自動壓縮（3.5MB 照片約縮到 100KB）。', '自動建立還原點（每 5 分鐘與重大操作前，保留 6 個），可從「⏱ 還原點」還原。', '狀態列顯示暫存容量，接近上限會紅字提醒。'] },
+  { v: 'v1.5', d: '2026-09-20', t: '重新洗題（A/B 卷）與答案表', items: ['🎲 重新洗題：用同樣條件換一批新數字（本格／本頁／整份）。', 'A 卷＋B 卷 PDF、A/B 卷＋各自解答。', '📋 產生答案表：自動整理全份答案成一頁。'] },
+  { v: 'v1.4', d: '2026-09-20', t: '分數四則運算', items: ['分數題型擴充為 ＋－×÷，兩個數可各自設定型態（真分數／帶分數／假分數／整數）。', '分母關係（同分母／通分／倍數）、約分與答案條件。'] },
+  { v: 'v1.3.1', d: '2026-09-18', t: '修正自由繪製游標偏移', items: ['改用 SVG 座標轉換，點選位置與下筆位置完全對齊。', '新增粉紅十字準心與畫布比例鎖定。'] },
+  { v: 'v1.3', d: '2026-09-18', t: '自由繪製複合圖形', items: ['✏️ 自由繪製：折線／多邊形、角度弧、直角記號、等長記號、文字標註等。', '雙擊圖形可重新編輯，圖形會存進專案檔。'] },
+  { v: 'v1.2', d: '2026-09-18', t: '快速出題「特殊條件」', items: ['進位／借位、餘數、答案上限、略過質數、互質條件等，各題型都可加條件。', '條件出不出得來會即時提示。'] },
+  { v: 'v1.1', d: '2026-09-18', t: '答案格寬度與數論題型', items: ['快速出題可調整答案方框寬度。', '新增質因數分解、因數、倍數、最大公因數、最小公倍數、質數判別、四捨五入等題型。'] },
+  { v: 'v1.0', d: '2026-09-16', t: '初版', items: ['版面切割、30＋範本庫、27 種數學元件、快速出題、解答模式、A4 PDF 匯出與專案存檔。'] },
+];
+
+/* 比較版本字串（v1.3.1 < v1.4） */
+function verLT(a, b) {
+  const p = s => String(s || '').replace(/^v/i, '').split('.').map(n => +n || 0);
+  const x = p(a), y = p(b), n = Math.max(x.length, y.length);
+  for (let i = 0; i < n; i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d < 0; }
+  return false;
+}
+
 /* ================= 狀態與文件模型 ================= */
 const S = window.S = { doc: null, activeId: null, range: null, selW: null, hist: [], hi: -1, showAns: false, zoom: 1, tab: 'home', genCache: null };
-const LS_AUTO = 'mathpaper.autosave.v1', LS_MINE = 'mathpaper.mytemplates.v1';
+const LS_AUTO = 'mathpaper.autosave.v1', LS_MINE = 'mathpaper.mytemplates.v1', LS_SNAPS = 'mathpaper.snapshots.v1';
+const SNAP_MAX = 6, SNAP_BYTES = 1.6e6, WARN_BYTES = 3.2e6;
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
 
@@ -1446,7 +1709,7 @@ function findNode(id, doc = S.doc) {
 function replaceNode(f, nn) { if (f.parent) f.parent.children[f.index] = nn; else S.doc.pages[f.pageIndex].layout = nn; }
 function baseDoc(o = {}) {
   return {
-    kind: 'mathpaper', version: 1, meta: { name: o.name || '數學試卷' },
+    kind: 'mathpaper', version: 1, meta: { name: o.name || '數學試卷', app: APP_NAME, ver: APP_VER },
     page: Object.assign({ orientation: 'portrait', margin: 12, font: 'kai', size: 14, lh: 1.9, guides: true, pnum: true, footer: '' }, o.page || {}),
     header: Object.assign({ type: 'review', school: 'ＯＯ國民小學　數學科', title: '數學複習卷', subtitle: '', fields: '班級:16, 座號:12, 姓名:30', score: true, every: false, tsize: 20 }, o.header || {}),
     pages: o.pages || [{ layout: mkCell() }]
@@ -1556,20 +1819,90 @@ function pushHistory() {
   if (S.hist[S.hi] !== j) { S.hist = S.hist.slice(0, S.hi + 1); S.hist.push(j); if (S.hist.length > 120) S.hist.shift(); S.hi = S.hist.length - 1; }
   autosave(j);
 }
+/* ---------- 自動暫存、還原點與容量 ---------- */
+const getSnaps = () => { try { return JSON.parse(lsGet(LS_SNAPS) || '[]'); } catch (e) { return []; } };
+const lsUsage = () => { let n = 0; [LS_AUTO, LS_MINE, LS_SNAPS].forEach(k => n += (lsGet(k) || '').length); return n * 2; };
+const fmtSize = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.round(b / 1024) + ' KB';
+function saveSnapshot(reason, force) {
+  try {
+    syncFromDOM();
+    const j = JSON.stringify(S.doc);
+    if (j.length * 2 > SNAP_BYTES) return false;                       /* 文件太大（通常是圖片多）就不做還原點 */
+    const snaps = getSnaps(), now = Date.now();
+    if (snaps.length && snaps[0].j === j) return false;
+    if (!force && snaps.length && now - snaps[0].t < 5 * 60 * 1000) return false;
+    snaps.unshift({ id: uid(), t: now, reason: reason || '定時存檔', name: S.doc.meta.name || '未命名', j });
+    let total = 0; const keep = [];
+    snaps.forEach(s => { if (keep.length < SNAP_MAX && total + s.j.length * 2 < SNAP_BYTES) { keep.push(s); total += s.j.length * 2; } });
+    return lsSet(LS_SNAPS, JSON.stringify(keep));
+  } catch (e) { return false; }
+}
+let warnedFull = false, lastSnapT = 0;
 function autosave(j) {
   const ok = lsSet(LS_AUTO, j);
-  const t = new Date(); $('#saveState').textContent = ok ? `✓ 已自動暫存 ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}` : '⚠ 無法自動暫存（請記得儲存專案）';
+  const t = new Date(), hm = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+  const used = lsUsage(), big = used > WARN_BYTES;
+  $('#saveState').textContent = !ok ? '⚠ 瀏覽器空間已滿，無法自動暫存 → 請按 Ctrl+S 儲存專案檔'
+    : big ? `✓ 已自動暫存 ${hm}・已用 ${fmtSize(used)} ⚠` : `✓ 已自動暫存 ${hm}`;
+  $('#saveState').style.color = ok && !big ? '' : '#E53935';
+  if ((!ok || big) && !warnedFull) { warnedFull = true; toast(ok ? `⚠ 瀏覽器暫存空間快滿了（${fmtSize(used)}），建議按 Ctrl+S 儲存專案檔，圖片也盡量少放` : '⚠ 瀏覽器空間已滿，請立刻按 Ctrl+S 儲存專案檔！', 6000); }
+  if (Date.now() - lastSnapT > 5 * 60 * 1000) { lastSnapT = Date.now(); saveSnapshot('定時存檔'); }
+}
+function restoreSnapshot(id) {
+  const s = getSnaps().find(x => x.id === id); if (!s) return;
+  const when = new Date(s.t).toLocaleString('zh-TW', { hour12: false });
+  confirmBox(`要還原到「${when}（${s.reason}）」的版本嗎？目前的內容會先自動建立一個還原點。`, () => {
+    saveSnapshot('還原前', true);
+    loadDoc(JSON.parse(s.j), `⏱ 已還原到 ${when}`);
+    closeGallery();
+  });
+}
+function delSnapshot(id) { lsSet(LS_SNAPS, JSON.stringify(getSnaps().filter(s => s.id !== id))); }
+function snapNow() { toast(saveSnapshot('手動建立', true) ? '📌 已建立還原點（在「範本庫 → ⏱ 還原點」）' : '⚠ 目前內容太大或與上一個還原點相同，未建立'); }
+
+/* ---------- 圖片自動壓縮 ---------- */
+function shrinkImage(src, cb, maxW = 1200) {
+  const img = new Image();
+  img.onload = () => {
+    const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+    const scale = Math.min(1, maxW / (w || 1));
+    if (scale >= 1 && src.length < 300000) return cb(src, { kept: true });
+    try {
+      const c = el('canvas'); c.width = Math.max(1, Math.round(w * scale)); c.height = Math.max(1, Math.round(h * scale));
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      let out = c.toDataURL('image/jpeg', 0.85);
+      if (out.length >= src.length) out = src;
+      cb(out, { before: src.length, after: out.length, w: c.width, h: c.height });
+    } catch (e) { cb(src, {}); }
+  };
+  img.onerror = () => cb(src, {});
+  img.src = src;
+}
+function insertImageFile(file) {
+  if (!file) return;
+  const rd = new FileReader();
+  rd.onload = () => shrinkImage(rd.result, (out, info) => {
+    insertHTML(mwHTML('img', { src: out, w: 60 }));
+    if (info.before && info.after < info.before * .9) toast(`🖼 圖片已自動壓縮：${fmtSize(info.before * .75)} → ${fmtSize(info.after * .75)}`);
+  });
+  rd.readAsDataURL(file);
 }
 function undo() { pushHistory(); if (S.hi > 0) { S.hi--; S.doc = JSON.parse(S.hist[S.hi]); renderAll(); autosave(S.hist[S.hi]); toast('↶ 已復原'); } }
 function redo() { if (S.hi < S.hist.length - 1) { S.hi++; S.doc = JSON.parse(S.hist[S.hi]); renderAll(); autosave(S.hist[S.hi]); toast('↷ 已重做'); } }
 function mutate(fn) { syncFromDOM(); if (fn() === false) return; renderAll(); pushHistory(); }
 function loadDoc(doc, msg) {
   if (!doc || !Array.isArray(doc.pages)) { toast('❌ 檔案格式不正確'); return; }
+  if (S.doc && S.hist.length > 1) saveSnapshot('開啟其他文件前', true);
+  const fileVer = (doc.meta && doc.meta.ver) || '';
   const base = baseDoc(); doc.page = Object.assign(base.page, doc.page); doc.header = Object.assign(base.header, doc.header); doc.meta = Object.assign(base.meta, doc.meta);
   doc.kind = 'mathpaper';
   S.doc = doc; S.activeId = cellsOf(doc.pages[0].layout)[0].id; S.range = null; S.hist = []; S.hi = -1;
   renderAll(); pushHistory(); if (msg) toast(msg);
   $('#workspace').scrollTop = 0;
+  const sz = JSON.stringify(doc).length * 2;
+  if (sz > 1.6e6) setTimeout(() => toast(`⚠ 這份文件含較多圖片（約 ${fmtSize(sz)}），瀏覽器暫存可能放不下，請記得用 Ctrl+S 儲存專案檔`, 6000), 1200);
+  if (msg && fileVer && verLT(fileVer, APP_VER)) setTimeout(() => toast(`ℹ 這份專案是用 ${fileVer} 建立的，目前版本 ${APP_VER}，內容已自動沿用`, 5000), 900);
 }
 
 /* ================= 游標與插入 ================= */
@@ -1616,7 +1949,7 @@ function editWidget(e) {
   if (w.custom) return openDraw(Object.assign({}, w.def, getP(e)), v => { pushHistory(); e.dataset.p = JSON.stringify(v); refreshW(e); afterChange(true); });
   openDialog({ title: '編輯：' + w.name, fields: w.fields, values: Object.assign({}, w.def, getP(e)), preview: v => mwHTML(type, v), okText: '更新', onOK: v => { pushHistory(); e.dataset.p = JSON.stringify(v); refreshW(e); afterChange(true); } });
 }
-function openGen() {
+function openGen(kind) {
   S.genCache = null;
   const applyPreset2 = () => {
     const sel = $('#dlgForm [data-k=kind]'); if (!sel) return;
@@ -1626,7 +1959,7 @@ function openGen() {
   };
   openDialog({
     onOpen: () => { const sel = $('#dlgForm [data-k=kind]'); if (sel) sel.addEventListener('change', applyPreset2); },
-    title: '⚡ 快速出題', fields: GEN.fields, values: Object.assign({}, GEN.def, S.lastGen || {}), okText: '插入',
+    title: '⚡ 快速出題', fields: GEN.fields, values: Object.assign({}, GEN.def, S.lastGen || {}, typeof kind === 'string' && kind ? Object.assign({ kind }, KIND_PRESET[kind]) : {}), okText: '插入',
     preview: v => {
       const items = genItems(v); S.genCache = items;
       const h = $('#dlgHint');
@@ -1639,12 +1972,153 @@ function openGen() {
       if (S.genShort) toast(`⚠ 條件較嚴格，只插入了 ${items.length} 題`, 3500);
       else if (S.genDup) toast('⚠ 符合條件的題目不夠多，部分題目重複', 3500);
       if (v.target === 'cells') {
+        const gid = uid(), attr = `data-gen="${esc(JSON.stringify(v))}" data-genid="${gid}"`;
         mutate(() => {
           const pi = curPage(), cells = cellsOf(S.doc.pages[pi].layout); let start = Math.max(0, cells.findIndex(c => c.id === S.activeId));
-          items.forEach((h, i) => { const c = cells[start + i]; if (c) c.html = qnoH(v.qno, v.qs) + h; });
+          items.forEach((h, i) => { const c = cells[start + i]; if (c) c.html = `<div ${attr} data-geni="${i}">${qnoH(v.qno, v.qs)}${h}</div>`; });
           if (items.length > cells.length - start) toast(`⚠ 格子不足，只填入 ${cells.length - start} 題`);
         });
       } else insertHTML(genGrid(items, v));
+    }
+  });
+}
+
+
+/* ================= 重新洗題（A/B 卷） ================= */
+function rerollGroups(scope) {
+  const root = $('#pages');
+  let els = $$('[data-gen]', root);
+  if (scope === 'page') { const pi = curPage(); els = els.filter(e => { const w = e.closest('.page-wrap'); return w && +w.dataset.i === pi; }); }
+  if (scope === 'cur') { const cell = S.activeId && $(`#pages .cell[data-id="${S.activeId}"]`); els = cell ? $$('[data-gen]', cell) : []; }
+  if (!els.length) return 0;
+  const groups = new Map();
+  els.forEach(e => { const id = e.dataset.genid || uid(); if (!groups.has(id)) groups.set(id, []); groups.get(id).push(e); });
+  let n = 0;
+  groups.forEach(list => {
+    let p; try { p = JSON.parse(list[0].dataset.gen); } catch (e) { return; }
+    if (list[0].dataset.geni != null) {
+      list.sort((a, b) => (+a.dataset.geni) - (+b.dataset.geni));
+      const items = genItems(Object.assign({}, p, { count: list.length }));
+      list.forEach((e, i) => { e.innerHTML = `${qnoH(p.qno, p.qs)}${items[i] || ''}`; n++; });
+    } else {
+      const e = list[0], cnt = e.children.length || +p.count || 1;
+      const items = genItems(Object.assign({}, p, { count: cnt }));
+      e.innerHTML = items.map(h => `<div>${qnoH(p.qno, p.qs)}${h}</div>`).join('');
+      n += items.length;
+    }
+  });
+  renumber(root); setAnsVisible(S.showAns); checkOverflow();
+  return n;
+}
+function reroll(scope) {
+  syncFromDOM(); if (scope === 'doc') saveSnapshot('重新洗題前', true); pushHistory();
+  const n = rerollGroups(scope);
+  if (!n) { toast('這裡沒有「快速出題」產生的題組（手動輸入的題目不會被換掉）'); return; }
+  pushHistory();
+  toast(`🎲 已重新出題：${n} 題${scope === 'doc' ? '（整份文件）' : scope === 'page' ? '（本頁）' : ''}`);
+}
+
+/* ================= 答案表 ================= */
+function ownerQno(e) {
+  let n = e.parentElement, lv = 0;
+  while (n && lv++ < 6 && !n.classList.contains('cc')) { const q = n.querySelector('.mw-qno'); if (q) return q; n = n.parentElement; }
+  return null;
+}
+const stripBr = s => String(s ?? '').replace(/\[([^\[\]]*)\]/g, '$1').trim();
+/* 依元件型態取出「一題的答案文字」，例如直式的 472、分數的 3/4、除法的 13 餘 2 */
+function ansOfWidget(mw) {
+  const t = mw.dataset.type, p = Object.assign({}, (W[t] || {}).def, getP(mw));
+  const inner = () => $$('.ans', mw).map(x => (x.textContent || '').trim()).filter(Boolean).join('、');
+  switch (t) {
+    case 'blank': return String(p.ans ?? '').trim();
+    case 'cmp': return String(p.ans ?? '').trim();
+    case 'frac': {
+      const hasBox = [p.w, p.n, p.d].some(x => /\[[^\]]*\]/.test(String(x ?? '')));   /* 沒有方框代表只是題目裡的分數 */
+      if (!hasBox) return '';
+      const w = stripBr(p.w), n = stripBr(p.n), d = stripBr(p.d); return (w ? w + ' ' : '') + n + '/' + d;
+    }
+    case 'vert': return p.mode === 'show' ? '' : stripBr(p.ans);
+    case 'ldiv': return p.mode === 'show' ? '' : stripBr(p.q) + (String(p.r || '').trim() ? ` 餘 ${stripBr(p.r)}` : '');
+    case 'sdiv': return p.mode === 'show' ? '' : splitList(p.divs).join('、');
+    case 'money': return String(p.ans || '').trim() ? `${p.ans} 元` : '';
+    default: return inner();
+  }
+}
+function collectAnswers() {
+  const pg = $('#pages'), entries = [], map = new Map();
+  let sec = '', last = null, autoN = 0, autoSec = null;
+  const entryFor = el => { let en = map.get(el); if (!en) { en = { sec, q: el.textContent.trim(), ans: [] }; map.set(el, en); entries.push(en); } return en; };
+  const add = (text, owner) => {
+    if (!text) return;
+    if (owner) { entryFor(owner).ans.push(text); return; }
+    if (last && last.sec === sec && !last.auto) { last.ans.push(text); return; }
+    if (autoSec !== sec) { autoSec = sec; autoN = 0; }
+    last = { sec, q: `${++autoN}.`, ans: [text], auto: true }; entries.push(last);
+  };
+  $$('.mw-sec, .mw-qno, .mw, .ans', pg).forEach(el => {
+    if (el.closest('[data-anssheet]')) return;
+    if (el.classList.contains('mw-sec')) { const h = el.closest('.sec-h'); sec = (h ? h.textContent : el.textContent).trim(); autoSec = null; return; }
+    if (el.classList.contains('mw-qno')) { const en = entryFor(el); en.sec = sec; en.q = el.textContent.trim(); last = en; return; }
+    if (el.classList.contains('mw')) { add(ansOfWidget(el), ownerQno(el)); return; }
+    if (el.closest('.mw')) return;               /* 元件內的答案已處理過 */
+    add((el.textContent || '').trim(), ownerQno(el));
+  });
+  return entries.filter(x => x.ans.length).map(x => ({ sec: x.sec, q: x.q, ans: x.ans }));
+}
+function answerSheetHTML(v) {
+  const data = collectAnswers();
+  if (!data.length) return '';
+  const cols = Math.max(1, +v.cols || 5), joiner = v.joiner || '、';
+  const groups = [];
+  data.forEach(d => {
+    const key = v.showSec ? d.sec : '';
+    let g = groups[groups.length - 1];
+    if (!g || g.key !== key) { g = { key, rows: [] }; groups.push(g); }
+    g.rows.push(d);
+  });
+  let h = `<div data-anssheet="1" style="font-size:${+v.fsize || 13}pt">`;
+  h += `<div class="sec-h">${esc(v.title || '參考答案')}</div>`;
+  groups.forEach(g => {
+    if (v.showSec && g.key) h += `<div class="as-sec">${esc(g.key)}</div>`;
+    const cells = g.rows.map(r => `<span class="as-q">${esc(r.q)}</span><span class="as-a">${esc(r.ans.join(joiner))}</span>`);
+    if (v.style === 'table') {
+      let rows = '';
+      for (let i = 0; i < cells.length; i += cols) {
+        rows += '<tr>' + Array.from({ length: cols }, (_, j) => `<td>${cells[i + j] || ''}</td>`).join('') + '</tr>';
+      }
+      h += `<table class="tbl as-tbl">${rows}</table>`;
+    } else {
+      h += `<div class="qgrid as-plain" style="grid-template-columns:repeat(${cols},minmax(0,1fr))">${cells.map(c => `<div>${c}</div>`).join('')}</div>`;
+    }
+  });
+  return h + '</div><div><br></div>';
+}
+function makeAnswerSheet() {
+  syncFromDOM();
+  const n = collectAnswers().length;
+  if (!n) { toast('文件中找不到設定過答案的題目（請確認題目有填寫解答）'); return; }
+  openDialog({
+    title: '📋 產生答案表', okText: '產生',
+    fields: [F.text('title', '標題'), F.sel('style', '樣式', [['table', '表格（有格線）'], ['plain', '橫排（無格線）']]),
+      F.sel('cols', '每列題數', [['3', '3'], ['4', '4'], ['5', '5'], ['6', '6'], ['8', '8'], ['10', '10']]),
+      F.num('fsize', '字級（pt）', 8, 24, 1), F.chk('showSec', '顯示大題名稱'),
+      F.sel('target', '放置位置', [['newpage', '放在最後一頁（已有答案表則更新它）'], ['here', '插入到游標位置']]),
+      F.note(`目前偵測到 ${n} 題有解答。答案表是一般內容，可自行修改，也會一起列印或匯出 PDF。`)],
+    values: Object.assign({ title: '參考答案', style: 'table', cols: '5', fsize: 13, showSec: true, target: 'newpage' }, S.lastAns || {}),
+    preview: v => answerSheetHTML(v),
+    onOK: v => {
+      S.lastAns = v;
+      const html = answerSheetHTML(v);
+      if (!html) return toast('沒有可列出的答案');
+      if (v.target === 'here') { insertHTML(html); toast('📋 已插入答案表'); return; }
+      mutate(() => {
+        let pi = S.doc.pages.findIndex(pg => cellsOf(pg.layout).some(c => (c.html || '').includes('data-anssheet')));
+        if (pi < 0) { S.doc.pages.push({ layout: mkCell({ html }) }); pi = S.doc.pages.length - 1; }
+        else { const c = cellsOf(S.doc.pages[pi].layout).find(c => (c.html || '').includes('data-anssheet')); c.html = html; }
+        S.activeId = cellsOf(S.doc.pages[pi].layout)[0].id;
+      });
+      toast('📋 答案表已放在最後一頁');
+      setTimeout(() => { const w = $$('.page-wrap').pop(); w && w.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 60);
     }
   });
 }
@@ -1753,8 +2227,8 @@ const PRESETS = {
   cards: { label: '🃏 題卡（2 欄 × 4 列，剪裁虛線）', header: 'none', layout: () => gridLayout(2, 4, 'dashed', 4) },
   blank: { label: '⬜ 空白頁（無表頭）', header: 'none', layout: () => mkCell() },
 };
-function applyPreset(k) { const p = PRESETS[k]; mutate(() => { S.doc.header.type = p.header; applyLayoutToPage(curPage(), p.layout()); }); toast('已套用：' + p.label.replace(/^\S+\s/, '')); }
-function applyGrid(c, r, border) { mutate(() => applyLayoutToPage(curPage(), gridLayout(c, r, border || 'none'))); toast(`已套用 ${c} 欄 × ${r} 列`); }
+function applyPreset(k) { saveSnapshot('套用版面範本前', true); const p = PRESETS[k]; mutate(() => { S.doc.header.type = p.header; applyLayoutToPage(curPage(), p.layout()); }); toast('已套用：' + p.label.replace(/^\S+\s/, '')); }
+function applyGrid(c, r, border) { saveSnapshot('套用欄列版面前', true); mutate(() => applyLayoutToPage(curPage(), gridLayout(c, r, border || 'none'))); toast(`已套用 ${c} 欄 × ${r} 列`); }
 function customGrid() {
   openDialog({
     title: '▦ 自訂欄列版面', small: true, okText: '套用',
@@ -1817,7 +2291,14 @@ function openDialog(o) {
       const lab = el('label', 'fl'); lab.textContent = f.label; form.append(lab); els = [lab];
       if (f.type === 'sel') { ctl = el('select'); f.opts.forEach(([v, l]) => { const op = el('option'); op.value = v; op.textContent = l; ctl.append(op); }); ctl.value = String(vals[f.k] ?? ''); }
       else if (f.type === 'area') { ctl = el('textarea'); ctl.value = vals[f.k] ?? ''; }
-      else if (f.type === 'img') { ctl = el('input'); ctl.type = 'file'; ctl.accept = 'image/*'; ctl.onchange = () => { const file = ctl.files[0]; if (!file) return; const rd = new FileReader(); rd.onload = () => { vals[f.k] = rd.result; upd(); }; rd.readAsDataURL(file); }; }
+      else if (f.type === 'img') {
+        ctl = el('input'); ctl.type = 'file'; ctl.accept = 'image/*';
+        ctl.onchange = () => {
+          const file = ctl.files[0]; if (!file) return; const rd = new FileReader();
+          rd.onload = () => shrinkImage(rd.result, (out, info) => { vals[f.k] = out; upd(); if (info.before && info.after < info.before * .9) toast(`🖼 圖片已自動壓縮：${fmtSize(info.before * .75)} → ${fmtSize(info.after * .75)}`); });
+          rd.readAsDataURL(file);
+        };
+      }
       else { ctl = el('input'); ctl.type = f.type === 'num' ? 'number' : f.type === 'color' ? 'color' : 'text'; if (f.min != null) ctl.min = f.min; if (f.max != null) ctl.max = f.max; if (f.step != null) ctl.step = f.step; ctl.value = vals[f.k] ?? ''; }
       form.append(ctl); els.push(ctl);
     }
@@ -1847,7 +2328,8 @@ function toast(msg, ms = 2200) { const t = $('#toast'); t.textContent = msg; t.c
 const fileBase = () => (S.doc.meta.name || '數學試卷').replace(/[\\/:*?"<>|]/g, '_');
 function download(fn, data, type) { const b = new Blob([data], { type }); const a = el('a'); a.href = URL.createObjectURL(b); a.download = fn; document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }
 function pickFile(accept, cb) { const inp = $('#fileIn'); inp.value = ''; inp.accept = accept; inp.onchange = () => { const f = inp.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => cb(rd.result, f); rd.readAsText(f); }; inp.click(); }
-function exportProject() { pushHistory(); download(fileBase() + '.mathpaper.json', JSON.stringify(S.doc), 'application/json'); toast('💾 專案檔已下載，可隨時「開啟專案」繼續編輯'); }
+function stampVer() { S.doc.meta.app = APP_NAME; S.doc.meta.ver = APP_VER; S.doc.meta.saved = new Date().toLocaleString('zh-TW'); }
+function exportProject() { pushHistory(); stampVer(); download(fileBase() + '.mathpaper.json', JSON.stringify(S.doc), 'application/json'); toast(`💾 專案檔已下載（${APP_NAME} ${APP_VER}），可隨時「開啟專案」繼續編輯`); }
 function importAny(expect) {
   pickFile('.json,application/json', txt => {
     let d; try { d = JSON.parse(txt); } catch (e) { return toast('❌ 無法讀取，請確認是本系統匯出的 .json 檔'); }
@@ -1864,7 +2346,7 @@ function importAny(expect) {
   });
 }
 function exportLayout() {
-  pushHistory(); const lay = clone(S.doc); lay.kind = 'mathpaper-layout';
+  pushHistory(); stampVer(); const lay = clone(S.doc); lay.kind = 'mathpaper-layout';
   lay.pages.forEach(p => cellsOf(p.layout).forEach(c => c.html = ''));
   download(fileBase() + '.版型.json', JSON.stringify(lay), 'application/json'); toast('📐 版型檔已下載（含紙張、表頭、欄列切割，不含題目）');
 }
@@ -1881,6 +2363,7 @@ async function exportPDF(mode) {
   if (exporting) return; exporting = true;
   syncFromDOM(); deselectW(); toast('⏳ 正在產生 PDF，請稍候…', 120000);
   const pg = $('#pages'), wasAns = S.showAns, zoom = S.zoom;
+  const snapshot = (mode === 'ab' || mode === 'abans') ? JSON.stringify(S.doc) : null;
   try {
     await ensurePDFLibs();
     document.body.classList.add('exporting'); pg.classList.add('exporting'); pg.classList.remove('guides'); pg.style.setProperty('--zoom', 1);
@@ -1888,21 +2371,30 @@ async function exportPDF(mode) {
     await document.fonts.ready;
     const { jsPDF } = window.jspdf, land = S.doc.page.orientation === 'landscape';
     const pdf = new jsPDF({ orientation: land ? 'landscape' : 'portrait', unit: 'mm', format: 'a4', compress: true });
-    const passes = mode === 'qa' ? [false, true] : [mode === 'a']; let first = true;
-    for (const ans of passes) {
-      setAnsVisible(ans); await new Promise(r => setTimeout(r, 60));
-      for (const page of $$('.page', pg)) {
-        const c = await html2canvas(page, { scale: S.pdfScale || 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
-        if (!first) pdf.addPage('a4', land ? 'landscape' : 'portrait'); first = false;
-        pdf.addImage(c.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, land ? 297 : 210, land ? 210 : 297, undefined, 'FAST');
+    const isAB = mode === 'ab' || mode === 'abans';
+    const passes = (mode === 'qa' || mode === 'abans') ? [false, true] : [mode === 'a'];
+    const rounds = isAB ? [{ tag: 'A' }, { tag: 'B', reroll: true }] : [{ tag: '' }];
+    let first = true;
+    for (const r of rounds) {
+      if (r.reroll) { rerollGroups('doc'); await new Promise(x => setTimeout(x, 80)); }
+      if (r.tag) $$('.page-foot span:nth-child(2)', pg).forEach(s => s.textContent = `${r.tag} 卷${S.doc.page.footer ? ' · ' + S.doc.page.footer : ''}`);
+      for (const ans of passes) {
+        setAnsVisible(ans); await new Promise(x => setTimeout(x, 60));
+        for (const page of $$('.page', pg)) {
+          const c = await html2canvas(page, { scale: S.pdfScale || 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+          if (!first) pdf.addPage('a4', land ? 'landscape' : 'portrait'); first = false;
+          pdf.addImage(c.toDataURL('image/jpeg', 0.93), 'JPEG', 0, 0, land ? 297 : 210, land ? 210 : 297, undefined, 'FAST');
+        }
       }
     }
-    pdf.save(fileBase() + (mode === 'a' ? '_解答卷' : mode === 'qa' ? '_題目卷與解答卷' : '') + '.pdf');
+    pdf.save(fileBase() + (mode === 'a' ? '_解答卷' : mode === 'qa' ? '_題目卷與解答卷' : mode === 'ab' ? '_AB卷' : mode === 'abans' ? '_AB卷與解答' : '') + '.pdf');
     toast('✅ PDF 已下載');
   } catch (e) { console.error(e); toast('❌ PDF 產生失敗：' + e.message + '（可改用「列印 → 另存為 PDF」）', 5000); }
   finally {
     document.body.classList.remove('exporting'); pg.classList.remove('exporting'); pg.classList.toggle('guides', !!S.doc.page.guides);
-    pg.style.setProperty('--zoom', zoom); setAnsVisible(wasAns); exporting = false;
+    pg.style.setProperty('--zoom', zoom);
+    if (snapshot) { S.doc = JSON.parse(snapshot); renderAll(); }
+    setAnsVisible(wasAns); exporting = false;
   }
 }
 function doPrint(mode) {
@@ -1942,7 +2434,8 @@ const A = {
   openProject: () => importAny('project'),
   exportProject, exportLayout,
   importLayout: () => importAny('layout'),
-  saveMyTemplate,
+  saveMyTemplate, snapNow,
+  snapshots: () => openGallery('⏱ 還原點'),
   toggleAns: () => { S.showAns = !S.showAns; setAnsVisible(S.showAns); syncToolbar(); toast(S.showAns ? '✅ 解答模式：顯示紅色答案' : '📝 題目模式：隱藏答案'); },
   undo, redo,
   boxText,
@@ -1953,8 +2446,10 @@ const A = {
   dupPage: () => { addPage(curPage(), true); toast('已複製目前頁'); },
   delPage: () => pageAction('del', curPage()),
   gen: openGen,
+  ansSheet: makeAnswerSheet,
   zoomFit: () => { const w = $('#workspace').clientWidth - 48, pw = S.doc.page.orientation === 'landscape' ? 1123 : 794; setZoom(Math.max(.4, Math.min(1.6, w / pw))); },
   help: showHelp,
+  verlog: showVerLog,
   clearCell: () => { if (!needCell()) return; confirmBox('確定清空目前格子的內容？', () => mutate(() => { findNode(S.activeId).node.html = ''; })); },
 };
 function runAct(a) {
@@ -1979,6 +2474,8 @@ function runAct(a) {
     case 'margin': return setPage('margin', +rest);
     case 'header': return mutate(() => { S.doc.header.type = rest; });
     case 'scale': S.pdfScale = +rest; return toast('PDF 解析度：' + (rest === '3' ? '高' : rest === '1.5' ? '省空間' : '標準'));
+    case 'reroll': return reroll(rest);
+    case 'gen': return openGen(rest);
   }
 }
 const BORDERS = [['none', '無框線'], ['solid', '實線框'], ['dashed', '虛線框'], ['dotted', '點線框'], ['thick', '粗線框'], ['round', '圓角框'], ['bottom', '只有下框線'], ['right', '只有右框線']];
@@ -1987,10 +2484,11 @@ const TABS = [
     id: 'file', label: '📁 檔案', groups: [
       { label: '文件', items: [B('🗂️', '範本庫／新文件', 'gallery'), B('📂', '開啟專案', 'openProject'), B('💾', '儲存專案', 'exportProject', { title: '下載 .json 專案檔（Ctrl+S）' }), B('⭐', '存成我的範本', 'saveMyTemplate')] },
       { label: '版型設定', items: [B('📥', '匯入版型', 'importLayout', { title: '套用版型檔（保留目前題目）' }), B('📤', '匯出版型', 'exportLayout', { title: '只匯出紙張／表頭／欄列切割設定' })] },
-      { label: '輸出 A4', items: [M('📄', '匯出 PDF', [['📝 題目卷 PDF', 'pdf:q'], ['✅ 解答卷 PDF', 'pdf:a'], ['📚 題目卷＋解答卷（同一檔）', 'pdf:qa'], '-', { h: 'PDF 解析度' }, ['標準（建議）', 'scale:2'], ['高畫質（檔案較大）', 'scale:3'], ['省空間', 'scale:1.5']]),
+      { label: '輸出 A4', items: [M('📄', '匯出 PDF', [['📝 題目卷 PDF', 'pdf:q'], ['✅ 解答卷 PDF', 'pdf:a'], ['📚 題目卷＋解答卷（同一檔）', 'pdf:qa'], '-', { h: 'A/B 卷（隨機題目換新數字）' }, ['🎲 A 卷＋B 卷', 'pdf:ab'], ['🎲 A/B 卷＋各自解答', 'pdf:abans'], '-', { h: 'PDF 解析度' }, ['標準（建議）', 'scale:2'], ['高畫質（檔案較大）', 'scale:3'], ['省空間', 'scale:1.5']]),
         M('🖨️', '列印', [['🖨️ 列印題目卷', 'print:q'], ['🖨️ 列印解答卷', 'print:a'], { h: '列印視窗可選「另存為 PDF」得到向量檔' }])] },
-      { label: '解答', items: [B('✅', '解答模式', 'toggleAns', { id: 'ans' })] },
-      { label: '說明', items: [B('❓', '使用說明', 'help')] },
+      { label: '解答', items: [B('✅', '解答模式', 'toggleAns', { id: 'ans' }), B('📋', '產生答案表', 'ansSheet', { title: '把全份試卷的答案整理成一頁答案表' })] },
+      { label: '安全存檔', items: [B('⏱', '還原點', 'snapshots', { title: '回到先前自動存檔的版本' }), B('📌', '建立還原點', 'snapNow')] },
+      { label: '說明', items: [B('❓', '使用說明', 'help'), B('🆕', '版本紀錄', 'verlog', { title: '看看每次改版新增了什麼' })] },
     ]
   },
   {
@@ -2044,7 +2542,11 @@ const TABS = [
       { label: '題目', items: [B('🔘', '選擇題', 't:choice'), B('⭕', '是非題', 't:tf'), B('✍️', '填充題', 't:fill'), B('⚖️', '比大小', 't:cmpset'), B('🧮', '橫式題組', 't:hgrid'), B('📖', '應用題', 't:word'), B('🔗', '連連看', 'w:match')] },
       { label: '作答區', items: [B('（ ）', '答案括號', 'wq:blank:{"style":"paren","w":2.5}'), B('＿', '底線', 'wq:blank:{"style":"line","w":5}'), B('□', '方框', 'wq:blank:{"style":"box","w":3}'), B('○', '圓圈', 'wq:blank:{"style":"circle","w":2}'), B('⚙', '填空格…', 'w:blank'), B('☰', '作答線', 'w:lines'), B('↕', '空白間距', 'w:space')] },
       { label: '版面元素', items: [B('🗨️', '文字方塊', 't:textbox'), B('▦', '表格', 't:table'), M('―', '分隔線', [['實線', 'wq:hr:{"style":"solid"}'], ['虛線', 'wq:hr:{"style":"dashed"}'], ['雙線', 'wq:hr:{"style":"double"}'], ['✂ 剪下線', 'wq:hr:{"style":"cut"}']]), B('🖼', '圖片', 'w:img')] },
-      { label: '自動出題', items: [B('⚡', '快速出題', 'gen', { title: '隨機產生加減乘除、填未知數、比大小題目' })] },
+      {
+        label: '自動出題', items: [B('⚡', '快速出題', 'gen', { title: '隨機產生加減乘除、填未知數、比大小題目' }),
+          B('📏', '單位換算', 'gen:unit', { title: '長度、重量、容量、面積、體積、時間的單位換算' }), B('🕒', '時間計算', 'gen:time', { title: '時間量加減乘除、幾時幾分、經過多久、12／24 時制' }),
+          M('🎲', '重新洗題', [['本格子的題組', 'reroll:cur'], ['本頁所有題組', 'reroll:page'], ['整份文件', 'reroll:doc'], '-', { h: '同樣條件重新隨機出題，可做 A/B 卷' }])]
+      },
     ]
   },
   {
@@ -2073,7 +2575,7 @@ const TABS = [
       { label: '直式', items: [B('➕', '直式加減乘', 'w:vert'), B('⟌', '直式除法', 'w:ldiv'), B('⌐', '短除法', 'w:sdiv'), B('⚖️', '比大小', 'w:cmp')] },
       { label: '數量與圖示', items: [B('📏', '數線', 'w:nline'), B('🕒', '時鐘', 'w:clock'), B('🔢', '定位板', 'w:pv'), B('🔀', '數的分合', 'w:bond'), B('🍎', '圖像數量', 'w:pic'), B('🎲', '骰子', 'w:dice'), B('💰', '錢幣', 'w:money')] },
       { label: '格線', items: [M('▦', '格線', [['方格', 'w:grid:{"kind":"square"}'], ['點狀格', 'w:grid:{"kind":"dot"}'], ['十字點格', 'w:grid:{"kind":"cross"}'], ['橫線', 'w:grid:{"kind":"line","rows":6,"cols":18,"size":10}'], ['田字格', 'w:grid:{"kind":"tian","cols":10,"rows":2,"size":15}'], ['米字格', 'w:grid:{"kind":"mi","cols":10,"rows":2,"size":15}'], ['公分方格（每 5 格加粗）', 'w:grid:{"kind":"square","cols":36,"rows":20,"size":5,"bold":2}']])] },
-      { label: '自動出題', items: [B('⚡', '快速出題', 'gen')] },
+      { label: '自動出題', items: [B('⚡', '快速出題', 'gen'), M('🎲', '重新洗題', [['本格子的題組', 'reroll:cur'], ['本頁所有題組', 'reroll:page'], ['整份文件', 'reroll:doc']])] },
     ]
   },
   {
@@ -2141,9 +2643,19 @@ function showMenu(btn, items, grid) {
 function hideMenu() { $('#menu').hidden = true; S.menuBtn = null; }
 function setZoom(z) { S.zoom = Math.round(z * 100) / 100; $('#pages').style.setProperty('--zoom', S.zoom); $('#zoom').value = Math.round(S.zoom * 100); $('#zoomVal').textContent = Math.round(S.zoom * 100) + '%'; deselectW(); }
 
+function showVerLog() {
+  openDialog({
+    title: `🆕 版本紀錄（目前 ${APP_NAME} ${APP_VER}）`, noCancel: true, okText: '我知道了', fields: [{
+      type: 'html', html: `<div class="verlog">` + VERLOG.map(r =>
+        `<h4><span class="vtag">${esc(r.v)}</span>${esc(r.t)}<small>${esc(r.d)}</small></h4><ul>${r.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul>`
+      ).join('') + `</div>`
+    }]
+  });
+}
+
 function showHelp() {
   openDialog({
-    title: '❓ 使用說明', noCancel: true, okText: '我知道了', fields: [{
+    title: `❓ 使用說明（${APP_NAME} ${APP_VER}）`, noCancel: true, okText: '我知道了', fields: [{
       type: 'html', html: `
 <b>🗂️ 開始</b>：從「範本庫」挑一個範本（試卷、口算練習、格線簿…），或選空白文件。<br>
 <b>📐 版面</b>：「版面」分頁可套用複習卷／小考卷，或選「幾欄幾列」。點選某一格後可「左右切割／上下切割」自行切版，<b>拖曳格子之間的邊界</b>可調整大小。<br>
@@ -2152,19 +2664,27 @@ function showHelp() {
 <b>✅ 解答</b>：所有填空都可以設定答案，按「解答模式」預覽紅字答案；匯出時可選題目卷、解答卷或兩者合併。<br>
 <b>📄 輸出</b>：「匯出 PDF」直接下載 A4 PDF；「列印」視窗中選「另存為 PDF」可得到文字更銳利的向量 PDF。<br>
 <b>💾 儲存</b>：系統會自動暫存在此瀏覽器。「儲存專案」下載 .json 檔可帶到別台電腦；「匯出版型」只保存紙張、表頭與切割設定，可分享給同事套用。<br>
-<b>⌨️ 快速鍵</b>：Ctrl+Z 復原、Ctrl+Y 重做、Ctrl+S 儲存專案、Ctrl+P 列印、Delete 刪除選取的元件。` }]
+<b>⌨️ 快速鍵</b>：Ctrl+Z 復原、Ctrl+Y 重做、Ctrl+S 儲存專案、Ctrl+P 列印、Delete 刪除選取的元件。<br>
+<b>🆕 版本紀錄</b>：點標題旁的版本標籤（或「檔案 → 版本紀錄」）可以看每次改版新增了什麼。` }]
   });
 }
 
 /* ================= 範本庫 ================= */
-const G_CATS = ['推薦', '試卷', '計算練習', '數學素材', '格線簿', '表格', '我的範本'];
+const G_CATS = ['推薦', '試卷', '計算練習', '數學素材', '格線簿', '表格', '我的範本', '⏱ 還原點'];
 const tb = (type, over) => T[type].build(Object.assign({}, T[type].def, over));
 const wm = (type, over) => mwHTML(type, over);
 const genBlock = over => { const p = Object.assign({}, GEN.def, over); return genGrid(genItems(p), p); };
+/* 把隨機題目依序填入格子，並記住出題參數，之後可用「重新洗題」換新數字 */
+function fillCellsWithGen(lay, over, style) {
+  const cells = cellsOf(lay), p = Object.assign({}, GEN.def, over, { count: cells.length });
+  const items = genItems(p), attr = `data-gen="${esc(JSON.stringify(p))}" data-genid="${uid()}"`;
+  cells.forEach((c, i) => { c.html = `<div ${attr} data-geni="${i}"${style ? ` style="${style}"` : ''}>${qnoH(p.qno, p.qs)}${items[i] || ''}</div>`; });
+  return lay;
+}
 function oralDoc(title, genP, cols, rows, name) {
-  const lay = gridLayout(cols, rows, 'none', 1.5); const items = genItems(Object.assign({}, GEN.def, genP, { count: cols * rows }));
-  cellsOf(lay).forEach((c, i) => c.html = `<div>${wm('qno', { style: 'paren' })} ${items[i] || ''}</div>`);
-  if (lay.type === 'split') cellsOf(lay).forEach(c => c.valign = 'middle');
+  const lay = gridLayout(cols, rows, 'none', 1.5);
+  fillCellsWithGen(lay, Object.assign({ qno: true, qs: 'paren' }, genP));
+  cellsOf(lay).forEach(c => c.valign = 'middle');
   return baseDoc({ name, header: { type: 'quiz', title: esc(title), fields: '日期:22, 姓名:28, 用時:16', score: true, tsize: 17 }, page: { size: 15 }, pages: [{ layout: lay }] });
 }
 const GALLERY = [
@@ -2229,22 +2749,22 @@ const GALLERY = [
   { id: 'missing', name: '填入未知數', desc: '□ + 5 = 12 型式', cats: ['計算練習'], build: () => oralDoc('填入未知數　□ 練習', { kind: 'missing', add: true, sub: true, amin: 1, amax: 50, bmin: 1, bmax: 30 }, 3, 10, '填入未知數') },
   {
     id: 'vert', name: '直式加減練習', desc: '3 欄 × 4 列 直式', cats: ['推薦', '計算練習'], build: () => {
-      const lay = gridLayout(3, 4, 'dotted', 3); const it = genItems(Object.assign({}, GEN.def, { add: true, sub: true, amin: 100, amax: 999, bmin: 10, bmax: 999, fmt: 'vert', count: 12 }));
-      cellsOf(lay).forEach((c, i) => { c.html = `<div>${wm('qno', { style: 'paren' })}</div><div style="text-align:center">${it[i]}</div>`; });
+      const lay = gridLayout(3, 4, 'dotted', 3);
+      fillCellsWithGen(lay, { add: true, sub: true, mul: false, div: false, amin: 100, amax: 999, bmin: 10, bmax: 999, fmt: 'vert', qno: true, qs: 'paren' }, 'text-align:center');
       return baseDoc({ name: '直式加減練習', header: { type: 'quiz', title: '三位數直式加減法練習', fields: '日期:22, 姓名:28', tsize: 16 }, pages: [{ layout: lay }] });
     }
   },
   {
     id: 'mulvert', name: '直式乘法練習', desc: '二位數 × 二位數', cats: ['計算練習'], build: () => {
       const lay = gridLayout(3, 3, 'dotted', 3);
-      cellsOf(lay).forEach(c => { const a = rnd(12, 98), b = rnd(12, 98); c.html = `<div>${wm('qno', { style: 'paren' })}</div><div style="text-align:center">${wm('vert', { a: String(a), op: '×', b: String(b), mid: String(a * (b % 10)) + '\n' + String(a * Math.floor(b / 10)), ans: String(a * b), mode: 'box' })}</div>`; });
+      fillCellsWithGen(lay, { add: false, sub: false, mul: true, div: false, amin: 12, amax: 98, bmin: 12, bmax: 98, fmt: 'vert', mulMid: true, qno: true, qs: 'paren' }, 'text-align:center');
       return baseDoc({ name: '直式乘法練習', header: { type: 'quiz', title: '二位數乘二位數　直式練習', fields: '日期:22, 姓名:28', tsize: 16 }, pages: [{ layout: lay }] });
     }
   },
   {
     id: 'divvert', name: '直式除法練習', desc: '3 欄 × 3 列', cats: ['計算練習'], build: () => {
       const lay = gridLayout(3, 3, 'dotted', 3);
-      cellsOf(lay).forEach(c => { const b = rnd(2, 9), q = rnd(12, 99); c.html = `<div>${wm('qno', { style: 'paren' })}</div><div style="text-align:center">${wm('ldiv', { divisor: String(b), dividend: String(b * q), q: String(q), work: 4 })}</div>`; });
+      fillCellsWithGen(lay, { add: false, sub: false, mul: false, div: true, intdiv: true, amin: 24, amax: 891, bmin: 2, bmax: 9, fmt: 'vert', qno: true, qs: 'paren' }, 'text-align:center');
       return baseDoc({ name: '直式除法練習', header: { type: 'quiz', title: '直式除法練習（除數一位數）', fields: '日期:22, 姓名:28', tsize: 16 }, pages: [{ layout: lay }] });
     }
   },
@@ -2270,6 +2790,54 @@ const GALLERY = [
         })
       }]
     })
+  },
+  {
+    id: 'unitconv', name: '單位換算練習', desc: '長度、重量、容量、複名數、小數與比大小', cats: ['推薦', '計算練習'], build: () => {
+      const u = over => genBlock(Object.assign({ kind: 'unit', u_len: false, u_wt: false, u_cap: false, u_area: false, u_vol: false, u_time: false, uf_simple: false, uf_comp: false, uf_split: false, uf_dec: false, uf_cmp: false, cols: '2', bw: 4.5, qs: 'paren' }, over));
+      return baseDoc({
+        name: '單位換算練習', header: { type: 'quiz', title: '單位換算　練習卷', fields: '班級:14, 座號:12, 姓名:26', tsize: 16 }, pages: [{
+          layout: mkCell({
+            html: tb('sec', { title: '長度的換算', score: '每題 3 分' }) + u({ u_len: true, uf_simple: true, count: 4 }) +
+              tb('sec', { title: '化成單名數', score: '每題 3 分' }) + u({ u_len: true, u_wt: true, u_cap: true, uf_comp: true, count: 6 }) +
+              tb('sec', { title: '化成複名數', score: '每題 4 分' }) + u({ u_len: true, u_wt: true, u_cap: true, uf_split: true, count: 4, bw: 3.5 }) +
+              tb('sec', { title: '小數與單位換算', score: '每題 3 分' }) + u({ u_len: true, u_wt: true, u_cap: true, uf_dec: true, udp: 2, count: 4 }) +
+              tb('sec', { title: '比大小', score: '每題 2 分' }) + u({ u_len: true, u_wt: true, u_cap: true, uf_cmp: true, count: 4 })
+          })
+        }]
+      });
+    }
+  },
+  {
+    id: 'timecalc', name: '時間計算練習', desc: '時間量加減、幾時幾分、經過多久、24 時制', cats: ['推薦', '計算練習'], build: () => {
+      const t = over => genBlock(Object.assign({ kind: 'time', tf_add: false, tf_sub: false, tf_mul: false, tf_div: false, tf_later: false, tf_before: false, tf_elapsed: false, tf_conv: false, cols: '2', bw: 2.5, qs: 'paren', tstep: 5, thmax: 4 }, over));
+      return baseDoc({
+        name: '時間計算練習', header: { type: 'quiz', title: '時間的計算　練習卷', fields: '班級:14, 座號:12, 姓名:26', tsize: 16 }, pages: [{
+          layout: mkCell({
+            html: tb('sec', { title: '時間量的加減', score: '每題 4 分' }) + t({ tf_add: true, tf_sub: true, count: 4, tword: 'short' }) +
+              tb('sec', { title: '是幾時幾分？', score: '每題 4 分' }) + t({ tf_later: true, tf_before: true, count: 3, cols: '1' }) +
+              tb('sec', { title: '經過了多久？', score: '每題 4 分' }) + t({ tf_elapsed: true, count: 3, cols: '1' }) +
+              tb('sec', { title: '12 時制與 24 時制', score: '每題 3 分' }) + t({ tf_conv: true, count: 2, cols: '1', tstep: 1 }) +
+              tb('sec', { title: '時間量的乘除', score: '每題 4 分' }) + t({ tf_mul: true, tf_div: true, tpair: 'ms', count: 2, tword: 'short' })
+          })
+        }]
+      });
+    }
+  },
+  {
+    id: 'fracops', name: '分數四則運算練習', desc: '同分母、通分、帶分數、乘除', cats: ['計算練習'], build: () => {
+      const blk = (title, over) => { const p = Object.assign({}, GEN.def, KIND_PRESET.frac, { kind: 'frac', qs: 'paren' }, over); return tb('sec', { title, score: '' }) + genGrid(genItems(p), p); };
+      return baseDoc({
+        name: '分數四則運算練習', header: { type: 'quiz', title: '分數的四則運算　練習卷', fields: '班級:14, 座號:12, 姓名:26', tsize: 16 }, pages: [{
+          layout: mkCell({
+            html: blk('同分母加減', { add: true, sub: true, f1: 'proper', f2: 'proper', fmode: 'same', count: 6, cols: '3' }) +
+              blk('異分母加減（先通分）', { add: true, sub: true, f1: 'proper', f2: 'proper', fmode: 'diff', count: 6, cols: '3' }) +
+              blk('帶分數加減', { add: true, sub: true, f1: 'mixed', f2: 'mixed', fmode: 'diff', fmix: true, count: 4, cols: '2' }) +
+              blk('分數乘法（先約分再乘）', { add: false, sub: false, mul: true, f1: 'proper', f2: 'proper', fmode: 'any', crossReduce: true, count: 6, cols: '3' }) +
+              blk('分數除法', { add: false, sub: false, div: true, f1: 'proper', f2: 'proper', fmode: 'any', count: 3, cols: '3' })
+          })
+        }]
+      });
+    }
   },
   { id: 'cmp', name: '比大小練習', desc: '算式和數比大小', cats: ['計算練習'], build: () => oralDoc('比大小　在○中填入 ＞、＜ 或 ＝', { kind: 'cmp', add: true, sub: true, amin: 10, amax: 60, bmin: 1, bmax: 30 }, 3, 10, '比大小練習') },
   {
@@ -2334,8 +2902,9 @@ const GALLERY = [
   { id: 'table', name: '空白統計表', desc: '6 列 × 5 欄表格', cats: ['表格'], build: () => baseDoc({ name: '統計表', header: { type: 'quiz', title: '統計表', fields: '姓名:30', score: false, tsize: 16 }, pages: [{ layout: mkCell({ html: tb('sec', { title: '調查記錄', score: '' }) + tb('table', { rows: 8, cols: 5, data: '項目, 正字記號, 人數, 百分比, 備註' }) + tb('sec', { title: '分析', score: '' }) + wm('lines', { n: 6, gap: 10 }) }) }] }) },
   {
     id: 'cards', name: '題卡（剪裁卡）', desc: '2 × 4 虛線剪裁題卡', cats: ['試卷', '表格'], build: () => {
-      const lay = gridLayout(2, 4, 'dashed', 4); const it = genItems(Object.assign({}, GEN.def, { kind: 'calc', add: false, sub: false, mul: true, amin: 11, amax: 30, bmin: 2, bmax: 9, fmt: 'h', bstyle: 'box', count: 8 }));
-      cellsOf(lay).forEach((c, i) => { c.valign = 'middle'; c.html = `<div style="text-align:center;font-size:20pt"><b>第 ${i + 1} 關</b><br>${it[i]}</div>`; });
+      const lay = gridLayout(2, 4, 'dashed', 4);
+      fillCellsWithGen(lay, { kind: 'calc', add: false, sub: false, mul: true, div: false, amin: 11, amax: 30, bmin: 2, bmax: 9, fmt: 'h', bstyle: 'box', qno: false }, 'text-align:center;font-size:20pt');
+      cellsOf(lay).forEach(c => c.valign = 'middle');
       return baseDoc({ name: '闖關題卡', header: { type: 'none' }, page: { pnum: false }, pages: [{ layout: lay }] });
     }
   },
@@ -2357,6 +2926,21 @@ function thumbOf(doc) {
 function showGalCat(c) {
   S.galCat = c; $$('#galCats button').forEach(b => b.classList.toggle('on', b.textContent === c));
   const grid = $('#galGrid'); grid.innerHTML = ''; grid.scrollTop = 0;
+  if (c === '⏱ 還原點') {
+    const snaps = getSnaps();
+    grid.insertAdjacentHTML('beforeend', `<div class="gal-empty" style="grid-column:1/-1;text-align:left;padding:8px 4px">⏱ 系統會在「每 5 分鐘」以及「開啟範本／匯入檔案／套用版面／整份重新洗題」之前自動建立還原點，最多保留 ${SNAP_MAX} 個。目前已用瀏覽器空間 ${fmtSize(lsUsage())}。</div>`);
+    if (!snaps.length) { grid.insertAdjacentHTML('beforeend', '<div class="gal-empty">還沒有還原點。編輯一段時間後就會自動建立，也可以按「檔案 → 📌 建立還原點」。</div>'); return; }
+    snaps.forEach(s => {
+      const card = el('div', 'gcard');
+      try { card.append(thumbOf(JSON.parse(s.j))); } catch (e) { card.innerHTML = '<div class="gthumb">📄</div>'; }
+      const when = new Date(s.t).toLocaleString('zh-TW', { hour12: false }).replace(/:\d\d$/, '');
+      card.insertAdjacentHTML('beforeend', `<div class="gname">${esc(when)}</div><div class="gdesc">${esc(s.reason)}・${esc(s.name)}</div>`);
+      const del = el('button', 'gdel'); del.textContent = '✕'; del.title = '刪除這個還原點';
+      del.onclick = ev => { ev.stopPropagation(); delSnapshot(s.id); showGalCat(c); };
+      card.append(del); card.onclick = () => restoreSnapshot(s.id); grid.append(card);
+    });
+    return;
+  }
   if (c === '我的範本') {
     const imp = el('div', 'gcard blank'); imp.innerHTML = `<div class="gthumb">📥</div><div class="gname">開啟專案檔</div><div class="gdesc">.mathpaper.json</div>`; imp.onclick = () => importAny('project'); grid.append(imp);
     const mine = getMine();
@@ -2404,7 +2988,7 @@ function bindEvents() {
   pg.addEventListener('paste', e => {
     const ed = e.target.closest('.cc, .hce'); if (!ed) return;
     const items = [...(e.clipboardData?.items || [])], img = items.find(i => i.type.startsWith('image/'));
-    if (img) { e.preventDefault(); const rd = new FileReader(); rd.onload = () => insertHTML(mwHTML('img', { src: rd.result, w: 60 })); rd.readAsDataURL(img.getAsFile()); return; }
+    if (img) { e.preventDefault(); insertImageFile(img.getAsFile()); return; }
     const html = e.clipboardData.getData('text/html'); if (html && html.includes('data-type=')) return;
     e.preventDefault(); document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
   });
@@ -2459,6 +3043,7 @@ function bindEvents() {
 function init() {
   const st = el('style'); st.id = 'pageSizeStyle'; document.head.append(st);
   buildTabs(); bindEvents();
+  const vb = $('#verBadge'); if (vb) vb.textContent = APP_VER; document.title = APP_NAME;
   const saved = lsGet(LS_AUTO); let restored = false;
   if (saved) { try { loadDoc(JSON.parse(saved)); restored = true; } catch (e) { } }
   if (!restored) loadDoc(buildTpl(GALLERY.find(g => g.id === 'demo')));

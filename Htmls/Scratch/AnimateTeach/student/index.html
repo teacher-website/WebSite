@@ -425,27 +425,7 @@
     <div class="why"><b class="t">不用懂三角函數也能用　</b>只要記住一件事：<b>sin 算出來的數字，永遠在 −1 到 1 之間來回</b>，而且是平滑的來回，不會突然跳。
       <br>所以 sin(…) × 10 會在 −10 到 10 之間來回，再加上 90，角度就在 <b>80° 到 100° 之間</b>擺動——90° 是 Scratch 裡「面朝右邊、站直」的方向。
       計時器一直在增加，乘上 100 決定<b>擺得多快</b>；乘上 10 決定<b>擺得多大</b>。</div>
-    <div class="lab">
-      <div class="lh"><span class="tag">動手試</span>改改看兩個數字，看角色怎麼擺</div>
-      <div class="ctrl">
-        <label>計時器 × <input type="range" id="snA" min="20" max="600" step="10" value="100"> <output id="snAO">100</output>（速度）</label>
-        <label>× <input type="range" id="snB" min="0" max="60" value="10"> <output id="snBO">10</output>（幅度）</label>
-        <button class="btn ghost sm" id="snPause">⏸ 暫停</button>
-      </div>
-      <div class="sinbox">
-        <div class="sinstage"><div class="guide"></div><div class="base"></div><div class="pivot"><div class="arm" id="snArm"><span class="head">🌻</span></div></div></div>
-        <div class="sinread">
-          <span>計時器</span><span class="v" id="snT">0.00</span>
-          <span>計時器 × <span id="snAO2">100</span></span><span class="v" id="snX">0</span>
-          <span>sin 的結果</span><span class="v" id="snS">0.00</span>
-          <span>× <span id="snBO2">10</span></span><span class="v" id="snM">0.0</span>
-          <span><b>面朝（＋90）</b></span><span class="v" id="snD">90.0°</span>
-          <span>擺動範圍</span><span class="v" id="snR">80°～100°</span>
-        </div>
-      </div>
-      <canvas class="sinc" id="snC" width="1040" height="240"></canvas>
-      <p style="font-size:.82rem;color:var(--ink2);margin:6px 0 0">圖上的線是「面朝」的角度隨時間變化：波浪越密代表擺得越快，波浪越高代表擺得越大。</p>
-    </div>
+    
     <div class="good"><b class="t">可以用在哪裡　</b>花草隨風搖、鐘擺、角色開心時左右晃、招牌輕輕擺動。把「面朝」換成「y 改變」，就變成上下漂浮（例如水面上的東西）。</div>
     <div class="quote"><span class="who">昀宸說</span>
       <p>「你是看到這開始想用在遊戲裡，跟我說一聲，也許我認可你後會告訴你用法也說不定！」

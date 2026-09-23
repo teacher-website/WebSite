@@ -158,6 +158,7 @@
       <tr><td><code class="v">玩家答案</code> <code class="v">這次動作</code> <code class="v">這輪正確</code></td><td>0／0／1</td><td>剛做的動作（第 6 章有一個很重要的坑）</td></tr>
       <tr><td><code class="v">轉頭比</code> <code class="v">點頭比</code> <code class="v">臉寬</code> <code class="v">臉高</code></td><td>0</td><td>臉部計算過程，方便現場除錯</td></tr>
       <tr><td><code class="v">轉頭門檻</code> <code class="v">點頭門檻</code></td><td>18／8</td><td><b>做成變數</b>，到比賽現場可以立刻調</td></tr>
+      <tr><td><code class="v">左右相反</code></td><td>0</td><td>玩起來左右顛倒時改成 1，程式會把轉頭比變號</td></tr>
       <tr><td><code class="v">我的編號</code>（僅適用當前角色）</td><td>1／2／3</td><td>三個樂器各自記住自己是第幾號</td></tr>
     </table></div>
     <div class="why"><b class="t">為什麼用清單不用一堆變數　</b>節奏會越接越長（最多 10 個），如果用 <code class="v">第1個</code>～<code class="v">第10個</code> 十個變數，
@@ -174,6 +175,7 @@
     <ol>
       <li>用 Chrome 開 <b>stretch3.github.io</b>（不是 Scratch 官網）。</li>
       <li>左下角「加入擴充功能」→ 選 <b>Facemesh2Scratch</b>，允許使用攝影機。</li>
+      <li>攝影機要設成<b>像照鏡子</b>的那一個模式（你往右，畫面上也往右）。</li>
       <li>臉部偵測比手部吃資源，<b>關掉其他分頁</b>會順很多。</li>
     </ol>
     <div class="warn"><b class="t">臉部資料是生物特徵　</b>模型在自己的電腦上跑、影像不會上傳，但還是<b>不要錄影或截圖同學的臉</b>，
@@ -188,6 +190,11 @@
       <tr><td>第 (1) 人的 (部位) 的 y 座標</td><td>約 −180～180</td><td>鼻尖 (2)、額頭頂端 (11)、下巴 (153)</td></tr>
       <tr><td><b>人數</b></td><td>現在看到幾張臉</td><td><b>最重要的守門積木</b></td></tr>
     </table></div>
+    <div class="warn"><b class="t">⚠️ 左右相反怎麼辦　</b>這是實際用攝影機時最常遇到的狀況：明明向左轉頭，響的卻是沙鈴。
+      原因是攝影機積木有「鏡像」和「不鏡像」兩種模式，<b>選到不鏡像時，臉部的 x 座標會整個變號</b>，
+      轉頭比的正負就跟著顛倒。<br>
+      最快的解法：把變數 <code class="v">左右相反</code> 改成 <b>1</b>（舞台左上角看得到），
+      程式會自動把轉頭比變號，不用去動任何積木。改回 0 就恢復原樣。</div>
     <div class="warn"><b class="t">一定要先看「人數」　</b>臉離開鏡頭時，座標積木回傳的是<b>空白</b>，不是 0。
       直接拿空白去做加減乘除，Scratch 會當成 0，結果就會亂跳。所以所有判斷都要包在「<b>如果 人數 &gt; 0</b>」裡面。</div>
   </div>
@@ -423,6 +430,7 @@
   <div class="topic">
     <h3>建議的測試順序</h3>
     <ol>
+      <li><b>先確認左右沒有相反</b>：向左轉頭，牌子要顯示「向左轉頭」、響的要是<b>木鼓</b>。相反的話把 <code class="v">左右相反</code> 設成 1。</li>
       <li><b>只測動作</b>：看畫面下方的牌子，做四種狀態（預備／左／點頭／右），名稱都對嗎？</li>
       <li><b>看比例數字</b>：左上角的 <code class="v">轉頭比</code>、<code class="v">點頭比</code>，做動作時有沒有明顯超過門檻？</li>
       <li><b>用鍵盤玩一次</b>：← ↓ → 把兩關都走完，確認計分、扣火把、過關都正常。</li>
@@ -438,6 +446,7 @@
       <tr><th>數字</th><th>預設</th><th>調大會怎樣</th></tr>
       <tr><td><code class="v">轉頭門檻</code></td><td>18</td><td>要轉更多才算，比較不會誤判，但也比較難做</td></tr>
       <tr><td><code class="v">點頭門檻</code></td><td>8</td><td>要低頭更明顯才算</td></tr>
+      <tr><td><code class="v">左右相反</code></td><td>0</td><td>設成 1 會把左右對調（攝影機不是鏡像模式時用）</td></tr>
       <tr><td>提示間隔（起始）</td><td>0.9 秒</td><td>提示放慢，第一關比較好記</td></tr>
       <tr><td>每輪縮短</td><td>0.04 秒</td><td>難度上升更快</td></tr>
       <tr><td>間隔下限</td><td>0.25 秒</td><td>後面不會快到看不清楚</td></tr>
@@ -453,6 +462,8 @@
     <div class="tblwrap"><table class="tbl">
       <tr><th>症狀</th><th>先看什麼</th><th>常見原因</th></tr>
       <tr><td>做動作完全沒反應</td><td>牌子是不是「看不到臉」</td><td>光線太暗、臉離鏡頭太遠，或忘了把攝影機打開</td></tr>
+      <tr><td><b>左右相反</b>：向左轉頭卻打到沙鈴</td><td>攝影機是不是選到「不鏡像」的模式</td>
+        <td>x 座標整個變號了。把 <code class="v">左右相反</code> 設成 1 最快，或改用鏡像模式</td></tr>
       <tr><td>鍵盤有效、頭部動作沒效</td><td><code class="v">轉頭比</code> 做動作時的最大值</td><td>沒超過門檻 → 把 <code class="v">轉頭門檻</code> 調小</td></tr>
       <tr><td>一個動作被算成好幾次</td><td><code class="v">可以觸發</code> 有沒有設回 0</td><td>少了預備姿勢的旗標（第 4 章）</td></tr>
       <tr><td>每輪的第 2 個動作都不見</td><td><code class="v">玩家答案</code> 是在廣播<b>之前</b>還是之後歸零</td><td>第 6 章那個坑：一定要<b>先歸零再播動畫</b></td></tr>

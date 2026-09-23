@@ -76,8 +76,8 @@
       <tr><th>動作</th><th>怎麼判斷</th><th>做了會怎樣</th></tr>
       <tr><td><b>手放低</b>（預備姿勢）</td><td>手腕 y &lt; −40</td><td>把 <code class="v">可以觸發</code> 設回 1，才能做下一個動作</td></tr>
       <tr><td><b>手舉高</b>＝種樹</td><td>手腕 y &gt; 80</td><td><code class="v">遮蔭</code> +1（最多 8；種滿了青蛙會說「樹已經夠多了」）</td></tr>
-      <tr><td><b>從左揮到右</b>＝撈垃圾</td><td>手腕 x &lt; −100 之後再 &gt; 100</td><td><code class="v">垃圾</code> −1、<code class="v">水質</code> +5</td></tr>
-      <tr><td><b>張開手掌</b>＝擋住廢水</td><td>食指尖 x 與小指尖 x 相差 &gt; 90</td><td>偷倒事件中擋下來，水質不會掉</td></tr>
+      <tr><td><b>從左揮到右</b>＝撈垃圾</td><td>手腕 x &lt; −80 之後再 &gt; 80（2 秒內；手掌張開、中途手掉下來或掃過舉高都還算）</td><td><code class="v">垃圾</code> −1、<code class="v">水質</code> +5；已經撈乾淨時青蛙會說一句話</td></tr>
+      <tr><td><b>張開手掌</b>＝擋住廢水</td><td><b>手在畫面中間</b>，而且食指尖 x 與小指尖 x 相差 &gt; 90</td><td>偷倒事件中擋下來，水質不會掉</td></tr>
     </table></div>
     <div class="why"><b class="t">為什麼選這三個動作　</b>題目建議「優先選擇容易穩定判斷的動作」。
       手舉高、左右揮、張開手掌都是<b>大動作</b>，只要比大小就分得出來，不需要複雜的數學。</div>
@@ -142,7 +142,7 @@
       <tr><td><code class="v">水質</code></td><td>0～100</td><td>45</td><td>水乾不乾淨，決定畫面與結局</td></tr>
       <tr><td><code class="v">垃圾</code></td><td>0～6</td><td>5</td><td>溪床上的垃圾數量</td></tr>
       <tr><td><code class="v">遮蔭</code></td><td>0～8</td><td>1</td><td>溪邊的樹，越多水溫越低</td></tr>
-      <tr><td><code class="v">手勢</code> <code class="v">可以觸發</code> <code class="v">揮動階段</code></td><td>—</td><td>無／0／0</td><td>第 3、4 章的動作判斷</td></tr>
+      <tr><td><code class="v">手勢</code> <code class="v">可以觸發</code> <code class="v">揮動階段</code> <code class="v">揮動時間</code></td><td>—</td><td>無／0／0／0</td><td>第 3、4 章的動作判斷；<code class="v">揮動時間</code> 用來判斷揮動有沒有超過 2 秒</td></tr>
       <tr><td><code class="v">偷倒中</code> <code class="v">擋下成功</code> <code class="v">擋下次數</code></td><td>0／1</td><td>0</td><td>偷倒事件用</td></tr>
       <tr><td><code class="v">水蠆在</code></td><td>0／1</td><td>1</td><td>水蠆有沒有被污染趕走</td></tr>
       <tr><td><code class="v">偷倒回合A</code> <code class="v">偷倒回合B</code> <code class="v">垃圾回合</code></td><td>1～4</td><td>開始時抽</td><td>這一局哪幾個回合會發生事件，每次玩都不一樣</td></tr>
@@ -199,15 +199,20 @@
         <ul class="steps3" id="hSteps">
           <li data-s="1">① 手腕 y &lt; −40 → <b>預備</b></li>
           <li data-s="2">② 手腕 y &gt; 80 → <b>舉高</b>（種樹）</li>
-          <li data-s="3">③ 張開幅度 &gt; 90 → <b>張開</b>（擋住）</li>
-          <li data-s="4">④ 手腕 x &lt; −100 → <b>左</b>；x &gt; 100 → <b>右</b>（左揮到右＝撈垃圾）</li>
+          <li data-s="3">③ 手腕 x &lt; −100 → <b>左</b>；x &gt; 100 → <b>右</b>（左揮到右＝撈垃圾）</li>
+          <li data-s="4">④ 手在中間，而且張開幅度 &gt; 90 → <b>張開</b>（擋住）</li>
           <li data-s="5">⑤ 其他 → <b>中間</b>（不做事）</li>
         </ul>
         <div class="bigres">判斷結果：<span id="hRes">中間</span></div>
       </div>
     </div>
-    <div class="why"><b class="t">判斷順序很重要　</b>先問「是不是預備」，再問「是不是舉高」，最後才看左右。
-      如果順序反過來，手放低的時候可能會被當成「左」或「右」，程式就會亂觸發。</div>
+    <div class="why"><b class="t">判斷順序很重要　</b>先問「是不是預備」，再問「是不是舉高」，接著看「在左邊還是右邊」，
+      <b>都不是（手在中間）才看手掌有沒有張開</b>。<br>
+      順序如果排錯，程式就會怪怪的：把「張開」排在左右前面，玩家<b>張著手掌揮手</b>時會一路被判成「張開」，
+      揮到右邊也不會被認成「右」，<b>垃圾就永遠撈不起來</b>——這是我們實測到的真實災情。
+      把「預備」排到最後也一樣會出事：手放低時可能被當成「左」或「右」而亂觸發。</div>
+    <div class="warn"><b class="t">自己驗證一次　</b>在上面的實驗室把手拖到最左邊，然後把「張開幅度」拉到 180（手掌全開）——
+      結果應該還是<b>左</b>。如果變成「張開」，就表示判斷順序排錯了。</div>
   </div>
 
   <div class="topic">
@@ -233,9 +238,33 @@
     <div class="warn"><b class="t">不要用「等待 2 秒」代替　</b>那不是狀態機，說明文件寫不出判斷方式，而且玩家會不知道要等多久。</div>
   </div>
 
+  <div class="topic">
+    <h3>⚠️ 揮手要「撐得住」：真人不會揮出一條直線</h3>
+    <p>這是我們實際測出來、最容易卡住學生的一個坑。用真人的揮手軌跡去跑，電腦看到的手勢是這樣：</p>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>揮手方式</th><th>電腦實際看到的手勢</th><th>舊寫法的結果</th></tr>
+      <tr><td>水平直線揮過去</td><td>預備 → 左 → 中間 → 右</td><td>✅ 撈得到</td></tr>
+      <tr><td>揮到一半手自然往下掉</td><td>預備 → 左 → <b>預備</b> → 中間 → 右</td><td>❌ 撈不到（揮動階段被歸零）</td></tr>
+      <tr><td>揮成一個向上的弧形</td><td>預備 → 左 → <b>舉高</b> → 中間 → 右</td><td>❌ 撈不到，還<b>多種了一棵樹</b></td></tr>
+    </table></div>
+    <p>手臂揮過去本來就會畫弧線，中間掃過「舉高」或掉到「預備」幾乎一定會發生。
+      所以要讓「正在揮動」這件事撐得住中途的雜訊，做三件事：</p>
+    <ol>
+      <li>看到<b>預備</b>時只把 <code class="v">可以觸發</code> 設為 1，<b>不要</b>把 <code class="v">揮動階段</code> 歸零。</li>
+      <li>看到<b>左</b>時除了 <code class="v">揮動階段</code> 設為 1，再用 <code class="v">揮動時間</code> 記下現在的計時器；
+        超過 <b>2 秒</b>還沒揮到右邊，才把這次揮動作廢。</li>
+      <li><b>揮動階段 ＝ 1 的時候不接受種樹和擋住</b>，這樣弧形揮手掃過「舉高」也不會誤種樹、不會把揮動打斷。</li>
+    </ol>
+    <div class="why"><b class="t">這樣還符合題目規則嗎　</b>符合。撈到垃圾之後 <code class="v">可以觸發</code> 一樣會設回 0，
+      還是要<b>回到預備姿勢</b>才能做下一個動作，同一個動作不會被重複判定。
+      我們只是不讓「揮動途中的一瞬間」被當成另一個動作。</div>
+    <div class="warn"><b class="t">左右門檻也放寬了　</b>手腕 x 的門檻從 ±100 改成 <b>±80</b>，手不必伸到畫面最邊邊。
+      如果教室的攝影機視角比較窄，可以再往下調。</div>
+  </div>
+
   <div class="topic lab">
     <div class="lh"><h3>🚦 預備姿勢模擬器</h3><span class="tag">按按鈕假裝比動作</span></div>
-    <p>試試看：連按兩次「舉高」會怎樣？中間先按一次「預備」又會怎樣？</p>
+    <p>試試看：連按兩次「舉高」會怎樣？中間先按一次「預備」又會怎樣？<br>再試一次「左 → 預備 → 右」和「左 → 舉高 → 右」——<b>都要撈得到</b>，這就是上面那三個保護的效果。</p>
     <div class="btnrow" id="armBtns">
       <button class="btn sm ghost" data-g="預備">🙌 預備（手放低）</button>
       <button class="btn sm ghost" data-g="舉高">☝️ 舉高</button>
@@ -270,6 +299,9 @@
     </div>
     <div class="bscript" data-blk="actBlock" style="margin-top:12px"></div>
     <div class="bscript" data-blk="clamp" style="margin-top:12px"></div>
+    <div class="why"><b class="t">做不到的時候也要回話　</b>撈垃圾如果溪裡已經沒有垃圾，程式什麼都不做，
+      玩家會以為「我的動作沒被認出來」。所以加一個 <code class="m">沒垃圾了</code> 廣播讓青蛙說
+      「溪裡的垃圾都撈乾淨了，謝謝你！」——<b>有回話 ＝ 動作有被認出來</b>，這是除錯時最重要的線索。</div>
     <div class="why"><b class="t">上限一定要給回饋　</b>種樹最多 8 棵（因為樹的位置只排了 8 個）。
       種滿了如果什麼事都沒發生，玩家會以為程式壞了，所以要廣播 <code class="m">樹滿了</code> 讓青蛙說一句
       「樹已經夠多了！看看溪裡還有沒有垃圾。」——把玩家帶去做另一件有用的事。</div>
@@ -435,6 +467,8 @@
       <li><b>只測動作</b>：看畫面下方的牌子，做四個動作，名稱都對嗎？</li>
       <li><b>用鍵盤測故事</b>：↑ 種樹、← 撈垃圾、B 擋住，確認數字和畫面都會變。</li>
       <li><b>三種結局都跑一次</b>：什麼都不做 → 壞結局；只撈垃圾 → 普通；撈垃圾＋種樹＋擋住 → 好結局。</li>
+      <li><b>用三種方式各揮一次</b>：水平直線、揮到一半手往下掉、揮成向上的弧形——<b>三種都要撈得起來</b>，而且弧形那次不可以多種出一棵樹。</li>
+      <li><b>張著手掌揮一次</b>：手掌全開從左揮到右，一樣要撈得起來（牌子要顯示「左」再顯示「右」）。</li>
       <li><b>連玩兩次</b>：兩次的事件回合應該不一樣（偷倒兩個回合、亂丟垃圾一個回合，都不重複）。</li>
       <li><b>種到滿</b>：一直種樹到第 8 棵以後再種，青蛙要說「樹已經夠多了」。</li>
       <li><b>換人玩</b>：請同學來玩，看看他們看不看得懂提示。</li>
@@ -456,6 +490,23 @@
     </table></div>
     <p>改完之後，記得到<a href="doc.html">程式說明文件</a>把數字更新。</p>
   </div>
+  <div class="topic">
+    <h3>🔧 遇到問題先看這裡</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>症狀</th><th>先看什麼</th><th>常見原因</th></tr>
+      <tr><td>垃圾撈不掉</td><td>左上角的 <code class="v">可以觸發</code> 與 <code class="v">揮動階段</code> 監看視窗</td>
+        <td>揮到左邊時 <code class="v">揮動階段</code> 沒有變 1 → 手不夠左（門檻 −80）；變 1 之後又變回 0 → 中途被「預備／舉高」打斷，要做第 4 章的三個保護；
+          <code class="v">可以觸發</code> 一直是 0 → 沒有被判到「預備」，手要放更低一點</td></tr>
+      <tr><td>垃圾越撈越多</td><td>是不是剛好遇到「有人亂丟垃圾」的回合</td>
+        <td>那個回合垃圾會 +2；另外「亂丟垃圾」要用<b>如果否則</b>，寫成兩個「如果」會一次加 3 件</td></tr>
+      <tr><td>做動作完全沒反應</td><td>牌子是不是「看不到手」</td><td>手離開鏡頭、光線太暗，或忘了把攝影機打開</td></tr>
+      <tr><td>一個動作連做好幾次</td><td><code class="v">可以觸發</code> 有沒有在動作後設回 0</td><td>少了回到預備姿勢的旗標（第 4 章）</td></tr>
+      <tr><td>種樹沒反應</td><td>遮蔭是不是已經 8</td><td>種滿了，青蛙會說「樹已經夠多了」</td></tr>
+    </table></div>
+    <p>最快的除錯方法：先用<b>鍵盤</b>（↑ 種樹、← 撈垃圾、B 擋住）測一次。
+      鍵盤有效但手勢沒效 → 問題在<b>動作判斷</b>；鍵盤也沒效 → 問題在<b>舞台的處理程式</b>。</p>
+  </div>
+
   <div class="topic">
     <h3>挑戰任務</h3>
     <div class="cards3">

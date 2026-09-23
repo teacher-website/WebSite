@@ -14,9 +14,9 @@
     function classify(){
       if(pos.y<-40)return ['預備',1];
       if(pos.y>80)return ['舉高',2];
-      if(spread>90)return ['張開',3];
-      if(pos.x<-100)return ['左',4];
-      if(pos.x>100)return ['右',4];
+      if(pos.x<-100)return ['左',3];
+      if(pos.x>100)return ['右',3];
+      if(spread>90)return ['張開',4];   // 手在中間時才看手掌張不張開
       return ['中間',5];
     }
     function paint(){
@@ -35,7 +35,7 @@
       pos.y=Math.max(-175,Math.min(175,180-(ev.clientY-r.top)/r.height*360));
       paint();
     }
-    st.addEventListener('pointerdown',function(ev){drag=true;st.setPointerCapture(ev.pointerId);fromEvent(ev);ev.preventDefault();});
+    st.addEventListener('pointerdown',function(ev){drag=true;try{st.setPointerCapture(ev.pointerId);}catch(e){}fromEvent(ev);ev.preventDefault();});
     st.addEventListener('pointermove',function(ev){if(drag)fromEvent(ev);});
     st.addEventListener('pointerup',function(){drag=false;});
     $('hSpread').addEventListener('input',function(){spread=+this.value;$('hSpreadO').textContent=spread;paint();});
@@ -48,16 +48,17 @@
     b.addEventListener('click',function(){
       var g=b.getAttribute('data-g'),log=$('armLog'),msg,cls='no';
       if(first){log.innerHTML='';first=false;}
-      if(g==='預備'){armed=1;wave=0;msg='看到「預備」：可以觸發 ＝ 1（回到預備姿勢了）';}
+      if(g==='預備'){armed=1;msg='看到「預備」：可以觸發 ＝ 1（回到預備姿勢了）'+(wave===1?'；揮動階段保持 1，揮到一半手掉下來不算失敗':'');}
       else if(g==='無'){msg='看不到手：什麼都不做';}
       else if(armed===0){msg='看到「'+g+'」，但可以觸發 ＝ 0 → 不算（要先回到預備姿勢）';}
-      else if(g==='舉高'){armed=0;cnt++;msg='🌳 種一棵樹！可以觸發 ＝ 0';cls='fire';}
-      else if(g==='張開'){armed=0;cnt++;msg='🖐 擋住廢水！可以觸發 ＝ 0';cls='fire';}
-      else if(g==='左'){wave=1;msg='看到「左」：揮動階段 ＝ 1（等你揮到右邊）';}
+      else if(g==='左'){wave=1;msg='看到「左」：揮動階段 ＝ 1（2 秒內揮到右邊就算數）';}
       else if(g==='右'){
         if(wave===1){armed=0;wave=0;cnt++;msg='🗑️ 撈起一件垃圾！可以觸發 ＝ 0';cls='fire';}
         else msg='看到「右」，但還沒從左邊揮過來 → 不算';
       }
+      else if(wave===1){msg='看到「'+g+'」，但現在正在揮動中（揮動階段 ＝ 1）→ 先不理它，免得打斷揮動';}
+      else if(g==='舉高'){armed=0;cnt++;msg='🌳 種一棵樹！可以觸發 ＝ 0';cls='fire';}
+      else if(g==='張開'){armed=0;cnt++;msg='🖐 擋住廢水！可以觸發 ＝ 0';cls='fire';}
       var d=document.createElement('div');d.className=cls;d.textContent=msg;log.prepend(d);
       $('armGun').textContent='可以觸發 ＝ '+armed;$('armGun').classList.toggle('on',!!armed);
       $('armWave').textContent='揮動階段 ＝ '+wave;$('armWave').classList.toggle('on',!!wave);

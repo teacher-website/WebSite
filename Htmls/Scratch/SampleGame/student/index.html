@@ -3,483 +3,499 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>爆炸頭節奏大師・Handpose2Scratch 製作教學</title>
+<title>部落樂舞・火堆旁的節奏 製作教學</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Nunito:wght@600;700;800&display=swap">
 <link rel="stylesheet" href="assets/style.css">
 <link rel="stylesheet" href="assets/anim.css">
-<link rel="stylesheet" href="assets/game.css">
+<link rel="stylesheet" href="assets/fire.css">
 </head>
 <body>
 <header class="top">
   <div class="in">
-    <div class="brand">🎵 爆炸頭節奏大師 <em>製作教學</em></div>
+    <div class="brand">🔥 部落樂舞 <em>火堆旁的節奏・製作教學</em></div>
     <div class="unitnav" style="margin-left:auto">
-      <a href="play.html">▶ 試玩</a>
-      <a href="#ch9">自我檢核</a>
-      <a href="爆炸頭節奏大師_範例.sb3" download>⬇ 範例 .sb3</a>
+      <a href="doc.html">📄 程式說明文件</a>
+      <a href="#ch8">🎮 試玩台</a>
+      <a href="部落樂舞_火堆旁的節奏.sb3" download>⬇ 範例 .sb3</a>
     </div>
   </div>
 </header>
 
 <div class="wrap">
   <section class="hero">
-    <span class="badge" style="display:inline-block;background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;padding:5px 16px;border-radius:999px;margin-bottom:10px">Handpose2Scratch・節奏遊戲專題</span>
-    <h1>用手勢玩節奏：做一個「爆炸頭節奏大師」</h1>
-    <p>Konami 的街機遊戲 <b>Bishi Bashi Special</b>（Hyper Bishi Bashi）裡有一關叫 <b>Perm Mania</b>：
-      爆炸頭師傅先跳一段節奏，玩家要照著同樣的節奏按按鈕，跟得好，頭髮就「砰」地變得更大。<br>
-      這次我們不用按鈕，改用 <b>Handpose2Scratch</b> 讓攝影機看你的手——<b>比出方向就是出招！</b></p>
-    <div class="warn" style="max-width:48em"><b class="t">開始之前　</b>這份教學會一步一步帶你做。每一步都先說「<b>為什麼要這樣做</b>」，再給積木。
-      建議你照順序做，每做完一步就按綠旗測試一次，不要全部拼完才測。</div>
+    <span class="badge" style="display:inline-block;background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;padding:5px 16px;border-radius:999px;margin-bottom:10px">貓咪盃・國小遊戲 AI 互動組　玩法 1</span>
+    <h1>部落樂舞・火堆旁的節奏</h1>
+    <p>圍著火堆的樂舞場景，用<b>頭部動作</b>演奏：<b>向左轉頭</b>＝低音木鼓、<b>點頭</b>＝竹鐘、<b>向右轉頭</b>＝沙鈴。<br>
+      每做對一個動作，火堆就<b>竄高一截</b>；做錯，火光瞬間暗下來。
+      第一關記住節奏，第二關把節奏<b>越接越長</b>。</p>
+    <div class="warn" style="max-width:48em"><b class="t">這份教學怎麼用　</b>每一章都先說「<b>為什麼要這樣做</b>」，再給積木，中間有可以動手玩的小實驗。
+      第 8 章有一個<b>完整可以玩的試玩台</b>，規則和範例檔一模一樣——先在網頁上玩懂規則，再回 Scratch 拼積木會快很多。
+      卡片上的<b>數值都可以改</b>，但改完要寫進<a href="doc.html">程式說明文件</a>。</div>
   </section>
 
   <div class="layout">
     <nav class="toc" id="toc" aria-label="目錄">
       <h3>目錄</h3>
-      <a href="#ch0">0　遊戲規則</a>
-      <a href="#ch1">1　先規劃再動手</a>
-      <a href="#ch2">2　打開攝影機</a>
-      <a href="#ch3">3　讓電腦看懂手勢</a>
-      <a href="#ch4">4　上膛與出招</a>
-      <a href="#ch5">5　譜面與節拍器</a>
-      <a href="#ch6">6　師傅示範與節拍列</a>
-      <a href="#ch7">7　判定 GOOD／BAD／MISS</a>
-      <a href="#ch8">8　主流程與爆炸頭</a>
-      <a href="#ch9">9　測試、調整與挑戰</a>
+      <a href="#ch0">0　遊戲與題目對照</a>
+      <a href="#ch1">1　流程、角色、變數與清單</a>
+      <a href="#ch2">2　準備與先量自己的數字</a>
+      <a href="#ch3">3　三個頭部動作怎麼判斷</a>
+      <a href="#ch4">4　預備姿勢：不重複判定</a>
+      <a href="#ch5">5　亂數產生節奏</a>
+      <a href="#ch6">6　播放提示與記錄動作</a>
+      <a href="#ch7">7　兩個關卡與計分</a>
+      <a href="#ch8">8　🎮 試玩台與畫面回饋</a>
+      <a href="#ch9">9　測試、挑戰與檢核</a>
+      <a class="sub" href="doc.html">📄 程式說明文件</a>
       <div class="prog">自我檢核進度</div>
       <div class="pbar"><i id="pbar"></i></div>
     </nav>
 
     <main>
-<!-- ================= 0 ================= -->
+<!-- ============ 0 ============ -->
 <section class="chap" id="ch0">
-  <div class="ch"><span class="cn" style="background:#FFD6E3">第 0 章</span><h2>遊戲規則：先看懂再做</h2></div>
-  <p class="lead">做遊戲之前，先把「怎麼玩」說清楚。規則越清楚，程式越好寫。</p>
+  <div class="ch"><span class="cn" style="background:#FFD9B3">第 0 章</span><h2>遊戲與題目對照</h2></div>
+  <p class="lead">先確認：題目要求的每一項，我們的遊戲裡都有。這一頁可以直接抄進說明文件。</p>
 
   <div class="topic">
-    <h3>原版 Perm Mania 怎麼玩？</h3>
-    <p>每一回合分成兩半：先由師傅<b>示範</b>一段節奏，接著玩家<b>照著做</b>。一整段裡最多只能錯一拍，
-      成功就得 1 分、頭髮變大一圈；錯太多就這回合失敗。有攻略作者形容它是整套遊戲裡最難的關卡之一。</p>
-    <div class="rules">
-      <div><b>① 看</b><span>師傅跳 8 拍，有的拍子出招、有的拍子休息</span></div>
-      <div><b>② 倒數</b><span>3、2、1、GO！準備換你</span></div>
-      <div><b>③ 做</b><span>照同樣的節奏、同樣的方向出招</span></div>
-      <div><b>④ 判定</b><span>錯 0～1 次過關，爆炸頭變大；錯 2 次以上失敗</span></div>
+    <h3>三個動作、三種聲音</h3>
+    <div class="cards3">
+      <div><b>🥁 向左轉頭</b><span>低音木鼓（Do 以下的低音）</span></div>
+      <div><b>🎐 點頭</b><span>竹鐘（清脆的高音）</span></div>
+      <div><b>🪘 向右轉頭</b><span>沙鈴（沙沙的雜訊聲）</span></div>
     </div>
+    <p style="margin-top:10px">三個動作<b>分別對應不同的樂器聲音</b>，而且畫面上對應的圖騰柱會亮起來、火堆會竄高一截——
+      這就是題目任務二說的「不同動作對應不同音符、樂器聲音或舞臺動畫」。</p>
   </div>
 
   <div class="topic">
-    <h3>我們的版本：三個出招手勢＋一個預備姿勢</h3>
-    <p>全部都是「<b>只伸出食指，其他手指握起來</b>」，用食指指的方向來分辨。每次出招後，都要<b>握拳回到預備姿勢</b>。</p>
-    <div class="why"><b class="t">比賽規則怎麼說　</b>臺北市貓咪盃初賽題目規定：遊戲至少使用 3 種手部或頭部動作，而且「每個動作之間須能判斷玩家已回到預備姿勢，避免同一動作被重複判定」。
-      所以我們規定<b>每個動作後面都要留一個休息拍</b>，讓玩家有時間握拳；想提高難度，就讓節奏<b>變快</b>，而不是讓動作連在一起。</div>
-    <div class="hands">
-      <figure><img src="assets/img/hand_left.png" alt="食指指向左邊"><b>左</b><small>食指往左指</small></figure>
-      <figure><img src="assets/img/hand_up.png" alt="食指指向上面"><b>上</b><small>食指往上指</small></figure>
-      <figure><img src="assets/img/hand_right.png" alt="食指指向右邊"><b>右</b><small>食指往右指</small></figure>
-      <figure><div class="fistico">✊</div><b>拳（預備）</b><small>五根手指都握起來<br>每次出招後回到這裡</small></figure>
-    </div>
-    <div class="good"><b class="t">先玩玩看　</b>打開 <a href="play.html">試玩頁</a>，用攝影機（或鍵盤 ← ↑ →）玩一次。自己玩過，等一下寫程式時才知道要做出什麼樣子。</div>
-  </div>
-</section>
-
-<!-- ================= 1 ================= -->
-<section class="chap" id="ch1">
-  <div class="ch"><span class="cn" style="background:#FFE7C7">第 1 章</span><h2>先規劃再動手</h2></div>
-  <p class="lead">一個遊戲有很多角色同時在做事。先決定「誰負責什麼」，程式才不會亂成一團。</p>
-
-  <div class="topic">
-    <h3>遊戲流程（每一回合）</h3>
-    <div class="flow2">
-      <div class="st">開場<small>握拳開始</small></div><span class="ar">→</span>
-      <div class="st a">看師傅<small>示範 8 拍</small></div><span class="ar">→</span>
-      <div class="st b">倒數<small>4 拍</small></div><span class="ar">→</span>
-      <div class="st c">玩家<small>跟著打 8 拍</small></div><span class="ar">→</span>
-      <div class="st d">結果<small>過關／失敗</small></div><span class="ar">→ 下一回合（共 5 回合）</span>
-    </div>
-    <p>我們用一個變數 <code class="v">階段</code> 記住「現在進行到哪裡」，它的值會是：待機、示範、倒數、玩家、結果、結束。
-      每個角色都先看 <code class="v">階段</code>，再決定自己要不要動。</p>
-  </div>
-
-  <div class="topic">
-    <h3>角色分工表</h3>
+    <h3>兩個關卡</h3>
     <div class="tblwrap"><table class="tbl">
-      <tr><th>角色</th><th>負責什麼</th><th>造型</th></tr>
-      <tr><td><b>舞台</b></td><td>主流程、節拍器（打拍）、讀取譜面</td><td>舞台背景</td></tr>
-      <tr><td><b>手勢偵測</b></td><td>把 21 個關節點變成「左／上／右／拳」；判斷出招</td><td>無、拳、左、上、右、其他（小牌子）</td></tr>
-      <tr><td><b>師傅</b></td><td>示範階段照譜面出招</td><td>拳、左、上、右</td></tr>
-      <tr><td><b>玩家</b></td><td>跟著你的手勢換造型</td><td>拳、左、上、右</td></tr>
-      <tr><td><b>爆炸頭</b></td><td>戴在玩家頭上，過關就變大</td><td>爆炸頭</td></tr>
-      <tr><td><b>節拍列</b></td><td>用 8 個分身顯示譜面，輪到的那一格放大</td><td>左、上、右、-（三張手勢圖＋休息圓點）</td></tr>
-      <tr><td><b>判定</b></td><td>算 GOOD／BAD／MISS</td><td>GOOD、BAD、MISS</td></tr>
-      <tr><td><b>提示</b></td><td>顯示「看師傅示範」「換你了」「3 2 1 GO」等文字</td><td>標題、看師傅、換你、數3…數0、過關、失敗、結束</td></tr>
+      <tr><th>關卡</th><th>怎麼玩</th><th>通過條件</th></tr>
+      <tr><td><b>第一關<br>節奏記憶</b></td><td>系統用亂數產生 <b>3～5 個</b>動作，依序播放提示，玩家照順序做出來</td><td><b>連續 3 輪完全正確</b></td></tr>
+      <tr><td><b>第二關<br>節奏接龍</b></td><td>系統先給 3 個動作；玩家做對之後，系統<b>在最後面再加一個</b>，序列越接越長</td><td><b>接到 10 個</b>並且做對</td></tr>
     </table></div>
-    <div class="why"><b class="t">小技巧　</b>造型、音效都用「<b>左、上、右</b>」命名，之後就能直接用變數切換：<b>造型換成（手勢）</b>，不用寫一大堆「如果」。</div>
+    <div class="why"><b class="t">第二關為什麼一定要「系統」加　</b>題目寫的是「系統會增加一個新的節奏」。
+      新動作必須用<b>亂數</b>產生，不能改成由同學出題，否則就不符合第二關的定義了。</div>
   </div>
 
   <div class="topic">
-    <h3>要準備的變數、清單、廣播</h3>
+    <h3>計分、難度與結束</h3>
     <div class="tblwrap"><table class="tbl">
-      <tr><th>種類</th><th>名稱</th><th>用途</th></tr>
-      <tr><td>手勢</td><td><code class="v">手勢</code> <code class="v">上膛</code> <code class="v">出招方向</code> <code class="v">手掌</code> <code class="v">食指長</code> <code class="v">中指長</code> <code class="v">dx</code> <code class="v">dy</code> <code class="v">門檻</code></td><td>第 3、4 章</td></tr>
-      <tr><td>節奏</td><td><code class="v">譜面</code> <code class="v">i</code> <code class="v">拍長</code> <code class="v">起始拍長</code> <code class="v">加速</code> <code class="v">開始時間</code> <code class="v">目前拍</code></td><td>第 5、8 章</td></tr>
-      <tr><td>判定</td><td><code class="v">下一個</code> <code class="v">錯誤</code> <code class="v">容許</code> <code class="v">延遲補償</code> <code class="v">出招時間</code> <code class="v">判定</code></td><td>第 7 章</td></tr>
-      <tr><td>流程</td><td><code class="v">階段</code> <code class="v">回合</code> <code class="v">分數</code></td><td>第 8 章</td></tr>
-      <tr><td>清單</td><td><code class="l">譜面清單</code> <code class="l">音符拍</code> <code class="l">音符方向</code></td><td>第 5 章</td></tr>
-      <tr><td>只屬於「節拍列」</td><td><code class="v">我的拍</code>（建立時選「僅適用當前角色」）</td><td>第 6 章</td></tr>
-      <tr><td>廣播</td><td><code class="m">開場</code> <code class="m">看師傅</code> <code class="m">換你</code> <code class="m">拍</code> <code class="m">出招</code> <code class="m">顯示判定</code> <code class="m">過關</code> <code class="m">失敗</code> <code class="m">遊戲結束</code></td><td>各章</td></tr>
+      <tr><th>項目</th><th>規則</th></tr>
+      <tr><td>每輪得分</td><td><b>10 × 動作數</b>（第二關越接越長，分數自然越來越高）</td></tr>
+      <tr><td>連續正確加分</td><td>連續 <b>3 輪</b>不出錯 → 進入「<b>火光全開</b>」狀態，該輪分數 <b>×2</b></td></tr>
+      <tr><td>做錯</td><td>扣一把<b>火把</b>（共 3 把），該輪重新挑戰</td></tr>
+      <tr><td>難度遞增</td><td>每答對一輪，提示間隔<b>縮短 40 毫秒</b>，下限 <b>250 毫秒</b></td></tr>
+      <tr><td>遊戲結束</td><td>火把歸零 → 遊戲結束；第二關接到 10 個並做對 → <b>挑戰成功</b></td></tr>
+    </table></div>
+  </div>
+
+  <div class="topic">
+    <h3>逐條對照題目</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>題目任務</th><th>我們的做法</th></tr>
+      <tr><td>一、至少 3 種手部或頭部動作，動作之間要能判斷已回到預備姿勢</td><td>三種頭部動作；<b>臉朝正前方＝預備姿勢</b>，用 <code class="v">可以觸發</code> 旗標（第 4 章）</td></tr>
+      <tr><td>二、不同動作對應不同音符／樂器／動畫</td><td>木鼓、竹鐘、沙鈴三種聲音＋圖騰柱亮起＋火堆竄高</td></tr>
+      <tr><td>三、至少兩個關卡，自訂通過與結束條件</td><td>節奏記憶（連續 3 輪全對）、節奏接龍（接到 10 個）；火把歸零結束</td></tr>
+      <tr><td>四、每輪得分，連續正確加分，錯誤重來或扣分</td><td>10 × 動作數；連續 3 輪 ×2；做錯扣一把火把並重新挑戰該輪</td></tr>
+      <tr><td>五、隨關卡增加難度</td><td>提示間隔每輪 −40 毫秒（下限 250 毫秒）＋ 第二關序列越來越長</td></tr>
+      <tr><td>程式說明文件</td><td>見 <a href="doc.html">程式說明文件</a>（可填寫、可列印）</td></tr>
     </table></div>
   </div>
 
   <div class="dlcard">
-    <div class="ic">📦</div>
-    <div><b>完成版範例：爆炸頭節奏大師_範例.sb3</b><small>所有角色、造型、音效與程式都做好了，程式旁邊附有中文註解。卡住時可以打開對照。<br>請用 stretch3 開啟（檔案 → 從你的電腦挑選）。</small></div>
-    <a class="btn" href="爆炸頭節奏大師_範例.sb3" download>下載範例</a>
+    <div class="ic">🔥</div>
+    <div><b>完成版範例：部落樂舞_火堆旁的節奏.sb3</b><small>所有角色、造型、音效與程式都做好了，重要的程式旁邊都有中文註解。<br>請用 stretch3.github.io 開啟（檔案 → 從你的電腦挑選），並加入 <b>Facemesh2Scratch</b> 擴充功能。</small></div>
+    <a class="btn" href="部落樂舞_火堆旁的節奏.sb3" download>下載範例</a>
   </div>
 </section>
 
-<!-- ================= 2 ================= -->
-<section class="chap" id="ch2">
-  <div class="ch"><span class="cn" style="background:#D6F5E8">第 2 章</span><h2>打開攝影機，確認看得到手</h2></div>
-  <p class="lead">這一步和之前 Handpose2Scratch 課一樣，但多做一個重要的測試：<b>左右方向對不對</b>。</p>
+<!-- ============ 1 ============ -->
+<section class="chap" id="ch1">
+  <div class="ch"><span class="cn" style="background:#FFE7C7">第 1 章</span><h2>流程、角色、變數與清單</h2></div>
 
   <div class="topic">
-    <h3>① 開啟環境</h3>
-    <ol>
-      <li>用 <b>Chrome</b> 打開 <b>stretch3.github.io</b>（不是 Scratch 官網）。</li>
-      <li>左下角「添加擴展」→ 選有一隻手的 <b>Handpose2Scratch</b>，等它載入。</li>
-      <li>瀏覽器問能不能用攝影機 → 按「<b>允許</b>」。</li>
-    </ol>
-  </div>
-
-  <div class="topic">
-    <h3>② 方向測試：你往右指，dx 要是正的</h3>
-    <p>在舞台拼下面這段，按綠旗，把食指往<b>你的右手邊</b>指。角色說出的數字應該是<b>正數</b>；往左指是<b>負數</b>。</p>
-    <div class="bscript" data-blk="setupTest"></div>
-    <div class="warn"><b class="t">如果剛好相反　</b>把「將攝影機（開啟）」的選單換成另一個「開啟」選項（有的版本叫「鏡像開啟」或「左右反轉」），再測一次，直到往右指是正數為止。
-      後面所有判斷都以「往右＝dx 為正」為準。</div>
-    <div class="why"><b class="t">為什麼 dx 會是正的？　</b><b>dx ＝ 食指尖 x － 食指第三關節 x</b>。食指往右指時，指尖在指根的右邊，x 比較大，相減就是正數。往上指時換成看 <b>dy</b>。</div>
-  </div>
-</section>
-
-<!-- ================= 3 ================= -->
-<section class="chap" id="ch3">
-  <div class="ch"><span class="cn" style="background:#E3DBFF">第 3 章</span><h2>讓電腦看懂手勢</h2></div>
-  <p class="lead">Handpose2Scratch 只會告訴我們 21 個點的座標。我們要自己寫規則，把座標變成「左、上、右、拳」。</p>
-
-  <div class="topic">
-    <h3>想法：用手掌當尺</h3>
-    <p>手離鏡頭近，所有距離都變大；離得遠，全部變小。所以不能寫「食指長超過 50 就是伸直」。
-      我們改用「<b>比例</b>」：先量 <b>手腕(1) 到 中指第三關節(10)</b> 的距離當作 <code class="v">手掌</code>（一把尺），再拿手指長度跟它比。</p>
-    <ul>
-      <li><b>食指長</b>＝ 食指第三關節(6) 到 食指尖(9) 的距離</li>
-      <li><b>中指長</b>＝ 中指第三關節(10) 到 中指尖(13) 的距離</li>
-      <li>手指長度 &gt; 手掌 × <code class="v">門檻</code>（0.6）→ 這根手指是<b>伸直</b>的</li>
-    </ul>
-    <p>兩點距離用數學課的公式：<b>√（x 差 × x 差 ＋ y 差 × y 差）</b>，在 Scratch 裡是「平方根 數值」：</p>
-    <div class="bscript" data-blk="palm"></div>
-  </div>
-
-  <div class="topic lab" id="lab-g">
-    <div class="lh"><h3>🔬 手勢判斷實驗室</h3><span class="tag">拖曳黃色的點</span></div>
-    <p>拖曳<b>食指尖(9)</b>和<b>中指尖(13)</b>，或按下面的按鈕，看看電腦的判斷過程。數字都是舞台座標。</p>
-    <div class="glab">
-      <svg id="gsvg" viewBox="-150 -150 300 300" role="img" aria-label="手部關節點示意圖，可拖曳食指尖與中指尖"></svg>
-      <div>
-        <div class="readout2">
-          <div><div class="k">手掌（尺）</div><div class="v" id="gPalm">-</div></div>
-          <div><div class="k">食指長</div><div class="v" id="gIdx">-</div></div>
-          <div><div class="k">中指長</div><div class="v" id="gMid">-</div></div>
-          <div><div class="k">手掌 × 門檻</div><div class="v" id="gTh">-</div></div>
-          <div><div class="k">dx</div><div class="v" id="gDx">-</div></div>
-          <div><div class="k">dy</div><div class="v" id="gDy">-</div></div>
-        </div>
-        <ul class="steps3" id="gSteps">
-          <li data-s="1">① 中指長 &gt; 手掌×門檻？→ 是：<b>其他</b>（手張開）</li>
-          <li data-s="2">② 食指長 &lt; 手掌×門檻？→ 是：<b>拳</b></li>
-          <li data-s="3">③ |dx| &gt; |dy|？→ 是：dx&gt;0 <b>右</b>，否則 <b>左</b></li>
-          <li data-s="4">④ 否則：dy&gt;0 <b>上</b>，否則 <b>其他</b>（往下指）</li>
-        </ul>
-        <div class="bigres">判斷結果：<span id="gRes">-</span></div>
-        <div class="ctrl"><label>門檻 <input type="range" id="gThr" min="0.3" max="0.9" step="0.05" value="0.6"> <output id="gThrO">0.6</output></label></div>
-        <div class="btnrow">
-          <button class="btn sm ghost" data-pose="fist">✊ 拳</button>
-          <button class="btn sm ghost" data-pose="left">👈 左</button>
-          <button class="btn sm ghost" data-pose="up">☝️ 上</button>
-          <button class="btn sm ghost" data-pose="right">👉 右</button>
-          <button class="btn sm ghost" data-pose="open">🖐 張開</button>
-        </div>
-      </div>
+    <h3>一輪的流程</h3>
+    <div class="flow2">
+      <div class="st">出題<small>亂數產生節奏</small></div><span class="ar">→</span>
+      <div class="st a">播放提示<small>樂器依序亮起</small></div><span class="ar">→</span>
+      <div class="st b">等待玩家<small>一個一個比對</small></div><span class="ar">→</span>
+      <div class="st c">結算<small>加分或扣火把</small></div><span class="ar">→</span>
+      <div class="st d">下一輪<small>或過關／結束</small></div>
     </div>
+    <p>用變數 <code class="v">階段</code> 記住現在是「開場、提示、等待、結果、結束」，
+      動作偵測的角色就知道<b>現在做的動作算不算數</b>。</p>
   </div>
 
   <div class="topic">
-    <h3>把規則寫成積木：定義「辨識手勢」</h3>
-    <p>新增角色「<b>手勢偵測</b>」，在「函式積木」建立一個積木叫 <b>辨識手勢</b>，並勾選「<b>執行時不重新整理畫面</b>」，讓它一瞬間算完。</p>
-    <div class="bscript" data-blk="classify"></div>
-    <div class="why"><b class="t">判斷的順序很重要　</b>先排除「手張開」，再判斷「拳」，最後才看方向。如果先看方向，手張開時也會被當成出招。</div>
-    <div class="warn"><b class="t">手掌那一行的真正寫法　</b>為了版面，上面把距離公式簡寫成「平方根 ( 手腕 ↔ 中指第三關節 )」。實際要照上一段「手掌」那塊完整的積木拼，食指長、中指長也一樣，只要把編號換成 6、9 和 10、13。</div>
-  </div>
-</section>
-
-<!-- ================= 4 ================= -->
-<section class="chap" id="ch4">
-  <div class="ch"><span class="cn" style="background:#FFE3C2">第 4 章</span><h2>上膛與出招：一次動作只算一次</h2></div>
-  <p class="lead">電腦每秒會判斷很多次手勢。如果手一直指著左邊，它會以為你出招了好幾十次！</p>
-
-  <div class="topic">
-    <h3>想法：像水槍一樣，要先「裝水」才能「射」</h3>
-    <ul>
-      <li>看到<b>拳</b> → <code class="v">上膛</code> 設為 1（裝好了）</li>
-      <li>已經上膛，又看到<b>左／上／右</b> → 出招一次，<code class="v">上膛</code> 設回 0</li>
-      <li>手一直指著同一邊 → 上膛是 0，<b>不會重複出招</b>，要先握拳才能再出招</li>
-    </ul>
-    <p>這剛好就是我們規則裡「每次出招後握拳回到預備姿勢」。</p>
-  </div>
-
-  <div class="topic lab">
-    <div class="lh"><h3>🔫 上膛模擬器</h3><span class="tag">按按鈕假裝比手勢</span></div>
-    <p>試試看：連按兩次「左」會怎樣？先按「拳」再按「左」又會怎樣？</p>
-    <div class="btnrow" id="armBtns">
-      <button class="btn sm ghost" data-g="拳">✊ 拳</button>
-      <button class="btn sm ghost" data-g="左">👈 左</button>
-      <button class="btn sm ghost" data-g="上">☝️ 上</button>
-      <button class="btn sm ghost" data-g="右">👉 右</button>
-      <button class="btn sm ghost" data-g="其他">🖐 張開</button>
-      <button class="btn sm ghost" data-g="無">🙈 手離開</button>
-    </div>
-    <p style="margin-top:10px"><span class="gun" id="armGun">上膛 ＝ 0</span>　出招次數：<b id="armCnt">0</b></p>
-    <div class="armlog" id="armLog"><div class="no">（還沒有動作）</div></div>
-  </div>
-
-  <div class="topic">
-    <h3>積木：手勢偵測的主程式</h3>
-    <div class="bscript" data-blk="detectLoop"></div>
-    <p>再做三組鍵盤出招，<b>沒有攝影機也能測試</b>，後面寫節奏和判定時會非常好用：</p>
-    <div class="bscript" data-blk="keys"></div>
-    <div class="why"><b class="t">為什麼用廣播？　</b>出招是一瞬間的「事件」。用 <code class="m">出招</code> 廣播，玩家角色（發出聲音）和判定角色（算分數）可以同時收到，各做各的事。</div>
-  </div>
-</section>
-
-<!-- ================= 5 ================= -->
-<section class="chap" id="ch5">
-  <div class="ch"><span class="cn" style="background:#D8ECFF">第 5 章</span><h2>譜面與節拍器</h2></div>
-  <p class="lead">節奏遊戲的核心是「時間」。這一章要做兩件事：把譜面寫下來，並做一個準確的節拍器。</p>
-
-  <div class="topic">
-    <h3>譜面用一串字表示</h3>
-    <p>每一個字代表一拍，共 8 拍：<b>左、上、右</b>是出招，<b>-</b> 是休息。例如 <b>「左-右-左-右-」</b>就是第 1、3、5、7 拍出招。</p>
-    <div class="warn"><b class="t">出題規則：動作後面一定要接「-」　</b>像「左右-上-…」這種兩個動作連在一起的譜面，玩家必須在一拍之內「指左 → 握拳 → 指右」，
-      攝影機常常來不及看到中間的握拳，第二個動作就會變成 MISS。所以每個動作後面都要留一個休息拍，讓玩家回到預備姿勢。</div>
-    <div class="bscript" data-blk="songs"></div>
-  </div>
-
-  <div class="topic">
-    <h3>讀取譜面：把字拆成兩張清單</h3>
-    <p>判定時我們需要知道「第幾個音符在第幾拍、要比什麼方向」。所以先把譜面拆開，存進 <code class="l">音符拍</code> 和 <code class="l">音符方向</code>。</p>
-    <div class="bscript" data-blk="readPattern"></div>
-    <div class="tblwrap"><table class="tbl" style="max-width:420px">
-      <tr><th>譜面「上-上-左-右-」</th><th>音符拍</th><th>音符方向</th></tr>
-      <tr><td>第 1 個音符</td><td>1</td><td>上</td></tr>
-      <tr><td>第 2 個音符</td><td>3</td><td>上</td></tr>
-      <tr><td>第 3 個音符</td><td>5</td><td>左</td></tr>
-      <tr><td>第 4 個音符</td><td>7</td><td>右</td></tr>
+    <h3>角色分工</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>角色</th><th>負責什麼</th></tr>
+      <tr><td><b>舞台</b></td><td>主流程、出題、播放提示、等待玩家、計分與關卡判斷</td></tr>
+      <tr><td><b>動作牌</b></td><td>把臉部座標變成「預備／左／點頭／右」，並把動作送出去；也負責鍵盤測試</td></tr>
+      <tr><td><b>木鼓・竹鐘・沙鈴</b></td><td>被點到時亮起、發出自己的聲音（三個角色程式一模一樣，只差編號）</td></tr>
+      <tr><td><b>火堆</b></td><td>依 <code class="v">火高</code> 換造型；做對竄高一截，做錯瞬間變暗</td></tr>
+      <tr><td><b>音樂精靈</b></td><td>開場說明、答對答錯的台詞、過關與結束的台詞</td></tr>
+      <tr><td><b>火把</b></td><td>3 個分身＝3 條命，依 <code class="v">命</code> 換成亮／滅</td></tr>
+      <tr><td><b>字卡</b></td><td>關卡卡、看好囉、換你做、答對、火光全開、答錯、通關、結束</td></tr>
     </table></div>
   </div>
 
   <div class="topic">
-    <h3>節拍器：用計時器對拍</h3>
-    <div class="two">
-      <div class="pane bad"><h4>✗ 用「等待」數拍子</h4><div class="bscript" data-blk="beatBad"></div>
-        <p style="font-size:.88rem">每次廣播、執行都會花一點點時間，8 拍下來會越拖越慢，和判定的時間對不上。</p></div>
-      <div class="pane ok"><h4>✓ 用「計時器」對拍</h4>
-        <p style="font-size:.88rem">先記下 <code class="v">開始時間</code>，第 n 拍一定在「開始時間＋(n−1)×拍長」。就算中間慢了一點，下一拍也會自動對回來。</p></div>
-    </div>
-    <p>在舞台建立函式積木 <b>打拍（拍數）</b>——要新增一個數字參數「拍數」，因為示範要打 8 拍、倒數只打 4 拍：</p>
-    <div class="bscript" data-blk="beat"></div>
-    <div class="bscript" data-blk="tick" style="margin-top:10px"></div>
-    <div class="warn"><b class="t">為什麼先「改變 1」再廣播？　</b>廣播出去後，收到訊息的角色要等一下才會開始執行。如果先廣播才加 1，它們讀到的 <code class="v">目前拍</code> 已經是下一拍了。</div>
+    <h3>變數與清單</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>名稱</th><th>一開始</th><th>意思</th></tr>
+      <tr><td><code class="l">節奏</code>（清單）</td><td>空的</td><td><b>這一輪要做的動作順序</b>，每一項是 1／2／3</td></tr>
+      <tr><td><code class="l">玩家動作</code>（清單）</td><td>空的</td><td>玩家實際做出來的順序，用來和上面比對</td></tr>
+      <tr><td><code class="v">關卡</code> <code class="v">分數</code> <code class="v">命</code></td><td>1／0／3</td><td>關卡與計分</td></tr>
+      <tr><td><code class="v">連續正確</code> <code class="v">火光全開</code></td><td>0／0</td><td>連續幾輪沒出錯；連續 3 輪 → 火光全開，該輪 ×2</td></tr>
+      <tr><td><code class="v">節奏長度</code> <code class="v">播放第幾個</code> <code class="v">玩家第幾個</code></td><td>0</td><td>清單有幾項、現在播到第幾項、玩家做到第幾個</td></tr>
+      <tr><td><code class="v">提示間隔</code></td><td>0.9</td><td>提示亮多久（秒），每答對一輪 −0.04，下限 0.25</td></tr>
+      <tr><td><code class="v">階段</code> <code class="v">動作</code> <code class="v">可以觸發</code></td><td>開場／無／0</td><td>流程控制與動作判定</td></tr>
+      <tr><td><code class="v">玩家答案</code> <code class="v">這次動作</code> <code class="v">這輪正確</code></td><td>0／0／1</td><td>剛做的動作（第 6 章有一個很重要的坑）</td></tr>
+      <tr><td><code class="v">轉頭比</code> <code class="v">點頭比</code> <code class="v">臉寬</code> <code class="v">臉高</code></td><td>0</td><td>臉部計算過程，方便現場除錯</td></tr>
+      <tr><td><code class="v">轉頭門檻</code> <code class="v">點頭門檻</code></td><td>18／8</td><td><b>做成變數</b>，到比賽現場可以立刻調</td></tr>
+      <tr><td><code class="v">我的編號</code>（僅適用當前角色）</td><td>1／2／3</td><td>三個樂器各自記住自己是第幾號</td></tr>
+    </table></div>
+    <div class="why"><b class="t">為什麼用清單不用一堆變數　</b>節奏會越接越長（最多 10 個），如果用 <code class="v">第1個</code>～<code class="v">第10個</code> 十個變數，
+      程式會又臭又長。<b>清單就是一排可以隨時加長的格子</b>，「第 n 項」正好對應「第 n 個動作」。</div>
   </div>
 </section>
 
-<!-- ================= 6 ================= -->
-<section class="chap" id="ch6">
-  <div class="ch"><span class="cn" style="background:#F3DBFF">第 6 章</span><h2>師傅示範與節拍列</h2></div>
-  <p class="lead">每一拍廣播 <code class="m">拍</code> 時，師傅和節拍列各自決定要做什麼。</p>
+<!-- ============ 2 ============ -->
+<section class="chap" id="ch2">
+  <div class="ch"><span class="cn" style="background:#D6F5E8">第 2 章</span><h2>準備與先量自己的數字</h2></div>
 
   <div class="topic">
-    <h3>師傅：照譜面出招</h3>
-    <div class="bscript" data-blk="master"></div>
-    <div class="why"><b class="t">一行搞定換造型　</b>因為造型名稱就是「左、上、右」，所以「造型換成（譜面的第 目前拍 字）」就能直接換對。音效也是一樣的道理。</div>
+    <h3>① 開啟環境</h3>
+    <ol>
+      <li>用 Chrome 開 <b>stretch3.github.io</b>（不是 Scratch 官網）。</li>
+      <li>左下角「加入擴充功能」→ 選 <b>Facemesh2Scratch</b>，允許使用攝影機。</li>
+      <li>臉部偵測比手部吃資源，<b>關掉其他分頁</b>會順很多。</li>
+    </ol>
+    <div class="warn"><b class="t">臉部資料是生物特徵　</b>模型在自己的電腦上跑、影像不會上傳，但還是<b>不要錄影或截圖同學的臉</b>，
+      課堂上也請依學校規定處理。</div>
   </div>
 
   <div class="topic">
-    <h3>節拍列：用分身排出 8 格</h3>
-    <p>節拍列的造型用第 0 章那三張手勢圖（左、上、右），再加一個小圓點「-」代表休息。</p>
-    <div class="two">
-      <div class="pane"><h4>本體：做 8 個分身</h4><div class="bscript" data-blk="rowMain"></div></div>
-      <div class="pane"><h4>分身：排好位置、換成譜面</h4><div class="bscript" data-blk="rowClone"></div></div>
-    </div>
-    <div class="bscript" data-blk="rowBeat" style="margin-top:12px"></div>
-    <div class="why"><b class="t">x 座標怎麼算？　</b>我的拍 × 55 − 247.5：第 1 格在 −192.5，第 8 格在 192.5，剛好左右對稱排在舞台上方。</div>
+    <h3>② Facemesh2Scratch 的積木</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>積木</th><th>回傳</th><th>本專案用到的部位</th></tr>
+      <tr><td>第 (1) 人的 (部位) 的 x 座標</td><td>約 −240～240，<b>偵測不到時是空白</b></td><td>鼻尖 (2)、臉部左緣 (455)、臉部右緣 (235)</td></tr>
+      <tr><td>第 (1) 人的 (部位) 的 y 座標</td><td>約 −180～180</td><td>鼻尖 (2)、額頭頂端 (11)、下巴 (153)</td></tr>
+      <tr><td><b>人數</b></td><td>現在看到幾張臉</td><td><b>最重要的守門積木</b></td></tr>
+    </table></div>
+    <div class="warn"><b class="t">一定要先看「人數」　</b>臉離開鏡頭時，座標積木回傳的是<b>空白</b>，不是 0。
+      直接拿空白去做加減乘除，Scratch 會當成 0，結果就會亂跳。所以所有判斷都要包在「<b>如果 人數 &gt; 0</b>」裡面。</div>
+  </div>
+
+  <div class="topic">
+    <h3>③ 先量自己的數字（這一步不能跳過）</h3>
+    <p>每個人的臉型、座位高度、攝影機角度都不一樣。先用下面這段程式，把頭轉左右看看 <code class="v">轉頭比</code> 會跑到多少，
+      再決定 <code class="v">轉頭門檻</code> 要設多少。</p>
+    <div class="bscript" data-blk="setupTest"></div>
   </div>
 </section>
 
-<!-- ================= 7 ================= -->
-<section class="chap" id="ch7">
-  <div class="ch"><span class="cn" style="background:#D6F5E8">第 7 章</span><h2>判定：GOOD、BAD、MISS</h2></div>
-  <p class="lead">這是整個遊戲最需要動腦的地方：怎麼知道玩家「有沒有跟上拍子」？</p>
+<!-- ============ 3 ============ -->
+<section class="chap" id="ch3">
+  <div class="ch"><span class="cn" style="background:#E3DBFF">第 3 章</span><h2>三個頭部動作怎麼判斷</h2></div>
+  <p class="lead">AI 只給我們 468 個點的座標，「看懂動作」的規則要自己寫。這裡只用<b>加減乘除和比大小</b>。</p>
 
   <div class="topic">
-    <h3>想法：每個音符都有一個「可以出招的時間窗」</h3>
+    <h3>想法：用「比例」，不要用座標</h3>
+    <p>如果直接看「鼻尖的 x 座標」，坐近一點、坐偏一點，數字就全變了。改成問這句話就穩很多：</p>
+    <div class="why" style="font-size:1.02rem">
+      <b>轉頭比 ＝（鼻尖x − 臉中心x）÷ 臉寬 × 100</b><br>
+      白話：<b>鼻尖偏離臉的中線，偏了「臉寬的百分之幾」</b>。<br>
+      臉轉到左邊 → 鼻尖跑到臉的左半邊 → 這個數字變成負的；轉到右邊 → 變成正的。
+    </div>
+    <div class="why">
+      <b>點頭比 ＝（臉中心y − 鼻尖y）÷ 臉高 × 100</b><br>
+      白話：低頭的時候，<b>鼻尖會跑到「額頭與下巴的中點」下面</b>，這個數字就會變大。
+    </div>
+    <p>因為上下都除以臉的大小，<b>坐遠坐近都不用重調門檻</b>——這就是「比例」在這裡真正的用處。</p>
+  </div>
+
+  <div class="topic lab" id="lab-face">
+    <div class="lh"><h3>🔬 頭部動作實驗室</h3><span class="tag">拉拉看</span></div>
+    <p>拉下面兩條軸，看看電腦會判斷成哪一個動作。也可以把<b>門檻</b>調大調小，感覺一下「太敏感」和「太遲鈍」的差別。</p>
+    <div class="hlab">
+      <div class="facestage" id="fStage"><div class="lab" id="fLab">預備</div></div>
+      <div>
+        <div class="readout2">
+          <div><div class="k">轉頭比</div><div class="v" id="fTurn">0</div></div>
+          <div><div class="k">點頭比</div><div class="v" id="fNod">0</div></div>
+        </div>
+        <div class="ctrl"><label>把頭轉左右
+          <input type="range" id="fYaw" min="-100" max="100" step="5" value="0"> <output id="fYawO">0</output></label></div>
+        <div class="ctrl"><label>把頭上下點
+          <input type="range" id="fPitch" min="-60" max="100" step="5" value="0"> <output id="fPitchO">0</output></label></div>
+        <div class="ctrl"><label>轉頭門檻
+          <input type="range" id="fTh" min="6" max="34" step="1" value="18"> <output id="fThO">18</output></label></div>
+        <div class="ctrl"><label>點頭門檻
+          <input type="range" id="fThN" min="3" max="24" step="1" value="8"> <output id="fThNO">8</output></label></div>
+        <ul class="steps3" id="fSteps">
+          <li data-s="1">① 轉頭比 &lt; −門檻 → <b>向左轉頭</b>（木鼓）</li>
+          <li data-s="2">② 轉頭比 &gt; 門檻 → <b>向右轉頭</b>（沙鈴）</li>
+          <li data-s="3">③ 以上都不是，點頭比 &gt; 門檻 → <b>點頭</b>（竹鐘）</li>
+          <li data-s="4">④ 其他 → <b>預備</b>（臉朝正前方）</li>
+        </ul>
+        <div class="bigres">判斷結果：<span id="fRes">預備（臉朝正前方）</span></div>
+      </div>
+    </div>
+    <div class="why"><b class="t">判斷順序為什麼是「先左右、再點頭」　</b>轉頭的時候，臉會變扁，點頭比也可能跟著變動。
+      先把「有沒有轉頭」判掉，剩下<b>臉在正中間</b>的情況再問「有沒有低頭」，兩個動作才不會互相干擾。</div>
+  </div>
+
+  <div class="topic">
+    <h3>積木：定義「辨識動作」</h3>
+    <div class="bscript" data-blk="classify"></div>
+    <div class="warn"><b class="t">兩個保護不能少　</b>① 最外面「<b>如果 人數 &gt; 0</b>」——偵測不到臉時座標是空白。
+      ② 裡面「<b>如果 臉寬 &gt; 10</b>」——臉太小或抓錯時，臉寬可能接近 0，<b>除以 0 會出事</b>。</div>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="chap" id="ch4">
+  <div class="ch"><span class="cn" style="background:#FFE3C2">第 4 章</span><h2>預備姿勢：避免同一個動作被重複判定</h2></div>
+  <p class="lead">這是題目<b>明文要求</b>的事。電腦每秒判斷 30 次，頭轉著不動就會連續送出幾十個動作。</p>
+
+  <div class="topic">
+    <h3>做法：用一個旗標變數 <code class="v">可以觸發</code></h3>
     <ul>
-      <li>第 k 個音符的時間 ＝（音符拍 − 1）× 拍長</li>
-      <li>出招時間離音符時間 <b>小於 <code class="v">容許</code></b>（0.3 秒）→ 有對到拍子。方向對 <b>GOOD</b>、方向錯 <b>BAD</b></li>
-      <li>在兩個音符中間亂出招 → <b>BAD</b></li>
-      <li>時間窗都過了還沒出招 → <b>MISS</b></li>
+      <li>看到<b>預備</b>（臉朝正前方）→ <code class="v">可以觸發</code> 設為 1</li>
+      <li>做出任何一個動作 → <code class="v">可以觸發</code> 立刻設為 0</li>
+      <li>所以頭一直轉著也只算一次，<b>要把臉轉回正前方</b>才能做下一個動作</li>
     </ul>
-    <p><code class="v">下一個</code> 記住「現在輪到第幾個音符」，判定完就加 1。</p>
-    <div class="why"><b class="t">延遲補償是什麼？　</b>攝影機拍到、AI 算出手勢，大約要 0.1～0.2 秒。所以把出招時間減掉 <code class="v">延遲補償</code>（0.15 秒），才是你真正動手的時間。用鍵盤玩時可以改成 0。</div>
-  </div>
-
-  <div class="topic lab" id="lab-r">
-    <div class="lh"><h3>🥁 節奏判定實驗室</h3><span class="tag">用鍵盤 ← ↑ → 或下方按鈕</span></div>
-    <p>點格子可以改譜面（- → 左 → 上 → 右）。按「開始」後：先聽 8 拍示範，倒數 4 拍，再換你打。下方時間軸的綠色區塊就是「時間窗」。</p>
-    <div class="slots" id="rSlots"></div>
-    <p class="savenote" id="rRule"></p>
-    <div class="ctrl">
-      <label>拍長 <input type="range" id="rBeat" min="0.4" max="1.2" step="0.05" value="0.8"> <output id="rBeatO">0.8</output> 秒</label>
-      <label>容許 <input type="range" id="rTol" min="0.1" max="0.4" step="0.05" value="0.3"> <output id="rTolO">0.3</output> 秒</label>
-    </div>
-    <div class="rhy-status">
-      <button class="btn" id="rStart">▶ 開始</button>
-      <span class="big" id="rPhase">待機</span>
-      <span class="judge" id="rJudge"></span>
-      <span>錯誤：<b id="rErr">0</b></span>
-    </div>
-    <div class="tline2" id="rLine"></div>
-    <div class="padbtns">
-      <button class="btn ghost" data-d="左">←</button>
-      <button class="btn ghost" data-d="上">↑</button>
-      <button class="btn ghost" data-d="右">→</button>
-    </div>
-  </div>
-
-  <div class="topic">
-    <h3>積木：判定角色</h3>
-    <p><b>① 收到出招時</b></p>
-    <div class="bscript" data-blk="judgeHit"></div>
-    <p style="margin-top:12px"><b>② 一直檢查有沒有漏拍</b></p>
-    <div class="bscript" data-blk="judgeMiss"></div>
-    <p style="margin-top:12px"><b>③ 把判定顯示出來</b></p>
-    <div class="bscript" data-blk="judgeShow"></div>
-    <div class="warn"><b class="t">「下一個 &lt; 長度＋1」是什麼意思？　</b>就是「下一個 ≤ 音符總數」，也就是「還有音符沒判定」。Scratch 沒有「≤」積木，所以用「&lt; 長度＋1」代替。</div>
+    <div class="why"><b class="t">這個遊戲特別需要它　</b>節奏接龍常常要連做同一個動作兩次（例如「木鼓、木鼓」）。
+      有了預備姿勢，<b>「連做兩次」和「一次拖很久」才分得出來</b>。</div>
+    <div class="bscript" data-blk="detectLoop"></div>
+    <p>送出動作的自訂積木（用一個參數就能處理三個動作）：</p>
+    <div class="bscript" data-blk="sendAction"></div>
+    <p>再做三組鍵盤觸發，沒有攝影機時也能測試整個遊戲流程：</p>
+    <div class="bscript" data-blk="keys"></div>
+    <div class="warn"><b class="t">除錯的第一招　</b>先用鍵盤（← ↓ →）玩一次。
+      <b>鍵盤有效但頭部動作沒效 → 問題在動作判定</b>；<b>鍵盤也沒效 → 問題在遊戲流程</b>。這一招可以省下很多時間。</div>
   </div>
 </section>
 
-<!-- ================= 8 ================= -->
-<section class="chap" id="ch8">
-  <div class="ch"><span class="cn" style="background:#FFD6E3">第 8 章</span><h2>主流程與爆炸頭</h2></div>
-  <p class="lead">最後把所有零件串起來。主流程放在舞台，照第 1 章的流程圖一步一步走。<br>
-      難度怎麼增加？每一關的譜面都有休息拍，所以改成讓<b>拍長一關比一關短</b>：拍長 ＝ 起始拍長(0.9) －（回合 − 1）× 加速(0.075)，第 1 關 0.9 秒、第 5 關 0.6 秒。</p>
+<!-- ============ 5 ============ -->
+<section class="chap" id="ch5">
+  <div class="ch"><span class="cn" style="background:#D8ECFF">第 5 章</span><h2>亂數產生節奏</h2></div>
 
   <div class="topic">
-    <h3>舞台：遊戲主流程</h3>
+    <h3>兩關的出題方式不一樣</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>關卡</th><th>做法</th></tr>
+      <tr><td>第一關</td><td><b>每輪重新出題</b>：先「刪除清單的全部項目」，再用「重複（隨機取數 3 到 5）次」放進「隨機取數 1 到 3」</td></tr>
+      <tr><td>第二關</td><td><b>不清空</b>：只在清單最後面「添加」一個新的亂數 → 前面的順序完全不變，這就是接龍</td></tr>
+    </table></div>
+    <div class="bscript" data-blk="makeSeq"></div>
+  </div>
+
+  <div class="topic lab" id="lab-gen">
+    <div class="lh"><h3>🎲 亂數節奏產生器</h3><span class="tag">按按鈕</span></div>
+    <p>按按鈕看看兩種出題方式的差別。注意第二關按幾次之後，<b>前面的格子完全沒有變</b>。</p>
+    <div class="btnrow">
+      <button class="btn sm" data-gen="一">🎲 第一關：重新出題（3～5 個）</button>
+      <button class="btn sm ghost" data-gen="接">➕ 第二關：接龍加一個</button>
+      <button class="btn sm ghost" data-gen="清">🗑 清空清單</button>
+    </div>
+    <div class="seqrow" id="genRow"></div>
+    <p style="margin-top:10px">清單「節奏」＝ <code id="genList">[ ]</code>　長度 ＝ <b id="genLen">0</b></p>
+    <p class="savenote" id="genMsg">1 = 向左轉頭（木鼓）、2 = 點頭（竹鐘）、3 = 向右轉頭（沙鈴）</p>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="chap" id="ch6">
+  <div class="ch"><span class="cn" style="background:#FFD6E3">第 6 章</span><h2>播放提示與記錄動作序列</h2></div>
+
+  <div class="topic">
+    <h3>播放提示：把清單一項一項拿出來</h3>
+    <div class="bscript" data-blk="playPrompt"></div>
+    <div class="why"><b class="t">為什麼要用 <code class="v">目前音</code> 這個變數　</b>三個樂器角色的程式一模一樣，
+      它們都在等「<b>目前音 ＝ 我的編號</b>」。舞台只要把要播的號碼放進 <code class="v">目前音</code> 再廣播，
+      就會自動只有那一個樂器亮起來——這樣加第四個樂器也不用改舞台的程式。</div>
+  </div>
+
+  <div class="topic">
+    <h3>等待玩家：一個一個比對</h3>
+    <div class="bscript" data-blk="waitPlayer"></div>
+    <div class="warn"><b class="t">⚠️ 這裡有一個很容易中的坑（我們實測中過）　</b>
+      收到玩家的動作之後，如果你寫成「<b>先廣播打對了並等待 → 再把玩家答案歸零</b>」，
+      那麼在動畫播放的那 0.2 秒裡，玩家做的<b>下一個動作</b>會被寫進「玩家答案」，
+      然後被你那句「歸零」一起清掉——結果就是<b>每一輪的第 2 個動作永遠消失</b>，玩家怎麼做都答錯。<br>
+      正確做法：<b>一讀到就先搬到「這次動作」並立刻把「玩家答案」歸零</b>，再去播動畫。</div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="chap" id="ch7">
+  <div class="ch"><span class="cn" style="background:#E3DBFF">第 7 章</span><h2>兩個關卡與計分</h2></div>
+
+  <div class="topic">
+    <h3>主流程</h3>
     <div class="bscript" data-blk="main"></div>
-    <div class="warn"><b class="t">順序陷阱　</b>一定要先設 <code class="v">開始時間</code>，再把 <code class="v">階段</code> 改成「玩家」。反過來的話，判定角色會用上一段的開始時間去算，一開始就判你好幾個 MISS。</div>
   </div>
 
   <div class="topic">
-    <h3>爆炸頭：過關就變大</h3>
-    <p>爆炸頭是一個獨立角色，放在玩家頭上，並用「圖層移到最下層」放到玩家後面。它的<b>造型中心點</b>要設在頭的位置，這樣放大時會往四周長，而不是往下蓋住臉。</p>
-    <div class="bscript" data-blk="afro"></div>
+    <h3>算分數與過關</h3>
+    <div class="bscript" data-blk="score"></div>
   </div>
 
-  <div class="topic">
-    <h3>玩家與提示</h3>
-    <div class="two">
-      <div class="pane"><h4>玩家跟著你的手勢動</h4><div class="bscript" data-blk="player"></div>
-        <div class="bscript" data-blk="playerHit" style="margin-top:8px"></div></div>
-      <div class="pane"><h4>提示：3、2、1、GO</h4><div class="bscript" data-blk="countdown"></div></div>
+  <div class="topic lab" id="lab-calc">
+    <div class="lh"><h3>🧮 計分試算</h3><span class="tag">拉拉看</span></div>
+    <div class="hlab">
+      <div>
+        <div class="ctrl"><label>這輪有幾個動作
+          <input type="range" id="cLen" min="3" max="10" step="1" value="5"> <output id="cLenO">5</output></label></div>
+        <div class="ctrl"><label>已經連續正確幾輪
+          <input type="range" id="cStreak" min="0" max="8" step="1" value="0"> <output id="cStreakO">0</output></label></div>
+      </div>
+      <div class="calc">
+        <div class="cbox"><div class="k">10 × 動作數</div><div class="big" id="cBase">50</div></div>
+        <div class="cbox"><div class="k">火光全開（連續 3 輪）</div><div class="big" id="cFull">否</div></div>
+        <div class="cbox"><div class="k">這輪實得</div><div class="big" id="cPts">50</div></div>
+        <div class="cbox"><div class="k">提示間隔</div><div class="big" id="cGap">0.90 秒</div></div>
+      </div>
     </div>
-    <p>其他提示（看師傅示範、換你了、過關、失敗、遊戲結束）都是「當收到訊息 → 造型換成 → 顯示 → 等待 → 隱藏」，自己拼拼看。</p>
+    <div class="why"><b class="t">難度為什麼用「間隔」而不是「總時間」　</b>第二關的序列會越來越長，
+      如果用固定總時間，後面根本來不及提示完。改成縮短<b>每一個提示的間隔</b>，長度和速度就會同時變難，而且不會不公平。</div>
   </div>
 </section>
 
-<!-- ================= 9 ================= -->
+<!-- ============ 8 ============ -->
+<section class="chap" id="ch8">
+  <div class="ch"><span class="cn" style="background:#FFD9B3">第 8 章</span><h2>🎮 試玩台與畫面回饋</h2></div>
+  <p class="lead">下面這台的規則和範例 .sb3 <b>完全一樣</b>（兩關、計分、火把、難度遞增）。先玩懂規則，再回 Scratch 拼積木。</p>
+
+  <div class="topic lab" id="lab-play">
+    <div class="lh"><h3>🔥 節奏接龍試玩台</h3><span class="tag">鍵盤 ← ↓ → 或按按鈕</span></div>
+    <div class="play">
+      <div class="stagebox" id="pStage"><div id="pScene" style="width:100%;height:100%"></div><div class="msg" id="pMsg">按「開始」就可以玩</div></div>
+      <div>
+        <div class="hud">
+          <div class="box"><div class="k">分數</div><div class="v" id="pScore">0</div></div>
+          <div class="box"><div class="k">火把</div><div class="v" id="pLife">3</div></div>
+          <div class="box"><div class="k">關卡</div><div class="v" id="pLevel">1</div></div>
+        </div>
+        <div class="hud" style="margin-top:8px">
+          <div class="box"><div class="k">這輪長度</div><div class="v" id="pLen">0</div></div>
+          <div class="box"><div class="k">提示間隔</div><div class="v" id="pGap">0.90</div></div>
+          <div class="box"><div class="k">連續正確</div><div class="v" id="pStreak">0</div></div>
+        </div>
+        <div class="btnrow">
+          <button class="btn sm" data-play="start">▶ 開始</button>
+          <button class="btn sm ghost" data-play="reset">↺ 重來</button>
+        </div>
+        <div class="btnrow">
+          <button class="btn sm ghost" data-play="1">🥁 木鼓（←）</button>
+          <button class="btn sm ghost" data-play="2">🎐 竹鐘（↓）</button>
+          <button class="btn sm ghost" data-play="3">🪘 沙鈴（→）</button>
+        </div>
+        <p class="keyhint">鍵盤：<kbd>←</kbd> 木鼓　<kbd>↓</kbd> 竹鐘　<kbd>→</kbd> 沙鈴。<br>
+          在 Scratch 裡這三個按鍵就是「向左轉頭、點頭、向右轉頭」。</p>
+      </div>
+    </div>
+    <div class="seqrow" id="pRow"></div>
+  </div>
+
+  <div class="topic">
+    <h3>畫面回饋：火堆與樂器</h3>
+    <div class="two">
+      <div class="pane"><h4>樂器：只有被點到的才亮</h4><div class="bscript" data-blk="totem"></div></div>
+      <div class="pane"><h4>火堆：做對就竄高一截</h4><div class="bscript" data-blk="fireBlk"></div></div>
+    </div>
+    <div class="why"><b class="t">三個角色共用一份程式　</b>木鼓、竹鐘、沙鈴的程式一模一樣，只有
+      <code class="v">我的編號</code>（僅適用當前角色）不同。做好一個之後，直接<b>複製角色再改編號</b>就好，不用重寫。</div>
+  </div>
+</section>
+
+<!-- ============ 9 ============ -->
 <section class="chap" id="ch9">
-  <div class="ch"><span class="cn" style="background:#FFE7C7">第 9 章</span><h2>測試、調整與挑戰</h2></div>
+  <div class="ch"><span class="cn" style="background:#FFE7C7">第 9 章</span><h2>測試、挑戰與檢核</h2></div>
 
   <div class="topic">
     <h3>建議的測試順序</h3>
     <ol>
-      <li><b>只測手勢</b>：看畫面下方的小牌子，比左、上、右、拳，名稱都對嗎？</li>
-      <li><b>用鍵盤測節奏</b>：把 <code class="v">延遲補償</code> 改成 0，用 ← ↑ → 玩，確認判定正確。</li>
-      <li><b>換成手勢玩</b>：延遲補償改回 0.15，再慢慢調整下表的數字。</li>
+      <li><b>只測動作</b>：看畫面下方的牌子，做四種狀態（預備／左／點頭／右），名稱都對嗎？</li>
+      <li><b>看比例數字</b>：左上角的 <code class="v">轉頭比</code>、<code class="v">點頭比</code>，做動作時有沒有明顯超過門檻？</li>
+      <li><b>用鍵盤玩一次</b>：← ↓ → 把兩關都走完，確認計分、扣火把、過關都正常。</li>
+      <li><b>連做同一個動作兩次</b>：例如節奏是「木鼓、木鼓」，中間<b>一定要把臉轉正</b>才算第二次。</li>
+      <li><b>故意做錯</b>：火把要少一把，火堆要變暗，該輪要重新開始。</li>
+      <li><b>換人玩</b>：請坐高一點和矮一點的同學各玩一次，必要時調門檻。</li>
     </ol>
   </div>
 
   <div class="topic">
     <h3>可以調整的數字</h3>
     <div class="tblwrap"><table class="tbl">
-      <tr><th>變數</th><th>預設</th><th>調大會怎樣</th><th>什麼時候調</th></tr>
-      <tr><td><code class="v">起始拍長</code></td><td>0.9</td><td>第 1 關變慢、比較簡單</td><td>剛開始就跟不上時</td></tr>
-      <tr><td><code class="v">加速</code></td><td>0.075</td><td>後面的關卡變快得更多</td><td>想要更難時調大；手勢來不及回到拳頭時調小</td></tr>
-      <tr><td><code class="v">容許</code></td><td>0.3</td><td>時間窗變寬、比較寬鬆</td><td>明明有跟上卻一直 BAD／MISS</td></tr>
-      <tr><td><code class="v">延遲補償</code></td><td>0.15</td><td>出招時間往前算</td><td>常常判成「太晚」時調大；鍵盤玩設 0</td></tr>
-      <tr><td><code class="v">門檻</code></td><td>0.6</td><td>手指要伸得更直才算伸直</td><td>握拳被當成出招 → 調大；指了卻顯示拳 → 調小</td></tr>
+      <tr><th>數字</th><th>預設</th><th>調大會怎樣</th></tr>
+      <tr><td><code class="v">轉頭門檻</code></td><td>18</td><td>要轉更多才算，比較不會誤判，但也比較難做</td></tr>
+      <tr><td><code class="v">點頭門檻</code></td><td>8</td><td>要低頭更明顯才算</td></tr>
+      <tr><td>提示間隔（起始）</td><td>0.9 秒</td><td>提示放慢，第一關比較好記</td></tr>
+      <tr><td>每輪縮短</td><td>0.04 秒</td><td>難度上升更快</td></tr>
+      <tr><td>間隔下限</td><td>0.25 秒</td><td>後面不會快到看不清楚</td></tr>
+      <tr><td>第一關過關輪數</td><td>3</td><td>第一關要待更久</td></tr>
+      <tr><td>第二關目標長度</td><td>10</td><td>要接更長才贏</td></tr>
+      <tr><td>火把數</td><td>3</td><td>可以錯更多次</td></tr>
+    </table></div>
+    <p>改完之後，記得到<a href="doc.html">程式說明文件</a>把數字更新。</p>
+  </div>
+
+  <div class="topic">
+    <h3>🔧 遇到問題先看這裡</h3>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>症狀</th><th>先看什麼</th><th>常見原因</th></tr>
+      <tr><td>做動作完全沒反應</td><td>牌子是不是「看不到臉」</td><td>光線太暗、臉離鏡頭太遠，或忘了把攝影機打開</td></tr>
+      <tr><td>鍵盤有效、頭部動作沒效</td><td><code class="v">轉頭比</code> 做動作時的最大值</td><td>沒超過門檻 → 把 <code class="v">轉頭門檻</code> 調小</td></tr>
+      <tr><td>一個動作被算成好幾次</td><td><code class="v">可以觸發</code> 有沒有設回 0</td><td>少了預備姿勢的旗標（第 4 章）</td></tr>
+      <tr><td>每輪的第 2 個動作都不見</td><td><code class="v">玩家答案</code> 是在廣播<b>之前</b>還是之後歸零</td><td>第 6 章那個坑：一定要<b>先歸零再播動畫</b></td></tr>
+      <tr><td>低頭會被判成轉頭</td><td>判斷順序</td><td>左右要排在點頭<b>前面</b>；也可以把 <code class="v">轉頭門檻</code> 調大一點</td></tr>
+      <tr><td>第二關的節奏每次都重來</td><td>出題有沒有誤刪清單</td><td>第二關<b>不可以</b>「刪除全部項目」，只能「添加」</td></tr>
     </table></div>
   </div>
 
   <div class="topic">
-    <h3>常見問題</h3>
-    <ul>
-      <li><b>小牌子一直是「看不到手」</b>：整隻手要入鏡、光線要亮、距離約一個手臂；一次只伸一隻手。</li>
-      <li><b>左右顛倒</b>：回到第 2 章換攝影機的「開啟」選項。</li>
-      <li><b>比「上」常被當成「其他」</b>：手背朝鏡頭時中指容易被看成伸直，試著讓手掌側面朝鏡頭，或把門檻調大一點。</li>
-      <li><b>很卡</b>：關掉其他分頁；把「辨識手勢」設成「執行時不重新整理畫面」。</li>
-      <li><b>作品存檔</b>：檔案 → 儲存到你的電腦（.sb3），下次一樣用 stretch3 開啟，不能上傳 Scratch 官網。</li>
-    </ul>
-  </div>
-
-  <div class="topic">
     <h3>挑戰任務</h3>
-    <div class="rules">
-      <div><b>⭐ 自己編譜</b><span>在譜面清單加上第 6、7 關（記得每個動作後面接「-」）</span></div>
-      <div><b>⭐⭐ 失敗就重來</b><span>沒過關時，同一關再挑戰一次，拍長不變</span></div>
-      <div><b>⭐⭐ 記憶模式</b><span>玩家階段把節拍列藏起來，只能靠記憶</span></div>
-      <div><b>⭐⭐⭐ 第四個手勢</b><span>加入「下」：dy &lt; 0 時不再當成其他</span></div>
-      <div><b>🏆 雙人對戰</b><span>兩個爆炸頭輪流挑戰，比誰的頭髮大</span></div>
+    <div class="cards3">
+      <div><b>⭐ 換自己的樂器</b><span>把三個音換成學校直笛、木琴或自己錄的聲音</span></div>
+      <div><b>⭐⭐ 加第四個動作</b><span>例如「抬頭」＝ 吼聲，注意要先量好它的比例數字</span></div>
+      <div><b>⭐⭐ 只剩動畫的靜音關</b><span>第三關提示不發出聲音，只有圖騰柱會亮</span></div>
+      <div><b>⭐⭐⭐ 兩人輪流接龍</b><span>加一個「輪到誰」的變數，兩人分數分開計算</span></div>
     </div>
   </div>
 
   <div class="topic">
-    <h3>✅ 自我檢核</h3>
+    <h3>✅ 自我檢核（對照題目）</h3>
     <div class="chklist" id="chk">
-      <label><input type="checkbox"> 往右指時，dx 是正數</label>
-      <label><input type="checkbox"> 小牌子能正確顯示 拳／左／上／右</label>
-      <label><input type="checkbox"> 手一直指著同一邊，不會重複出招</label>
-      <label><input type="checkbox"> 能說出為什麼要用「手掌」當尺</label>
-      <label><input type="checkbox"> 讀取譜面後，音符拍和音符方向的內容正確</label>
-      <label><input type="checkbox"> 我的譜面每個動作後面都有休息拍「-」</label>
-      <label><input type="checkbox"> 打拍用計時器，不是用「等待 0.8 秒」</label>
-      <label><input type="checkbox"> 師傅會照譜面出招並發出聲音</label>
-      <label><input type="checkbox"> 節拍列會跟著拍子放大</label>
-      <label><input type="checkbox"> 用鍵盤可以打出 GOOD，亂按會出現 BAD，不按會出現 MISS</label>
-      <label><input type="checkbox"> 錯 1 次還能過關，錯 2 次會失敗</label>
-      <label><input type="checkbox"> 過關時爆炸頭會變大</label>
-      <label><input type="checkbox"> 已把作品存成 .sb3</label>
+      <label><input type="checkbox"> 遊戲有 3 種頭部動作：向左轉頭、點頭、向右轉頭</label>
+      <label><input type="checkbox"> 每個動作之間要回到預備姿勢（臉朝正前方）才算數</label>
+      <label><input type="checkbox"> 三個動作分別對應不同的樂器聲音與畫面效果</label>
+      <label><input type="checkbox"> 第一關用亂數產生 3～5 個動作，連續 3 輪全對過關</label>
+      <label><input type="checkbox"> 第二關每答對一輪，系統在序列末端加一個新動作</label>
+      <label><input type="checkbox"> 每輪得分 ＝ 10 × 動作數，連續 3 輪不出錯該輪 ×2</label>
+      <label><input type="checkbox"> 做錯會扣一把火把，火把歸零遊戲結束</label>
+      <label><input type="checkbox"> 難度會隨關卡上升（提示間隔逐輪縮短，下限 0.25 秒）</label>
+      <label><input type="checkbox"> 程式說明文件四個重點都寫了（判定、亂數、序列記錄、關卡條件）</label>
+      <label><input type="checkbox"> 換一位同學也能順利玩完（門檻調好了）</label>
     </div>
     <p class="savenote" id="chkNote"></p>
   </div>
 </section>
-
-<footer style="margin-top:36px">爆炸頭節奏大師・Handpose2Scratch 製作教學 · 靈感來源：Konami《Bishi Bashi Special》Perm Mania（本教材為教學用的原創改編，角色與美術皆為自製）<br>
-Handpose2Scratch by Junya Ishihara (champierre)，於 stretch3.github.io 使用</footer>
     </main>
   </div>
 </div>
+
+<footer class="foot">
+  <div class="in">部落樂舞・火堆旁的節奏　·　臺北市 115 年度貓咪盃 國小遊戲 AI 互動組　·　本教材由本校自製，角色與音效皆為程式產生</div>
+</footer>
+
 <script src="assets/blk.js"></script>
 <script src="assets/lesson.js"></script>
 </body>

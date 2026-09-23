@@ -1,19 +1,7 @@
 /* =========================================================
-   blk.js — 把簡單的資料畫成 Scratch 積木（只負責「看」，不會執行）
-   沿用「Scratch 動畫製作教學」的積木繪製方式。
-   積木文字依 Scratch 官方繁體中文翻譯（scratch-l10n zh-tw）；
-   Handpose2Scratch 的積木文字沿用本校「Handpose2Scratch 教學」的中文說法。
-   ---------------------------------------------------------
-     {k:'hat',   c:'events',  t:[...]}          帽子積木
-     {k:'stack', c:'looks',   t:[...]}          一般積木
-     {k:'c',     c:'control', t:[...], body:[]} 重複／如果
-     {k:'ce',    c:'control', t:[...], body:[], t2:['否則'], body2:[]}
-     {k:'def',   t:[...]}                        定義（函式積木）
-   t 裡面可以放：
-     '文字'  {n:'10'} 數字  {s:'文字'} 文字格  {d:'選單'} 下拉選單
-     {r:{c:'sensing',t:[...]}} 圓角回報積木
-     {b:{c:'operators',t:[...]}} 六角形條件
-     {p:'參數'} 參數（粉紅色）  {flag:1} 綠旗圖示
+   blk.js — 把資料畫成 Scratch 積木（只負責「看」，不會執行）
+   積木文字依 Scratch 官方繁體中文翻譯（scratch-l10n zh-tw）
+   Facemesh2Scratch 的積木沿用本校 Facemesh2Scratch 教材的中文說法
    ========================================================= */
 var BLK = (function(){
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -59,297 +47,254 @@ var BLK = (function(){
   return {render:render,stack:stack,auto:auto,part:part};
 })();
 
-/* ---------- 小幫手：讓下面的程式片段好寫一點 ---------- */
-var LM={1:'手腕',6:'食指第三關節',9:'食指尖',10:'中指第三關節',13:'中指尖'};
+/* ---------- 小幫手 ---------- */
+var PART={2:'鼻尖 (2)',11:'額頭頂端 (11)',153:'下巴 (153)',235:'臉部右緣 (235)',455:'臉部左緣 (455)'};
 function V(n){return {r:{c:'variables',t:[n]}};}
-function HX(i){return {r:{c:'ext',t:[{d:LM[i]+' ('+i+')'},'的 x 座標']}};}
-function HY(i){return {r:{c:'ext',t:[{d:LM[i]+' ('+i+')'},'的 y 座標']}};}
+function LS(n){return {r:{c:'listtone',t:[n]}};}
+function FX(i){return {r:{c:'ext',t:['第',{d:'1'},'人的',{d:PART[i]},'的 x 座標']}};}
+function FY(i){return {r:{c:'ext',t:['第',{d:'1'},'人的',{d:PART[i]},'的 y 座標']}};}
+var FCNT={r:{c:'ext',t:['人數']}};
 function OP(a,o,b){return {r:{c:'operators',t:[a,o,b]}};}
 function B(a,o,b){return {b:{c:'operators',t:[a,o,b]}};}
 function AND(a,b){return {b:{c:'operators',t:[a,'且',b]}};}
 function OR(a,b){return {b:{c:'operators',t:[a,'或',b]}};}
-function NOT(a){return {b:{c:'operators',t:[a,'不成立']}};}
 function MATH(f,x){return {r:{c:'operators',t:[{d:f},'數值',x]}};}
-function LETTER(i,s){return {r:{c:'operators',t:['字串',s,'的第',i,'字']}};}
-function ITEM(i,l){return {r:{c:'listtone',t:[{d:l},'的第',i,'項']}};}
-function LLEN(l){return {r:{c:'listtone',t:['清單',{d:l},'的長度']}};}
+function RND(a,b){return {r:{c:'operators',t:['隨機取數',N(a),'到',N(b)]}};}
+function ITEM(i,l){return {r:{c:'listtone',t:['第',i,'項的',{d:l}]}};}
+function LEN(l){return {r:{c:'listtone',t:[{d:l},'的長度']}};}
+function LADD(x,l,o){var b={k:'stack',c:'listtone',t:['添加',x,'到',{d:l}]};for(var k in o)b[k]=o[k];return b;}
+function LCLR(l,o){var b={k:'stack',c:'listtone',t:['刪除',{d:l},'的全部項目']};for(var k in o)b[k]=o[k];return b;}
 function SETV(n,x,o){var b={k:'stack',c:'variables',t:['變數',{d:n},'設為',x]};for(var k in o)b[k]=o[k];return b;}
 function CHV(n,x,o){var b={k:'stack',c:'variables',t:['變數',{d:n},'改變',x]};for(var k in o)b[k]=o[k];return b;}
 function MSG(n,w,o){var b={k:'stack',c:'events',t:['廣播訊息',{d:n}].concat(w?['並等待']:[])};for(var k in o)b[k]=o[k];return b;}
 function WHEN(n,o){var b={k:'hat',c:'events',t:['當收到訊息',{d:n}]};for(var k in o)b[k]=o[k];return b;}
-var TIMER={r:{c:'sensing',t:['計時器']}};
-function DIST(a,b){
-  return MATH('平方根',OP(OP(OP(HX(a),'-',HX(b)),'*',OP(HX(a),'-',HX(b))),'+',OP(OP(HY(a),'-',HY(b)),'*',OP(HY(a),'-',HY(b)))));
-}
+function FLAG(o){var b={k:'hat',c:'events',t:['當',{flag:1},'被點擊']};for(var k in o)b[k]=o[k];return b;}
+function COS(x,o){var b={k:'stack',c:'looks',t:['造型換成',x]};for(var k in o)b[k]=o[k];return b;}
+function SAY(t,s){return {k:'stack',c:'looks',t:['說出',{s:t},'持續',{n:s},'秒']};}
+function CALL(t,o){var b={k:'stack',c:'myblocks',t:t};for(var k in o)b[k]=o[k];return b;}
+function WAIT(x,o){var b={k:'stack',c:'control',t:['等待',x,'秒']};for(var k in o)b[k]=o[k];return b;}
 function S(n){return {s:n};}
 function N(n){return {n:n};}
+var TIMER={r:{c:'sensing',t:['計時器']}};
 
 var SCRIPTS = {
 
-/* ---------- 步驟一：開機測試 ---------- */
+/* ---------- 先量自己的數字 ---------- */
 setupTest:[
-  {k:'hat',c:'events',t:['當',{flag:1},'被點擊']},
-  {k:'stack',c:'ext',t:['將攝影機',{d:'開啟'}],note:'畫面像照鏡子，你往右它也往右'},
-  {k:'stack',c:'ext',t:['將攝影機的透明度設為',N(50)]},
+  FLAG(),
+  {k:'stack',c:'ext',t:['將攝影機',{d:'鏡像開啟'}],note:'像照鏡子，你往右它也往右'},
+  {k:'stack',c:'ext',t:['將攝影機的透明度設為',N(70)]},
   {k:'stack',c:'ext',t:['將倍率設為',{d:'0.75'}]},
   {k:'forever',c:'control',t:['重複無限次'],body:[
-    SETV('dx',OP(HX(9),'-',HX(6)),{hl:1,note:'食指尖 x － 食指第三關節 x'}),
-    {k:'stack',c:'looks',t:['說出',V('dx')]}
+    {k:'c',c:'control',t:['如果',B(FCNT,'>',N(0)),'那麼'],hl:1,note:'先用「人數」確認看得到臉',body:[
+      SETV('臉寬',MATH('絕對值',OP(FX(455),'-',FX(235)))),
+      SETV('臉中心x',OP(OP(FX(455),'+',FX(235)),'/',N(2))),
+      SETV('轉頭比',OP(OP(OP(FX(2),'-',V('臉中心x')),'/',V('臉寬')),'×',N(100)),{hl:1,note:'把頭轉左右，看這個數字怎麼變'})
+    ]}
   ]}
 ],
 
-/* ---------- 步驟二：辨識手勢 ---------- */
-palm:[
-  SETV('手掌',DIST(1,10),{note:'兩點距離公式：√(x差² + y差²)'})
-],
+/* ---------- 定義：辨識動作 ---------- */
 classify:[
-  {k:'def',t:['辨識手勢'],note:'右鍵 → 編輯 → 勾選「執行時不重新整理畫面」'},
-  {k:'ce',c:'control',t:['如果',B(HX(1),'>',N(-250)),'那麼'],note:'看得到手才計算（看不到手時積木是空白）',body:[
-    SETV('手掌',{r:{c:'operators',t:['平方根 ( 手腕 ↔ 中指第三關節 )']}},{note:'當作「尺」，手靠近或離遠都能用'}),
-    SETV('食指長',{r:{c:'operators',t:['平方根 ( 食指第三關節 ↔ 食指尖 )']}}),
-    SETV('中指長',{r:{c:'operators',t:['平方根 ( 中指第三關節 ↔ 中指尖 )']}}),
-    SETV('dx',OP(HX(9),'-',HX(6))),
-    SETV('dy',OP(HY(9),'-',HY(6))),
-    {k:'ce',c:'control',t:['如果',B(V('中指長'),'>',OP(V('手掌'),'*',V('門檻'))),'那麼'],hl:1,note:'① 中指伸直 → 手是張開的',body:[
-      SETV('手勢',S('其他'))
-    ],body2:[
-      {k:'ce',c:'control',t:['如果',B(V('食指長'),'<',OP(V('手掌'),'*',V('門檻'))),'那麼'],hl:1,note:'② 食指也彎著 → 握拳',body:[
-        SETV('手勢',S('拳'))
+  {k:'def',t:['辨識動作'],note:'右鍵 → 編輯 → 勾選「執行時不重新整理畫面」'},
+  {k:'ce',c:'control',t:['如果',B(FCNT,'>',N(0)),'那麼'],hl:1,note:'偵測不到臉時座標積木回傳空白，一定要先擋',body:[
+    SETV('臉寬',MATH('絕對值',OP(FX(455),'-',FX(235))),{note:'臉部左緣 − 臉部右緣'}),
+    SETV('臉高',MATH('絕對值',OP(FY(11),'-',FY(153))),{note:'額頭頂端 − 下巴'}),
+    {k:'ce',c:'control',t:['如果',B(V('臉寬'),'>',N(10)),'那麼'],note:'臉太小或抓錯時不要拿去除',body:[
+      SETV('臉中心x',OP(OP(FX(455),'+',FX(235)),'/',N(2))),
+      SETV('臉中心y',OP(OP(FY(11),'+',FY(153)),'/',N(2))),
+      SETV('轉頭比',OP(OP(OP(FX(2),'-',V('臉中心x')),'/',V('臉寬')),'×',N(100)),{hl:1,note:'鼻尖偏離臉中心「臉寬的百分之幾」'}),
+      SETV('點頭比',OP(OP(OP(V('臉中心y'),'-',FY(2)),'/',V('臉高')),'×',N(100)),{hl:1,note:'低頭時鼻尖會跑到臉中心下面，數字變大'}),
+      {k:'ce',c:'control',t:['如果',B(V('轉頭比'),'<',OP(N(0),'-',V('轉頭門檻'))),'那麼'],hl:1,note:'① 向左轉頭 → 木鼓',body:[
+        SETV('動作',S('左'))
       ],body2:[
-        {k:'ce',c:'control',t:['如果',B(MATH('絕對值',V('dx')),'>',MATH('絕對值',V('dy'))),'那麼'],hl:1,note:'③ 食指伸直：橫的多還是直的多？',body:[
-          {k:'ce',c:'control',t:['如果',B(V('dx'),'>',N(0)),'那麼'],body:[SETV('手勢',S('右'))],body2:[SETV('手勢',S('左'))]}
+        {k:'ce',c:'control',t:['如果',B(V('轉頭比'),'>',V('轉頭門檻')),'那麼'],hl:1,note:'② 向右轉頭 → 沙鈴',body:[
+          SETV('動作',S('右'))
         ],body2:[
-          {k:'ce',c:'control',t:['如果',B(V('dy'),'>',N(0)),'那麼'],body:[SETV('手勢',S('上'))],body2:[SETV('手勢',S('其他'))]}
+          {k:'ce',c:'control',t:['如果',B(V('點頭比'),'>',V('點頭門檻')),'那麼'],hl:1,note:'③ 點頭 → 竹鐘（先排除左右，臉在正中間才判斷）',body:[
+            SETV('動作',S('點頭'))
+          ],body2:[
+            SETV('動作',S('預備'),{note:'臉朝正前方＝預備姿勢'})
+          ]}
         ]}
       ]}
-    ]}
+    ],body2:[SETV('動作',S('無'))]}
   ],body2:[
-    SETV('手勢',S('無'))
+    SETV('動作',S('無'))
   ]}
 ],
 
-/* ---------- 步驟三：上膛與出招 ---------- */
+/* ---------- 偵測主迴圈：避免重複判定 ---------- */
 detectLoop:[
-  {k:'hat',c:'events',t:['當',{flag:1},'被點擊'],note:'角色：手勢偵測'},
-  SETV('上膛',N(0)),
+  FLAG({note:'角色：動作牌'}),
+  SETV('可以觸發',N(0)),
+  SETV('動作',S('無')),
   {k:'forever',c:'control',t:['重複無限次'],body:[
-    {k:'stack',c:'myblocks',t:['辨識手勢']},
-    {k:'stack',c:'looks',t:['造型換成',V('手勢')],note:'畫面下方的小牌子會顯示電腦看到什麼'},
-    {k:'c',c:'control',t:['如果',B(V('手勢'),'=',S('拳')),'那麼'],hl:1,body:[SETV('上膛',N(1))],note:'握拳 ＝ 裝好子彈'},
-    {k:'c',c:'control',t:['如果',AND(B(V('上膛'),'=',N(1)),OR(B(V('手勢'),'=',S('左')),OR(B(V('手勢'),'=',S('上')),B(V('手勢'),'=',S('右'))))),'那麼'],hl:1,
-     note:'有子彈又比出方向 ＝ 發射一次',body:[
-      SETV('出招方向',V('手勢')),
-      SETV('上膛',N(0)),
-      MSG('出招')
+    CALL(['辨識動作']),
+    COS(V('動作'),{note:'牌子直接顯示電腦現在看到什麼'}),
+    {k:'c',c:'control',t:['如果',B(V('動作'),'=',S('預備')),'那麼'],hl:1,note:'臉轉回正前方 → 才能再做一次動作',body:[
+      SETV('可以觸發',N(1))
+    ]},
+    {k:'c',c:'control',t:['如果',AND(B(V('可以觸發'),'=',N(1)),B(V('動作'),'=',S('左'))),'那麼'],hl:1,body:[
+      SETV('可以觸發',N(0)),CALL(['送出動作',N(1)])
+    ]},
+    {k:'c',c:'control',t:['如果',AND(B(V('可以觸發'),'=',N(1)),B(V('動作'),'=',S('點頭'))),'那麼'],body:[
+      SETV('可以觸發',N(0)),CALL(['送出動作',N(2)])
+    ]},
+    {k:'c',c:'control',t:['如果',AND(B(V('可以觸發'),'=',N(1)),B(V('動作'),'=',S('右'))),'那麼'],body:[
+      SETV('可以觸發',N(0)),CALL(['送出動作',N(3)])
     ]}
+  ]}
+],
+sendAction:[
+  {k:'def',t:['送出動作',{p:'編號'}]},
+  {k:'c',c:'control',t:['如果',B(V('階段'),'=',S('等待')),'那麼'],hl:1,note:'只有輪到玩家的時候才算數',body:[
+    SETV('玩家答案',{p:'編號'})
+  ]},
+  {k:'c',c:'control',t:['如果',B(V('階段'),'=',S('開場')),'那麼'],note:'開場可以先試做，只會發出聲音',body:[
+    SETV('目前音',{p:'編號'}),MSG('試音')
   ]}
 ],
 keys:[
-  {k:'hat',c:'events',t:['當',{d:'向左'},'鍵被按下'],note:'↑、→ 也各做一組'},
-  SETV('出招方向',S('左')),
-  MSG('出招')
+  {k:'hat',c:'events',t:['當',{d:'向左'},'鍵被按下'],note:'沒有攝影機也能測試：← 木鼓、↓ 竹鐘、→ 沙鈴'},
+  CALL(['送出動作',N(1)])
 ],
 
-/* ---------- 步驟四：譜面與節拍器 ---------- */
-songs:[
-  {k:'stack',c:'listtone',t:['刪除',{d:'譜面清單'},'的所有項目']},
-  {k:'stack',c:'listtone',t:['添加',S('左-右-左-右-'),'到',{d:'譜面清單'}],note:'第 1 關'},
-  {k:'stack',c:'listtone',t:['添加',S('上-上-左-右-'),'到',{d:'譜面清單'}]},
-  {k:'stack',c:'listtone',t:['添加',S('右-左-上-右-'),'到',{d:'譜面清單'}]},
-  {k:'stack',c:'listtone',t:['添加',S('左-上-右-上-'),'到',{d:'譜面清單'}]},
-  {k:'stack',c:'listtone',t:['添加',S('上-右-左-上-'),'到',{d:'譜面清單'}],note:'每個動作後面都有「-」'}
-],
-readPattern:[
-  {k:'def',t:['讀取譜面'],note:'角色：舞台'},
-  {k:'stack',c:'listtone',t:['刪除',{d:'音符拍'},'的所有項目']},
-  {k:'stack',c:'listtone',t:['刪除',{d:'音符方向'},'的所有項目']},
-  SETV('i',N(1)),
-  {k:'c',c:'control',t:['重複',{r:{c:'operators',t:['字串',V('譜面'),'的長度']}},'次'],loop:1,body:[
-    {k:'c',c:'control',t:['如果',NOT(B(LETTER(V('i'),V('譜面')),'=',S('-'))),'那麼'],hl:1,note:'不是休息（-）就是音符',body:[
-      {k:'stack',c:'listtone',t:['添加',V('i'),'到',{d:'音符拍'}],note:'記下「第幾拍」'},
-      {k:'stack',c:'listtone',t:['添加',LETTER(V('i'),V('譜面')),'到',{d:'音符方向'}],note:'記下「哪個方向」'}
-    ]},
-    CHV('i',N(1))
-  ]}
-],
-beat:[
-  {k:'def',t:['打拍',{p:'拍數'}],note:'右鍵 → 新增參數「拍數」'},
-  SETV('目前拍',N(0)),
-  {k:'c',c:'control',t:['重複',{p:'拍數'},'次'],loop:1,body:[
-    CHV('目前拍',N(1),{note:'先加 1，再廣播（順序很重要）'}),
-    {k:'stack',c:'control',t:['等待直到',B(TIMER,'>',OP(V('開始時間'),'+',OP(OP(V('目前拍'),'-',N(1)),'*',V('拍長'))))],hl:1,
-     note:'第 n 拍的時間 ＝ 開始時間 ＋ (n−1) × 拍長'},
-    MSG('拍')
-  ]},
-  {k:'stack',c:'control',t:['等待直到',B(TIMER,'>',OP(V('開始時間'),'+',OP({p:'拍數'},'*',V('拍長'))))],note:'等最後一拍也走完'}
-],
-beatBad:[
-  {k:'c',c:'control',t:['重複',N(8),'次'],loop:1,body:[
-    MSG('拍'),
-    {k:'stack',c:'control',t:['等待',N(0.8),'秒']}
-  ]}
-],
-tick:[
-  WHEN('拍',{note:'角色：舞台'}),
-  {k:'stack',c:'sound',t:['播放音效',{d:'拍'}]}
-],
-
-/* ---------- 步驟五：師傅與節拍列 ---------- */
-master:[
-  WHEN('拍',{note:'角色：師傅'}),
-  {k:'ce',c:'control',t:['如果',B(V('階段'),'=',S('示範')),'那麼'],body:[
-    {k:'c',c:'control',t:['如果',NOT(B(LETTER(V('目前拍'),V('譜面')),'=',S('-'))),'那麼'],body:[
-      {k:'stack',c:'looks',t:['造型換成',LETTER(V('目前拍'),V('譜面'))],hl:1,note:'造型名稱就叫「左」「上」「右」'},
-      {k:'stack',c:'sound',t:['播放音效',LETTER(V('目前拍'),V('譜面'))],note:'音效也取一樣的名字'},
-      {k:'stack',c:'control',t:['等待',N(0.4),'秒']},
-      {k:'stack',c:'looks',t:['造型換成',{d:'拳'}]}
+/* ---------- 亂數節奏產生 ---------- */
+makeSeq:[
+  {k:'def',t:['出題'],note:'角色：舞台；勾選「執行時不重新整理畫面」'},
+  {k:'ce',c:'control',t:['如果',B(V('關卡'),'=',N(1)),'那麼'],hl:1,note:'第一關：每輪重新出題',body:[
+    LCLR('節奏'),
+    {k:'c',c:'control',t:['重複',RND(3,5),'次'],loop:1,hl:1,note:'亂數決定這輪有幾個動作（3～5）',body:[
+      LADD(RND(1,3),'節奏',{note:'1 = 向左轉頭　2 = 點頭　3 = 向右轉頭'})
     ]}
   ],body2:[
-    {k:'stack',c:'motion',t:['y 改變',N(6)],note:'其他時候跟著拍子點頭'},
-    {k:'stack',c:'control',t:['等待',N(0.1),'秒']},
-    {k:'stack',c:'motion',t:['y 改變',N(-6)]}
-  ]}
-],
-rowMain:[
-  WHEN('看師傅',{note:'角色：節拍列（我的拍是「僅適用當前角色」的變數）'}),
-  {k:'ce',c:'control',t:['如果',B(V('我的拍'),'=',N(0)),'那麼'],note:'本體負責做分身；舊分身刪掉自己',body:[
-    {k:'c',c:'control',t:['重複',N(8),'次'],loop:1,body:[
-      CHV('我的拍',N(1)),
-      {k:'stack',c:'control',t:['建立',{d:'自己'},'的分身']}
-    ]},
-    SETV('我的拍',N(0))
-  ],body2:[
-    {k:'cap',c:'control',t:['分身刪除']}
-  ]}
-],
-rowClone:[
-  {k:'hat',c:'control',t:['當分身產生']},
-  {k:'stack',c:'motion',t:['定位到 x:',OP(OP(V('我的拍'),'*',N(55)),'-',N(247.5)),'y:',N(110)],note:'8 格排成一排'},
-  {k:'stack',c:'looks',t:['造型換成',LETTER(V('我的拍'),V('譜面'))],hl:1,note:'第幾個分身就顯示譜面的第幾個字'},
-  {k:'stack',c:'looks',t:['圖像效果',{d:'幻影'},'設為',N(30)]},
-  {k:'stack',c:'looks',t:['顯示']}
-],
-rowBeat:[
-  WHEN('拍'),
-  {k:'c',c:'control',t:['如果',B(V('我的拍'),'>',N(0)),'那麼'],body:[
-    {k:'ce',c:'control',t:['如果',AND(B(V('目前拍'),'=',V('我的拍')),NOT(B(V('階段'),'=',S('倒數')))),'那麼'],hl:1,note:'輪到我這一格就放大',body:[
-      {k:'stack',c:'looks',t:['尺寸設為',N(140),'%']},
-      {k:'stack',c:'looks',t:['圖像效果',{d:'幻影'},'設為',N(0)]}
+    {k:'ce',c:'control',t:['如果',B(LEN('節奏'),'=',N(0)),'那麼'],note:'剛進第二關：先給 3 個',body:[
+      {k:'c',c:'control',t:['重複',N(3),'次'],loop:1,body:[LADD(RND(1,3),'節奏')]}
     ],body2:[
-      {k:'stack',c:'looks',t:['尺寸設為',N(100),'%']},
-      {k:'stack',c:'looks',t:['圖像效果',{d:'幻影'},'設為',N(30)]}
+      LADD(RND(1,3),'節奏',{hl:1,note:'接龍：在最後面「再加一個」，前面的都不動'})
     ]}
-  ]}
-],
-
-/* ---------- 步驟六：判定 ---------- */
-judgeHit:[
-  WHEN('出招',{note:'角色：判定'}),
-  {k:'c',c:'control',t:['如果',B(V('階段'),'=',S('玩家')),'那麼'],body:[
-    SETV('出招時間',OP(OP(TIMER,'-',V('開始時間')),'-',V('延遲補償')),{note:'這一段開始後，過了幾秒？'}),
-    {k:'ce',c:'control',t:['如果',AND(B(V('下一個'),'<',OP(LLEN('音符拍'),'+',N(1))),
-        B(MATH('絕對值',OP(V('出招時間'),'-',OP(OP(ITEM(V('下一個'),'音符拍'),'-',N(1)),'*',V('拍長')))),'<',V('容許'))),'那麼'],hl:1,
-     note:'時間差夠小 → 有對到拍子',body:[
-      {k:'ce',c:'control',t:['如果',B(V('出招方向'),'=',ITEM(V('下一個'),'音符方向')),'那麼'],body:[
-        SETV('判定',S('GOOD'))
-      ],body2:[
-        SETV('判定',S('BAD')),CHV('錯誤',N(1))
-      ]},
-      CHV('下一個',N(1),{note:'換看下一個音符'})
-    ],body2:[
-      SETV('判定',S('BAD'),{note:'沒拍子亂出招'}),CHV('錯誤',N(1))
-    ]},
-    MSG('顯示判定')
-  ]}
-],
-judgeMiss:[
-  {k:'hat',c:'events',t:['當',{flag:1},'被點擊'],note:'角色：判定'},
-  {k:'forever',c:'control',t:['重複無限次'],body:[
-    {k:'c',c:'control',t:['如果',AND(B(V('階段'),'=',S('玩家')),AND(B(V('下一個'),'<',OP(LLEN('音符拍'),'+',N(1))),
-        B(OP(OP(TIMER,'-',V('開始時間')),'-',V('延遲補償')),'>',OP(OP(OP(ITEM(V('下一個'),'音符拍'),'-',N(1)),'*',V('拍長')),'+',V('容許'))))),'那麼'],hl:1,
-     note:'音符時間＋容許 都過了還沒出招 → MISS',body:[
-      SETV('判定',S('MISS')),CHV('錯誤',N(1)),CHV('下一個',N(1)),MSG('顯示判定')
-    ]}
-  ]}
-],
-judgeShow:[
-  WHEN('顯示判定'),
-  {k:'stack',c:'looks',t:['造型換成',V('判定')],note:'造型名稱：GOOD、BAD、MISS'},
-  {k:'stack',c:'looks',t:['圖像效果',{d:'幻影'},'設為',N(0)]},
-  {k:'stack',c:'looks',t:['顯示']},
-  {k:'c',c:'control',t:['重複',N(10),'次'],loop:1,body:[
-    {k:'stack',c:'motion',t:['y 改變',N(2)]},
-    {k:'stack',c:'looks',t:['圖像效果',{d:'幻影'},'改變',N(10)]}
   ]},
-  {k:'stack',c:'looks',t:['隱藏']}
+  SETV('節奏長度',LEN('節奏'))
 ],
 
-/* ---------- 步驟七：主流程 ---------- */
+/* ---------- 播放提示 ---------- */
+playPrompt:[
+  {k:'def',t:['播放提示']},
+  SETV('階段',S('提示')),
+  SETV('播放第幾個',N(0)),
+  WAIT(N(0.6)),
+  {k:'c',c:'control',t:['重複',V('節奏長度'),'次'],loop:1,body:[
+    CHV('播放第幾個',N(1)),
+    SETV('目前音',ITEM(V('播放第幾個'),'節奏'),{hl:1,note:'把清單的第 1、2、3… 個拿出來'}),
+    MSG('亮起',true,{note:'對應的樂器亮起、發出聲音，亮的時間 = 提示間隔'}),
+    WAIT(OP(V('提示間隔'),'×',N(0.45)),{note:'中間的休息'})
+  ]}
+],
+
+/* ---------- 等待玩家 ---------- */
+waitPlayer:[
+  {k:'def',t:['等待玩家']},
+  SETV('階段',S('等待')),
+  SETV('玩家第幾個',N(0)),
+  SETV('這輪正確',N(1)),
+  SETV('玩家答案',N(0)),
+  SETV('可以觸發',N(0),{note:'要先把臉轉正，才能開始做第一個動作'}),
+  LCLR('玩家動作'),
+  {k:'c',c:'control',t:['重複直到',OR(B(V('玩家第幾個'),'=',V('節奏長度')),B(V('這輪正確'),'=',N(0)))],loop:1,body:[
+    {k:'stack',c:'control',t:['等待直到',B(V('玩家答案'),'>',N(0))]},
+    SETV('這次動作',V('玩家答案'),{hl:1,note:'先搬到「這次動作」'}),
+    SETV('玩家答案',N(0),{hl:1,note:'⚠️ 立刻歸零！等動畫播完才歸零的話，玩家在動畫期間做的下一個動作會被一起清掉'}),
+    CHV('玩家第幾個',N(1)),
+    LADD(V('這次動作'),'玩家動作',{note:'把玩家做的動作記到清單裡'}),
+    SETV('目前音',V('這次動作')),
+    {k:'ce',c:'control',t:['如果',B(V('這次動作'),'=',ITEM(V('玩家第幾個'),'節奏')),'那麼'],hl:1,note:'和節奏的同一個位置比對',body:[
+      MSG('打對了',true,{note:'火堆竄高一截、樂器響一聲'})
+    ],body2:[
+      SETV('這輪正確',N(0),{note:'錯一個就結束這一輪，不用做完'})
+    ]}
+  ]}
+],
+
+/* ---------- 主流程 ---------- */
 main:[
-  {k:'hat',c:'events',t:['當',{flag:1},'被點擊'],note:'角色：舞台'},
-  {k:'stack',c:'myblocks',t:['（設定變數、譜面清單、攝影機…）'],note:'前面步驟做過的初始設定'},
-  MSG('開場'),
-  {k:'stack',c:'control',t:['等待直到',OR(B(V('手勢'),'=',S('拳')),{b:{c:'sensing',t:[{d:'空白'},'鍵被按下？']}})],note:'握拳就開始'},
-  SETV('回合',N(0)),
-  {k:'c',c:'control',t:['重複',LLEN('譜面清單'),'次'],loop:1,body:[
-    CHV('回合',N(1),{note:'回合一開始就加 1，畫面上的回合數才會和譜面一致'}),
-    SETV('拍長',OP(V('起始拍長'),'-',OP(OP(V('回合'),'-',N(1)),'*',V('加速'))),{hl:1,note:'一關比一關快：0.9、0.825、0.75…'}),
-    SETV('譜面',ITEM(V('回合'),'譜面清單')),
-    {k:'stack',c:'myblocks',t:['讀取譜面']},
-    MSG('看師傅',true,{note:'①'}),
-    SETV('開始時間',TIMER),SETV('階段',S('示範')),
-    {k:'stack',c:'myblocks',t:['打拍',N(8)],hl:1,note:'師傅示範 8 拍'},
-    SETV('階段',S('倒數')),
-    MSG('換你',true,{note:'②'}),
-    SETV('開始時間',TIMER),
-    {k:'stack',c:'myblocks',t:['打拍',N(4)],hl:1,note:'倒數 3、2、1、GO'},
-    SETV('錯誤',N(0)),SETV('下一個',N(1)),
-    SETV('開始時間',TIMER,{note:'先記時間，再改階段'}),SETV('階段',S('玩家')),
-    {k:'stack',c:'myblocks',t:['打拍',N(8)],hl:1,note:'③ 換你打 8 拍'},
+  FLAG({note:'角色：舞台'}),
+  CALL(['（分數 0、命 3、關卡 1、提示間隔 0.9、門檻…）']),
+  SETV('階段',S('開場')),
+  MSG('開場',true,{note:'精靈說明玩法，這時候可以先試做三個動作'}),
+  {k:'stack',c:'control',t:['等待直到',OR(B(V('動作'),'=',S('預備')),{b:{c:'sensing',t:[{d:'空白'},'鍵被按下？']}})],note:'把臉擺正就開始'},
+  MSG('關卡卡',true),
+  {k:'c',c:'control',t:['重複直到',OR(B(V('命'),'=',N(0)),B(V('通關'),'=',N(1)))],loop:1,hl:1,note:'遊戲結束條件：命歸零，或第二關接到 10 個',body:[
+    CHV('輪數',N(1)),
+    SETV('火高',N(0)),MSG('火堆變化'),
+    CALL(['出題']),
+    MSG('新回合',true),
+    CALL(['播放提示']),
+    CALL(['等待玩家']),
     SETV('階段',S('結果')),
-    {k:'c',c:'control',t:['如果',B(V('下一個'),'<',OP(LLEN('音符拍'),'+',N(1))),'那麼'],note:'還沒輪到的音符都算漏掉',body:[
-      CHV('錯誤',OP(OP(LLEN('音符拍'),'-',V('下一個')),'+',N(1)))
-    ]},
-    {k:'ce',c:'control',t:['如果',B(V('錯誤'),'<',N(2)),'那麼'],hl:1,note:'④ 最多錯 1 次就過關',body:[
-      CHV('分數',N(1)),MSG('過關',true)
+    {k:'ce',c:'control',t:['如果',B(V('這輪正確'),'=',N(1)),'那麼'],body:[
+      CALL(['算分數與過關'])
     ],body2:[
-      MSG('失敗',true)
+      CHV('命',N(-1),{hl:1,note:'答錯扣一把火把'}),
+      SETV('連續正確',N(0)),SETV('火光全開',N(0)),SETV('火高',N(0)),
+      MSG('答錯了',true)
     ]}
   ]},
-  SETV('階段',S('結束')),
-  MSG('遊戲結束')
+  {k:'ce',c:'control',t:['如果',B(V('通關'),'=',N(1)),'那麼'],body:[MSG('通關了')],body2:[MSG('結束了')]}
 ],
-afro:[
-  WHEN('過關',{note:'角色：爆炸頭'}),
-  {k:'stack',c:'sound',t:['播放音效',{d:'過關'}]},
-  {k:'stack',c:'looks',t:['尺寸設為',OP(OP(N(40),'+',OP(V('分數'),'*',N(20))),'+',N(15)),'%'],note:'先誇張一下'},
-  {k:'stack',c:'control',t:['等待',N(0.15),'秒']},
-  {k:'stack',c:'looks',t:['尺寸設為',OP(N(40),'+',OP(V('分數'),'*',N(20))),'%'],hl:1,note:'再縮回正確大小'}
+score:[
+  {k:'def',t:['算分數與過關']},
+  CHV('連續正確',N(1)),
+  {k:'c',c:'control',t:['如果',B(V('連續正確'),'>',N(2)),'那麼'],hl:1,note:'連續 3 輪不出錯 → 火光全開',body:[
+    SETV('火光全開',N(1))
+  ]},
+  SETV('本輪得分',OP(N(10),'×',V('節奏長度')),{hl:1,note:'每輪得分 ＝ 10 × 動作數'}),
+  {k:'c',c:'control',t:['如果',B(V('火光全開'),'=',N(1)),'那麼'],body:[
+    SETV('本輪得分',OP(V('本輪得分'),'×',N(2)),{hl:1,note:'火光全開狀態：該輪 ×2'})
+  ]},
+  CHV('分數',V('本輪得分')),
+  SETV('提示間隔',OP(V('提示間隔'),'-',N(0.04)),{note:'難度：每答對一輪，提示變快 40 毫秒'}),
+  {k:'c',c:'control',t:['如果',B(V('提示間隔'),'<',N(0.25)),'那麼'],body:[SETV('提示間隔',N(0.25),{note:'下限 250 毫秒'})]},
+  MSG('答對了',true),
+  {k:'ce',c:'control',t:['如果',B(V('關卡'),'=',N(1)),'那麼'],body:[
+    {k:'c',c:'control',t:['如果',B(V('連續正確'),'>',N(2)),'那麼'],hl:1,note:'第一關通過條件：連續 3 輪完全正確',body:[
+      SETV('關卡',N(2)),SETV('連續正確',N(0)),SETV('火光全開',N(0)),
+      LCLR('節奏',{note:'第二關從頭接起'}),
+      MSG('過關了',true),MSG('關卡卡',true)
+    ]}
+  ],body2:[
+    {k:'c',c:'control',t:['如果',B(V('節奏長度'),'>',N(9)),'那麼'],hl:1,note:'第二關通過條件：接到 10 個並且答對',body:[
+      SETV('通關',N(1))
+    ]}
+  ]}
 ],
-player:[
-  {k:'hat',c:'events',t:['當',{flag:1},'被點擊'],note:'角色：玩家'},
-  {k:'forever',c:'control',t:['重複無限次'],body:[
-    {k:'c',c:'control',t:['如果',NOT(B(V('手勢'),'=',S('無'))),'那麼'],body:[
-      {k:'ce',c:'control',t:['如果',OR(B(V('手勢'),'=',S('左')),OR(B(V('手勢'),'=',S('上')),B(V('手勢'),'=',S('右')))),'那麼'],body:[
-        {k:'stack',c:'looks',t:['造型換成',V('手勢')]}
-      ],body2:[
-        {k:'stack',c:'looks',t:['造型換成',{d:'拳'}]}
+
+/* ---------- 樂器與火堆 ---------- */
+totem:[
+  FLAG({note:'角色：木鼓（竹鐘、沙鈴一模一樣，只改編號）'}),
+  SETV('我的編號',N(1),{hl:1,note:'僅適用當前角色：木鼓 1、竹鐘 2、沙鈴 3'}),
+  COS({d:'暗'}),
+  {k:'hat',c:'events',t:['當收到訊息',{d:'亮起'}]},
+  {k:'c',c:'control',t:['如果',B(V('我的編號'),'=',V('目前音')),'那麼'],hl:1,note:'只有被點到的樂器才亮',body:[
+    COS({d:'亮'}),
+    {k:'stack',c:'sound',t:['播放音效',{d:'木鼓'}]},
+    {k:'stack',c:'looks',t:['尺寸改變',N(8)]},
+    WAIT(V('提示間隔')),
+    {k:'stack',c:'looks',t:['尺寸改變',N(-8)]},
+    COS({d:'暗'})
+  ]}
+],
+fireBlk:[
+  WHEN('火堆變化',{note:'角色：火堆'}),
+  {k:'ce',c:'control',t:['如果',B(V('火高'),'<',N(1)),'那麼'],body:[COS({d:'暗'})],body2:[
+    {k:'ce',c:'control',t:['如果',B(V('火高'),'<',N(2)),'那麼'],body:[COS({d:'小'})],body2:[
+      {k:'ce',c:'control',t:['如果',B(V('火高'),'<',N(3)),'那麼'],body:[COS({d:'中'})],body2:[
+        {k:'ce',c:'control',t:['如果',B(V('火光全開'),'=',N(1)),'那麼'],hl:1,body:[COS({d:'全開'})],body2:[COS({d:'大'})]}
       ]}
     ]}
-  ]}
-],
-playerHit:[
-  WHEN('出招',{note:'角色：玩家'}),
-  {k:'stack',c:'looks',t:['造型換成',V('出招方向')]},
-  {k:'stack',c:'sound',t:['播放音效',V('出招方向')]}
-],
-countdown:[
-  WHEN('拍',{note:'角色：提示'}),
-  {k:'c',c:'control',t:['如果',B(V('階段'),'=',S('倒數')),'那麼'],body:[
-    {k:'stack',c:'looks',t:['造型換成',{r:{c:'operators',t:['字串組合',S('數'),OP(N(4),'-',V('目前拍'))]}}],hl:1,note:'目前拍 1→「數3」… 4→「數0」(GO!)'},
-    {k:'stack',c:'looks',t:['顯示']},
-    {k:'stack',c:'control',t:['等待',N(0.5),'秒']},
-    {k:'stack',c:'looks',t:['隱藏']}
-  ]}
+  ]},
+  {k:'hat',c:'events',t:['當收到訊息',{d:'打對了'}]},
+  {k:'c',c:'control',t:['如果',B(V('火高'),'<',N(4)),'那麼'],body:[CHV('火高',N(1),{hl:1,note:'每做對一個動作，火堆竄高一截'})]},
+  MSG('火堆變化')
 ]
 };

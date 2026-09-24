@@ -2,8 +2,8 @@
 (function () {
   BLK.auto(SCRIPTS);
   var $ = function (id) { return document.getElementById(id); };
-  var NAMES = ['食', '中', '無', '小'];
-  var FULL = ['食指', '中指', '無名指', '小指'];
+  var NAMES = ['拇', '食', '中', '無', '小'];
+  var FULL = ['拇指', '食指', '中指', '無名指', '小指'];
   var RPS = { 1: '石頭', 2: '剪刀', 3: '布' };
   var PAT2RPS = { '0000': 1, '1100': 2, '1111': 3 };
 
@@ -29,6 +29,9 @@
   /* ---------- 畫一隻手（SVG）---------- */
   function handSVG(f, opt) {
     opt = opt || {};
+    if (f.length === 4) f = [0].concat(f);          // 沒給拇指就當作收起來
+    var th = f[0];
+    f = f.slice(1);
     var INK = '#3F3327', SKIN = '#FFD9B0', DK = '#E8B487';
     var b = ['<rect x="62" y="168" width="76" height="52" rx="22" fill="' + DK + '" stroke="' + INK + '" stroke-width="4"/>',
              '<rect x="50" y="96" width="100" height="90" rx="30" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="4"/>'];
@@ -42,17 +45,19 @@
       } else {
         g = '<rect x="' + x + '" y="86" width="20" height="26" rx="10" fill="' + DK + '" stroke="' + INK + '" stroke-width="4"/>';
       }
-      b.push(opt.click ? '<g class="fg" data-f="' + i + '"><rect x="' + (x - 3) + '" y="' + (f[i] ? 104 - ln - 6 : 80) + '" width="26" height="' + (f[i] ? ln + 28 : 38) + '" fill="transparent"/>' + g + '</g>' : g);
+      b.push(opt.click ? '<g class="fg" data-f="' + (i + 1) + '"><rect x="' + (x - 3) + '" y="' + (f[i] ? 104 - ln - 6 : 80) + '" width="26" height="' + (f[i] ? ln + 28 : 38) + '" fill="transparent"/>' + g + '</g>' : g);
     }
-    var th = f[0] && f[1] && f[2] && f[3];
-    b.push(th ? '<rect x="8" y="112" width="52" height="22" rx="11" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="4"/>'
-              : '<rect x="30" y="122" width="34" height="24" rx="12" fill="' + DK + '" stroke="' + INK + '" stroke-width="4"/>');
+    var tg = th ? '<rect x="8" y="112" width="52" height="22" rx="11" fill="' + SKIN + '" stroke="' + INK + '" stroke-width="4"/>'
+                : '<rect x="30" y="122" width="34" height="24" rx="12" fill="' + DK + '" stroke="' + INK + '" stroke-width="4"/>';
+    b.push(opt.click ? '<g class="fg" data-f="0"><rect x="' + (th ? 4 : 26) + '" y="106" width="' + (th ? 60 : 42) + '" height="36" fill="transparent"/>' + tg + '</g>' : tg);
     return '<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg">' + b.join('') + '</svg>';
   }
 
-  function pat(f) { return f.join(''); }
-  function cnt(f) { return f[0] + f[1] + f[2] + f[3]; }
-  function rpsOf(f) { return PAT2RPS[pat(f)] || 0; }
+  function pat(f) { return f.join(''); }                    // 五位（拇食中無小）
+  function four(f) { return f.slice(1).join(''); }          // 四位（猜拳用）
+  function cnt(f) { return f[0] + f[1] + f[2] + f[3] + f[4]; }
+  function rpsOf(f) { return PAT2RPS[four(f)] || 0; }
+  function rpsHand(n) { return n === 1 ? [0, 0, 0, 0, 0] : n === 2 ? [0, 1, 1, 0, 0] : [1, 1, 1, 1, 1]; }
 
   /* ============ 實驗 1：一根手指的比大小 ============ */
   (function () {
@@ -92,7 +97,7 @@
   /* ============ 實驗 2：四根手指 → 指型 / 手指數 / 猜拳 ============ */
   function makeHandLab(boxId, onChange) {
     var box = $(boxId); if (!box) return null;
-    var f = [0, 0, 0, 0];
+    var f = [0, 0, 0, 0, 0];
     box.className = 'handlab';
     box.innerHTML =
       '<div class="handbox"><div class="handsvg" id="' + boxId + '_svg"></div>' +
@@ -112,10 +117,12 @@
           return '<div class="lamp' + (f[i] ? ' on' : '') + '"><i>' + (f[i] ? '✓' : '') + '</i><b>' + n + '</b></div>';
         }).join('') + '</div>' +
         '<div class="vrow"><span class="vbox code"><em>指型</em>' + p + '</span>' +
-        '<span class="vbox"><em>手指數</em>' + c + '</span>' +
+        '<span class="vbox"><em>手指數</em>' + c + '</span></div>' +
+        '<div class="vrow"><span class="vbox code" style="background:#8E6BE0"><em>四指型</em>' + four(f) + '</span>' +
         '<span class="vbox ' + (r ? 'res' : 'dim') + '"><em>猜拳</em>' + (r ? r + '　' + RPS[r] : '0　看不懂') + '</span></div>' +
         '<p style="margin:4px 0 0;font-size:.92rem;color:var(--ink2)">' +
-        (r ? '這是合法的猜拳手勢。' : '猜拳只認得 0000、1100、1111 三種；其他都要玩家再比一次。') +
+        (r ? '這是合法的猜拳手勢（猜拳只看四指型，拇指開不開都可以）。'
+           : '猜拳只認得四指型 0000、1100、1111；其他都要玩家再比一次。') +
         '</p>';
       if (onChange) onChange(f.slice());
     }
@@ -148,8 +155,8 @@
                '算出來的 <b>' + ((me % 3) + 1) + '</b> ' + (win ? '＝' : '≠') + ' 電腦的 <b>' + pc + '</b>　→　<b>' + res + '</b>') +
         '</div>' +
         '<div class="hands2" style="margin-top:14px">' +
-        '<figure>' + handSVG(me === 1 ? [0, 0, 0, 0] : me === 2 ? [1, 1, 0, 0] : [1, 1, 1, 1]) + '<figcaption>你　' + RPS[me] + '</figcaption></figure>' +
-        '<figure>' + handSVG(pc === 1 ? [0, 0, 0, 0] : pc === 2 ? [1, 1, 0, 0] : [1, 1, 1, 1]) + '<figcaption>電腦　' + RPS[pc] + '</figcaption></figure>' +
+        '<figure>' + handSVG(rpsHand(me)) + '<figcaption>你　' + RPS[me] + '</figcaption></figure>' +
+        '<figure>' + handSVG(rpsHand(pc)) + '<figcaption>電腦　' + RPS[pc] + '</figcaption></figure>' +
         '</div>' +
         '<div style="text-align:center;margin-top:12px"><span class="pbanner ' + cls + '">' + res + '</span></div>';
       box.querySelectorAll('button[data-k]').forEach(function (b) {
@@ -221,7 +228,7 @@
     box.className = 'playbox';
     box.innerHTML =
       '<div class="btnrow" style="margin-bottom:12px">' +
-      '<button class="btn" id="pNum">① 數字關（8 題）</button> ' +
+      '<button class="btn" id="pNum">① 數字關 0～5（8 題）</button> ' +
       '<button class="btn" id="pRps">② 猜拳關（5 回合）</button> ' +
       '<button class="btn" id="pStop">回選單</button></div>' +
       '<div class="pstage" id="pStage"></div>' +
@@ -243,16 +250,16 @@
       setHud();
     }
     function askNum() {
-      do { target = Math.floor(Math.random() * 5); } while (target === prev || target === cnt(hand.get()));
+      do { target = Math.floor(Math.random() * 6); } while (target === prev || target === cnt(hand.get()));
       prev = target; qn++; deadline = Date.now() + 8000; busy = false;
-      scene('<div class="sm">比出這麼多根手指！</div><div class="pcard"><div class="big">' + target + '</div></div>');
+      scene('<div class="sm">比出這麼多根手指！（拇指也算）</div><div class="pcard"><div class="big">' + target + '</div></div>');
       setHud();
     }
     function numDone(okFlag) {
       busy = true;
       if (okFlag) score++;
       setHud();
-      scene('<div class="sm">比出這麼多根手指！</div><div class="pcard"><div class="big">' + target + '</div></div>' +
+      scene('<div class="sm">比出這麼多根手指！（拇指也算）</div><div class="pcard"><div class="big">' + target + '</div></div>' +
             '<div class="pbanner ' + (okFlag ? 'ok' : 'no') + '">' + (okFlag ? '答對了！' : '時間到') + '</div>');
       (okFlag ? SFX.ok : SFX.no)();
       setTimeout(function () {
@@ -283,7 +290,7 @@
       var me = rpsOf(hand.get());
       if (!me) {
         empty++;
-        scene('<div class="pbanner no">看不懂</div><div class="sm">石頭＝握拳　剪刀＝食指＋中指　布＝全張開<br>這一回合不算，請再比一次</div>');
+        scene('<div class="pbanner no">看不懂</div><div class="sm">石頭＝握拳　剪刀＝食指＋中指　布＝全張開<br>（猜拳不看拇指）這一回合不算，請再比一次</div>');
         SFX.no();
         if (empty > 5) { setTimeout(function () { menu(); }, 1400); return; }
         setTimeout(rpsRound, 1500); return;
@@ -293,8 +300,8 @@
       var res = tie ? '平手' : (win ? '你贏了' : '你輸了');
       if (win) score++;
       scene('<div class="hands2">' +
-            '<figure>' + handSVG(me === 1 ? [0, 0, 0, 0] : me === 2 ? [1, 1, 0, 0] : [1, 1, 1, 1]) + '<figcaption>你　' + RPS[me] + '</figcaption></figure>' +
-            '<figure>' + handSVG(pcHand === 1 ? [0, 0, 0, 0] : pcHand === 2 ? [1, 1, 0, 0] : [1, 1, 1, 1]) + '<figcaption>電腦　' + RPS[pcHand] + '</figcaption></figure>' +
+            '<figure>' + handSVG(rpsHand(me)) + '<figcaption>你　' + RPS[me] + '</figcaption></figure>' +
+            '<figure>' + handSVG(rpsHand(pcHand)) + '<figcaption>電腦　' + RPS[pcHand] + '</figcaption></figure>' +
             '</div><div class="pbanner ' + (tie ? 'tie' : win ? 'win' : 'lose') + '">' + res + '</div>');
       (tie ? SFX.tie : win ? SFX.win : SFX.lose)();
       setHud();

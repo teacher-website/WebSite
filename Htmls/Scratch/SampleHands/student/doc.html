@@ -26,7 +26,7 @@
   <section class="hero">
     <h1>手勢辨識大挑戰</h1>
     <p>一份可以直接印出來、或照著改成自己版本的程式說明。<br>
-      <b>作品名稱</b>　手勢辨識大挑戰（數字 0～4 ＋ 剪刀石頭布）<br>
+      <b>作品名稱</b>　手勢辨識大挑戰（數字 0～5 ＋ 剪刀石頭布）<br>
       <b>使用工具</b>　Scratch 3（stretch3.github.io）＋ Handpose2Scratch 擴充功能<br>
       <b>執行方式</b>　用 stretch3 開啟 .sb3 → 允許使用攝影機 → 點綠旗</p>
   </section>
@@ -35,15 +35,15 @@
     <div class="ch"><span class="cn" style="background:#BFE3FF">一</span><h2>作品說明</h2></div>
     <p>本作品用<b>單手手勢</b>操作，共兩個關卡，兩關共用同一段辨識程式：</p>
     <div class="cards">
-      <div class="card"><h3>數字關</h3><p>畫面隨機出 0～4，玩家比出<b>相同根數</b>的手指。共 8 題，每題 8 秒，答對得 1 分。</p></div>
+      <div class="card"><h3>數字關</h3><p>畫面隨機出 0～5，玩家比出<b>相同根數</b>的手指（<b>拇指也算</b>）。共 8 題，每題 8 秒，答對得 1 分。</p></div>
       <div class="card"><h3>猜拳關</h3><p>喊完「剪刀　石頭　布　出拳！」後抓取玩家手勢，與電腦亂數對戰。共 5 回合，贏一場得 1 分。</p></div>
-      <div class="card"><h3>輔助功能</h3><p><b>D</b> 開關骨架點、<b>K</b> 切換鍵盤模式（無攝影機可用）、<b>M</b> 回選單、<b>1/2</b> 直接進關卡。</p></div>
+      <div class="card"><h3>輔助功能</h3><p><b>D</b> 開關骨架點、<b>K</b> 切換鍵盤模式（無攝影機可用，按 0～5）、<b>M</b> 回選單、<b>1/2</b> 直接進關卡。</p></div>
     </div>
   </section>
 
   <section class="chap">
     <div class="ch"><span class="cn" style="background:#C9F0D8">二</span><h2>辨識方法</h2></div>
-    <h3>1　單根手指是否伸直</h3>
+    <h3>1　食指～小指是否伸直（比直向）</h3>
     <div class="keyrule"><span class="k">指尖的 y 座標　＞　同一根手指第二關節的 y 座標</span>
       <span class="sub">成立 ＝ 伸直（記 1）　不成立 ＝ 彎曲（記 0）</span></div>
     <p>實際實作時加上<b>遲滯（餘裕）</b>，避免手指停在半彎位置時判斷一直跳動：</p>
@@ -58,20 +58,31 @@
       <tr><td>無名指</td><td>15</td><td>17</td><td>無名指</td></tr>
       <tr><td>小指</td><td>19</td><td>21</td><td>小指</td></tr>
     </table></div>
-    <p class="sm">拇指不納入計算：拇指是往側向伸展，y 座標的比較法不適用。</p>
+    <h3>1-2　拇指是否伸直（比橫向）</h3>
+    <p>拇指是往<b>側向</b>伸展，y 座標的比較法不適用，改以橫向距離判斷：</p>
+    <div class="keyrule">
+      <span class="k">手寬　＝　｜食指第三關節 (6) 的 x　−　小指第三關節 (18) 的 x｜<br>
+      拇指距離　＝　｜拇指尖 (5) 的 x　−　食指第三關節 (6) 的 x｜<br><br>
+      拇指距離　＞　手寬 × <b>拇指比例</b>(0.45)　→　拇指伸直</span>
+      <span class="sub">以「手寬」為尺，故手的遠近不影響；取絕對值，故左右手與鏡像皆適用。
+        同樣加上遲滯，餘裕 ＝ 手寬 × 0.08。</span></div>
+    <p class="sm">實測（本專案模型）：手張開時拇指距離約為手寬的 0.97 倍，收起時約 0.22 倍；
+      手縮放至 0.35～1.6 倍，判斷結果皆一致。</p>
 
-    <h3>2　兩個輸出</h3>
-    <p><b>手指數</b> ＝ 食指 ＋ 中指 ＋ 無名指 ＋ 小指（0～4；偵測不到手時為 −1）—— 數字關使用。<br>
-       <b>指型</b> ＝ 四個 0／1 串接成的四位字串，例如 <code>1100</code> —— 猜拳關使用。</p>
+    <h3>2　三個輸出</h3>
+    <p><b>手指數</b> ＝ 拇指 ＋ 食指 ＋ 中指 ＋ 無名指 ＋ 小指（0～5；偵測不到手時為 −1）—— 數字關使用。<br>
+       <b>指型</b> ＝ 五個 0／1 串接成的五位字串（順序 拇食中無小），例如 <code>01100</code> —— 穩定判斷使用。<br>
+       <b>四指型</b> ＝ 去掉拇指的四位字串，例如 <code>1100</code> —— 猜拳關使用。</p>
 
     <h3>3　猜拳對照</h3>
     <div class="tablewrap"><table class="pattab">
-      <tr><th>指型</th><th>猜拳號</th><th>意義</th></tr>
+      <tr><th>四指型</th><th>猜拳號</th><th>意義</th></tr>
       <tr class="yes"><td class="code">0000</td><td>1</td><td>石頭</td></tr>
       <tr class="yes"><td class="code">1100</td><td>2</td><td>剪刀</td></tr>
       <tr class="yes"><td class="code">1111</td><td>3</td><td>布</td></tr>
       <tr class="no"><td class="code">其他</td><td>0</td><td>看不懂，該回合不計</td></tr>
     </table></div>
+    <p class="sm"><b>猜拳刻意不納入拇指</b>：比剪刀時拇指收起或翹起因人而異，納入判斷會大幅增加「看不懂」的比例。</p>
 
     <h3>4　兩道守門條件</h3>
     <ul>
@@ -115,7 +126,7 @@
       <tr><th></th><th>數字關</th><th>猜拳關</th></tr>
       <tr><td>題數／回合</td><td>8 題</td><td>5 回合</td></tr>
       <tr><td>時間限制</td><td>每題 8 秒</td><td>無（倒數約 2.1 秒後抓取）</td></tr>
-      <tr><td>出題方式</td><td>亂數 0～4，避開上一題與玩家當下手勢</td><td>電腦亂數 1～3</td></tr>
+      <tr><td>出題方式</td><td>亂數 0～5，避開上一題與玩家當下手勢</td><td>電腦亂數 1～3</td></tr>
       <tr><td>得分</td><td>答對 ＋1</td><td>贏 ＋1（平手、輸不加分）</td></tr>
       <tr><td>例外處理</td><td>超時顯示「時間到」，進下一題</td><td>手勢看不懂不計回合；連續 6 次抓不到自動回選單</td></tr>
     </table></div>
@@ -130,17 +141,20 @@
       <div><h3>變數</h3>
       <div class="tablewrap"><table class="pattab">
         <tr><th>名稱</th><th>初值</th><th>用途</th></tr>
-        <tr><td>食指／中指／無名指／小指</td><td>0</td><td>該指伸直＝1</td></tr>
-        <tr><td>手指數</td><td>−1</td><td>四根相加</td></tr>
-        <tr><td>指型</td><td>----</td><td>四位密碼</td></tr>
+        <tr><td>拇指／食指／中指／無名指／小指</td><td>0</td><td>該指伸直＝1</td></tr>
+        <tr><td>手指數</td><td>−1</td><td>五根相加（0～5）</td></tr>
+        <tr><td>指型</td><td>-----</td><td>五位密碼（拇食中無小）</td></tr>
+        <tr><td>四指型</td><td>----</td><td>不含拇指，猜拳用</td></tr>
         <tr><td>猜拳號</td><td>0</td><td>1/2/3，0＝看不懂</td></tr>
         <tr><td>確定手指數</td><td>−1</td><td>防抖後的手指數</td></tr>
         <tr><td>確定指型</td><td>----</td><td>防抖後的指型</td></tr>
         <tr><td>確定猜拳號</td><td>0</td><td>防抖後的猜拳號</td></tr>
         <tr><td>上次指型／穩定起點</td><td>—</td><td>穩定判斷比較用</td></tr>
         <tr><td>穩定門檻</td><td>0.15</td><td><b>可調</b>，秒</td></tr>
-        <tr><td>手長／餘裕</td><td>—</td><td>遲滯計算用</td></tr>
+        <tr><td>手長／餘裕</td><td>—</td><td>四指遲滯計算用</td></tr>
+        <tr><td>手寬／拇指距離／拇指門檻／拇指餘裕</td><td>—</td><td>拇指判斷計算用</td></tr>
         <tr><td>餘裕比例</td><td>0.08</td><td><b>可調</b></td></tr>
+        <tr><td>拇指比例</td><td>0.45</td><td><b>可調</b></td></tr>
         <tr><td>沒手起點</td><td>—</td><td>掉格計時用</td></tr>
         <tr><td>掉格容忍</td><td>0.4</td><td><b>可調</b>，秒</td></tr>
         <tr><td>看得到手</td><td>0</td><td>守門結果</td></tr>
@@ -154,22 +168,23 @@
       <div><h3>清單</h3>
       <div class="tablewrap"><table class="pattab">
         <tr><th>名稱</th><th>內容</th></tr>
-        <tr><td>指名</td><td>食、中、無、小</td></tr>
-        <tr><td>指狀態</td><td>四根的 0／1</td></tr>
+        <tr><td>指名</td><td>拇、食、中、無、小</td></tr>
+        <tr><td>指狀態</td><td>五根的 0／1</td></tr>
         <tr><td>拳名</td><td>石頭、剪刀、布</td></tr>
-        <tr><td>點x／點y</td><td>9 個骨架點座標</td></tr>
+        <tr><td>點x／點y／點色</td><td>12 個骨架點的座標與造型</td></tr>
       </table></div>
       <h3>自訂積木（角色「偵測」）</h3>
       <div class="tablewrap"><table class="pattab">
         <tr><th>名稱</th><th>做什麼</th></tr>
         <tr><td>數手指</td><td>算出四指狀態、手指數、指型</td></tr>
-        <tr><td>認猜拳</td><td>指型 → 猜拳號</td></tr>
+        <tr><td>認猜拳</td><td>四指型 → 猜拳號</td></tr>
         <tr><td>穩定判斷</td><td>整組手勢的穩定時間，寫入「確定」三變數</td></tr>
         <tr><td>清空手勢</td><td>手真的離開鏡頭 0.4 秒後歸零</td></tr>
         <tr><td>更新骨架點</td><td>把 9 個點寫進清單</td></tr>
         <tr><td>讀鍵盤</td><td>鍵盤模式的替代輸入</td></tr>
       </table></div>
-      <p class="sm">六個自訂積木都勾選「執行時不重新整理畫面」。</p>
+      <p class="sm">六個自訂積木都勾選「執行時不重新整理畫面」。調整拇指時，建議把
+      <b>拇指距離</b> 與 <b>拇指門檻</b> 兩個監看器勾起來，直接看數值決定比例。</p>
       </div>
     </div>
   </section>
@@ -183,10 +198,10 @@
       <tr><td>按鈕A／按鈕B</td><td>按鈕</td><td>點擊進入關卡</td></tr>
       <tr><td>選單提示</td><td>提示</td><td>操作說明</td></tr>
       <tr><td>關卡說明</td><td>數字／猜拳</td><td>進關卡時顯示 2.2 秒</td></tr>
-      <tr><td>題目卡</td><td>0～4</td><td>數字關題目</td></tr>
+      <tr><td>題目卡</td><td>數0～數5</td><td>數字關題目（造型名稱刻意不用純數字，見下方說明）</td></tr>
       <tr><td>題目標</td><td>題目標</td><td>「比出這麼多根手指！」</td></tr>
-      <tr><td>手指燈</td><td>食0～小1（8 個）</td><td>4 個分身，即時顯示四根手指狀態</td></tr>
-      <tr><td>骨架</td><td>手腕／關節／指尖</td><td>9 個分身，畫出偵測到的點</td></tr>
+      <tr><td>手指燈</td><td>拇0～小1（10 個）</td><td>5 個分身，即時顯示五根手指狀態</td></tr>
+      <tr><td>骨架</td><td>手腕／掌根／關節／指尖</td><td>12 個分身，造型由「點色」清單決定</td></tr>
       <tr><td>我的手／電腦手</td><td>石頭／剪刀／布／問號</td><td>猜拳出拳畫面</td></tr>
       <tr><td>我的手牌／電腦手牌</td><td>牌</td><td>「你」「電腦」標示</td></tr>
       <tr><td>倒數</td><td>剪刀／石頭／布／出拳！</td><td>猜拳倒數</td></tr>
@@ -196,12 +211,25 @@
   </section>
 
   <section class="chap">
+    <div class="ch"><span class="cn" style="background:#B9E6FF">五之一</span><h2>實作注意事項</h2></div>
+    <h3>造型換成「數字」會被當成造型編號</h3>
+    <p>Scratch 的「造型換成 ◯」積木，當輸入為<b>數字型別</b>時會被視為<b>造型編號</b>，
+      而非造型名稱。因此 <code>造型換成 (題目)</code> 在題目為 3 時會切到第 3 個造型，
+      也就是名稱為「2」的造型，畫面顯示的數字永遠少 1；題目為 0 時更會切到最後一個造型。</p>
+    <p>本作品的處理方式：造型命名為 <b>數0～數4</b>，並以
+      <code>造型換成 (字串組合「數」與 題目)</code> 切換，確保輸入為文字。</p>
+    <p class="sm">此問題的表徵與「偵測失效」極為相似——手指燈與「確定手指數」皆正確，
+      玩家照畫面比卻永遠不過關。驗證方式：讓測試程式<b>依畫面上的造型</b>而非變數值作答。</p>
+  </section>
+
+  <section class="chap">
     <div class="ch"><span class="cn" style="background:#FFD9B3">六</span><h2>可調整的數值</h2></div>
     <p>改了哪一個，就在右邊那一欄寫下自己改成多少、為什麼。</p>
     <div class="tablewrap"><table class="pattab">
       <tr><th>在哪裡</th><th>預設</th><th>調整效果</th><th>我改成</th></tr>
       <tr><td>穩定門檻</td><td>0.15 秒</td><td>調大＝更穩但反應慢；調小＝靈敏但會閃</td><td></td></tr>
       <tr><td>餘裕比例</td><td>0.08</td><td>調大＝更不會抖，但手指要彎得更確實才放得開</td><td></td></tr>
+      <tr><td>拇指比例</td><td>0.45</td><td>拇指太容易被判成張開就調大，反之調小</td><td></td></tr>
       <tr><td>掉格容忍</td><td>0.4 秒</td><td>攝影機不穩可調大；調太大則手離開後反應變慢</td><td></td></tr>
       <tr><td>數字關題數</td><td>重複 8 次</td><td>課堂時間調整</td><td></td></tr>
       <tr><td>數字關每題秒數</td><td>計時起點 ＋ 8</td><td>難度</td><td></td></tr>
@@ -220,10 +248,13 @@
       <tr><td>偵測不到手</td><td>手移出鏡頭</td><td>手指數 −1，遊戲不亂動</td><td></td></tr>
       <tr><td>手橫放</td><td>手掌平放</td><td>看得到手 ＝ 0</td><td></td></tr>
       <tr><td>遠近不影響</td><td>同手勢遠近各一次</td><td>指型相同</td><td></td></tr>
-      <tr><td>16 種組合</td><td>0000～1111 逐一比</td><td>手指數與指型皆正確</td><td></td></tr>
+      <tr><td>32 種組合</td><td>00000～11111 逐一比</td><td>手指數與指型皆正確</td><td></td></tr>
+      <tr><td>拇指</td><td>四指張開，拇指開↔收</td><td>手指數在 4／5 之間切換</td><td></td></tr>
+      <tr><td>猜拳忽略拇指</td><td>比剪刀時拇指收一次、翹一次</td><td>兩次都判為剪刀</td><td></td></tr>
       <tr><td>抖動</td><td>手指在半彎處晃動</td><td>確定指型不跳動</td><td></td></tr>
       <tr><td>掉格</td><td>手快速晃動使偵測短暫中斷</td><td>確定手指數不會被清成 −1</td><td></td></tr>
       <tr><td>猜拳誤判</td><td>比中指＋無名指</td><td>顯示「看不懂」</td><td></td></tr>
+      <tr><td>題目卡顯示</td><td>比對畫面數字與「題目」變數</td><td>兩者一致</td><td></td></tr>
       <tr><td>數字關計分</td><td>全部答對</td><td>8 分</td><td></td></tr>
       <tr><td>猜拳勝負</td><td>三種拳各試</td><td>與餘數算式一致</td><td></td></tr>
     </table></div>

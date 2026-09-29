@@ -105,6 +105,10 @@ pre.code{background:var(--bg); border:2px solid var(--line); border-radius:14px;
 .paper td.lb{font-weight:700; width:22%}
 .paper td.c{text-align:center; vertical-align:middle}
 .paper [contenteditable]{outline:none; white-space:pre-wrap; min-height:1.4em; display:block; border-radius:3px}
+/* 接在「任務一：」冒號後面的編輯框；空的時候留一段底線，才點得到 */
+.paper [contenteditable].inl{display:inline; min-height:0}
+.paper [contenteditable].inl:empty{display:inline-block; min-width:8em; border-bottom:1px dotted #999; vertical-align:bottom}
+.paper .pair div{margin:2px 0}
 .paper [contenteditable]:hover{background:#FFF7D6}
 .paper [contenteditable]:focus{background:#FFF1B8}
 .paper .fill{color:#000}
@@ -118,14 +122,18 @@ pre.code{background:var(--bg); border:2px solid var(--line); border-radius:14px;
 @media print{
   @page{size:A4; margin:15mm}
   body{background:#fff}
+  /* 文件卡片在 main > #result 裡面，不是 main 的直接子元素，要逐層隱藏其他區塊 */
   body > *:not(main){display:none !important}
-  main > *:not(#docCard){display:none !important}
+  main{padding:0; max-width:none}
+  main > *:not(#result){display:none !important}
+  #result > *:not(#docCard){display:none !important}
   #docCard{border:none; box-shadow:none; padding:0; margin:0; background:#fff}
   #docCard > *:not(.paperwrap){display:none !important}
   .paper{box-shadow:none; padding:0; max-width:none; min-width:0}
   .paper .rowctl{display:none !important}
   .paper [contenteditable]:hover,.paper [contenteditable]:focus{background:none}
-  .paper tr{break-inside:avoid}
+  /* 只有分鏡這種短列不跨頁；遊戲組「任務與規則」是一整格長內容，必須允許跨頁，否則整格被推到下一頁留下大片空白 */
+  .paper tr.keep{break-inside:avoid}
 }
 @media (max-width:600px){ h1{font-size:1.2rem} .paper{padding:20px 16px} }
 </style>
@@ -1136,7 +1144,7 @@ function buildDocxXML(S) {
   } else {
     const txt = [para(runs('題目:' + (B.title || '')))];
     const rows = [row([cell(txt, W)], {h: 500}),
-      row([cell([para(run('1、 玩家在這個遊戲的目標是：', {b: true})), para(runs(D.goal))], W)], {h: 900})];
+      row([cell([para(run('1、 玩家在這個遊戲的目標是：', {b: true}) + runs(D.goal))], W)], {h: 900})];
     const inner = [para(run('2、 這個遊戲的規則條件及玩家任務挑戰是：', {b: true}), {after: 120})];
     D.pairs.forEach((p, i) => {
       inner.push(para(run(`任務${cn(i + 1)}：`) + runs(p.task), {after: 40}));
@@ -1182,7 +1190,7 @@ function regenerate() {
   if (!S.basic.title) S.basic.title = M.title;
   render();
 }
-const ed = (key, text) => `<span contenteditable="true" data-k="${key}" class="${String(text).includes(TODO) ? 'todo' : 'fill'}">${esc(text)}</span>`;
+const ed = (key, text, inline) => `<span contenteditable="true" data-k="${key}" class="${String(text).includes(TODO) ? 'todo' : 'fill'}${inline ? ' inl' : ''}">${esc(text)}</span>`;
 function paperHTML() {
   const G = GROUPS[S.group], D = S.doc, B = S.basic;
   const learn = LEARN.map((t, i) => `${B.learn === i ? '☑' : '□'} ${t}`);
@@ -1203,17 +1211,17 @@ function paperHTML() {
       h += `<tr><td rowspan="${n}">任務${cn(i + 1)}<div class="rowctl"><button data-act="delTask" data-i="${i}" title="刪除這個任務">刪除</button></div></td>
         <td rowspan="${n}">${ed(`tasks.${i}.narrative`, t.narrative)}</td><td><div class="rowctl"><button data-act="addShot" data-i="${i}">＋分鏡</button></div></td><td class="c">場景</td><td class="c">角色</td><td class="c">動作</td></tr>`;
       t.shots.forEach((sh, j) => {
-        h += `<tr><td>分鏡${cn(j + 1)}<div class="rowctl"><button data-act="delShot" data-i="${i}" data-j="${j}" title="刪除這個分鏡">刪除</button></div></td>
+        h += `<tr class="keep"><td>分鏡${cn(j + 1)}<div class="rowctl"><button data-act="delShot" data-i="${i}" data-j="${j}" title="刪除這個分鏡">刪除</button></div></td>
           <td>${ed(`tasks.${i}.shots.${j}.scene`, sh.scene)}</td><td>${ed(`tasks.${i}.shots.${j}.roles`, sh.roles)}</td><td>${ed(`tasks.${i}.shots.${j}.action`, sh.action)}</td></tr>`;
       });
     });
     h += `</table><div class="rowctl" style="margin:-8px 0 14px"><button data-act="addTask">＋新增任務</button></div>`;
   } else {
     h += `<table><tr><td>題目:${esc(B.title)}</td></tr>
-      <tr><td><b>1、 玩家在這個遊戲的目標是：</b>${ed('goal', D.goal)}</td></tr>
+      <tr><td class="goal"><b>1、 玩家在這個遊戲的目標是：</b>${ed('goal', D.goal, true)}</td></tr>
       <tr><td><b>2、 這個遊戲的規則條件及玩家任務挑戰是：</b>`;
     D.pairs.forEach((p, i) => {
-      h += `<div style="margin-top:10px">任務${cn(i + 1)}：${ed(`pairs.${i}.task`, p.task)}規則${cn(i + 1)}：${ed(`pairs.${i}.rule`, p.rule)}
+      h += `<div class="pair" style="margin-top:10px"><div>任務${cn(i + 1)}：${ed(`pairs.${i}.task`, p.task, true)}</div><div>規則${cn(i + 1)}：${ed(`pairs.${i}.rule`, p.rule, true)}</div>
         <div class="rowctl"><button data-act="delPair" data-i="${i}">刪除這組</button></div></div>`;
     });
     h += `<div class="rowctl"><button data-act="addPair">＋新增任務與規則</button></div></td></tr></table>`;
@@ -1300,7 +1308,7 @@ function setPath(obj, path, val) {
 /* ---------- 事件 ---------- */
 document.addEventListener('input', e => {
   const k = e.target.dataset?.k;
-  if (k && S.doc) { setPath(S.doc, k, e.target.innerText.replace(/\n$/, '')); e.target.className = e.target.innerText.includes(TODO) ? 'todo' : 'fill'; return; }
+  if (k && S.doc) { setPath(S.doc, k, e.target.innerText.replace(/\n$/, '')); const todo = e.target.innerText.includes(TODO); e.target.classList.toggle('todo', todo); e.target.classList.toggle('fill', !todo); return; }
   const b = e.target.dataset?.b;
   if (b) { S.basic[b] = e.target.value; clearTimeout(render.t); render.t = setTimeout(() => { const y = scrollY; const f = document.activeElement?.dataset?.b; render(); scrollTo(0, y); if (f) { const el = document.querySelector(`[data-b="${f}"]`); el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 500); }
 });

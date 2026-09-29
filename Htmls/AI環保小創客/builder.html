@@ -40,7 +40,7 @@
 
   <div class="mode-tabs" id="modeTabs">
     <button class="mode-tab" data-mode="poster" style="--task:var(--t-poster)"><span class="i">🖼️</span><span><b>環保海報</b><span class="d">Gemini 生成圖片</span></span></button>
-    <button class="mode-tab" data-mode="music" style="--task:var(--t-lyrics)"><span class="i">🎵</span><span><b>環保歌曲</b><span class="d">Gemini 歌詞 → Suno 音樂</span></span></button>
+    <button class="mode-tab" data-mode="music" style="--task:var(--t-lyrics)"><span class="i">🎵</span><span><b>音樂創作</b><span class="d">環保或自由主題 · Gemini 歌詞 → Suno</span></span></button>
     <button class="mode-tab" data-mode="webapp" style="--task:var(--t-webapp)"><span class="i">💻</span><span><b>網頁小程式</b><span class="d">Gemini Canvas 寫程式</span></span></button>
   </div>
 
@@ -129,11 +129,39 @@
         </div>
 
         <form class="card card-top-bar" data-step-form="lyrics" style="--task:var(--t-lyrics)" onsubmit="return false">
-          <div class="block-title"><span class="gem-dot">🎯</span>環保議題與歌名</div>
-          <div class="row-2">
-            <div class="field"><select data-k="topic" class="topic-select"></select></div>
-            <div class="field"><input type="text" data-k="title" placeholder="歌名（可以先空白）"></div>
+          <div class="block-title"><span class="gem-dot">🧭</span>創作方向</div>
+          <div class="chips" data-k="dir">
+            <button type="button" class="chip on" data-value="eco">🌏 環保主題</button>
+            <button type="button" class="chip" data-value="free">🎨 自由主題</button>
           </div>
+          <span class="hint">音樂創作不限環保議題，可以依老師的規定，選擇你想唱的主題。</span>
+
+          <div class="block-title"><span class="gem-dot">🎯</span>主題與歌名</div>
+          <div class="dir-eco">
+            <div class="field"><label>環保議題</label><select data-k="topic" class="topic-select"></select></div>
+          </div>
+          <div class="dir-free hidden">
+            <div class="field"><label>選一個主題</label>
+              <div class="chips" data-k="theme">
+                <button type="button" class="chip" data-value="追逐夢想">⭐ 追逐夢想</button>
+                <button type="button" class="chip" data-value="勇敢面對挑戰">🔥 勇敢挑戰</button>
+                <button type="button" class="chip" data-value="珍貴的友情">🤝 珍貴友情</button>
+                <button type="button" class="chip" data-value="家人的溫暖">👨‍👩‍👧 家人溫暖</button>
+                <button type="button" class="chip" data-value="感謝我的老師">🍎 感謝老師</button>
+                <button type="button" class="chip" data-value="畢業與校園回憶">🎓 校園回憶</button>
+                <button type="button" class="chip" data-value="大自然與四季">🌿 大自然與四季</button>
+                <button type="button" class="chip" data-value="我的家鄉臺灣">🏡 我的家鄉</button>
+                <button type="button" class="chip" data-value="我的寵物好朋友">🐶 寵物好朋友</button>
+                <button type="button" class="chip" data-value="運動場上的熱血">🏃 運動熱血</button>
+                <button type="button" class="chip" data-value="好吃的美食">🍜 美食</button>
+                <button type="button" class="chip" data-value="歡樂的節日">🎉 歡樂節日</button>
+                <button type="button" class="chip" data-value="給自己加油打氣">🌈 加油打氣</button>
+                <button type="button" class="chip" data-value="奇幻的冒險故事">🐉 奇幻冒險</button>
+              </div>
+            </div>
+            <div class="field"><label>或自己想一個主題 <span class="hint">（有填寫就優先使用）</span></label><input type="text" data-k="themeFree" placeholder="例如：第一次上台表演、我的狗狗小黑"></div>
+          </div>
+          <div class="field"><label>歌名</label><input type="text" data-k="title" placeholder="可以先空白，寫完歌詞再決定"></div>
 
           <div class="block-title"><span class="gem-dot">✍️</span>我自己寫的句子</div>
           <div class="field">
@@ -150,6 +178,19 @@
               <button type="button" class="chip" data-value="溫柔感動">溫柔感動</button>
               <button type="button" class="chip" data-value="輕鬆有趣">輕鬆有趣</button>
               <button type="button" class="chip" data-value="帶點反省">帶點反省</button>
+              <button type="button" class="chip" data-value="溫暖感謝">溫暖感謝</button>
+              <button type="button" class="chip" data-value="懷念不捨">懷念不捨</button>
+              <button type="button" class="chip" data-value="壯闊勇敢">壯闊勇敢</button>
+              <button type="button" class="chip" data-value="神祕奇幻">神祕奇幻</button>
+            </div>
+          </div>
+          <div class="field"><label>歌詞語言</label>
+            <div class="chips" data-k="lang">
+              <button type="button" class="chip on" data-value="國語（繁體中文）">國語</button>
+              <button type="button" class="chip" data-value="英文">英文</button>
+              <button type="button" class="chip" data-value="國語為主，副歌加一點簡單的英文">中英混合</button>
+              <button type="button" class="chip" data-value="臺灣台語（用漢字書寫）">台語</button>
+              <button type="button" class="chip" data-value="客家語（用漢字書寫）">客語</button>
             </div>
           </div>
           <div class="row-2">
@@ -175,7 +216,8 @@
               <button type="button" class="chip on" data-value="用國小六年級學生聽得懂的詞">六年級聽得懂</button>
               <button type="button" class="chip on" data-value="副歌要好記、容易跟著唱">副歌好記</button>
               <button type="button" class="chip" data-value="盡量押韻">盡量押韻</button>
-              <button type="button" class="chip on" data-value="環保知識要正確，不要誇大">內容正確</button>
+              <button type="button" class="chip on" data-value="內容和知識要正確，不要誇大">內容正確</button>
+              <button type="button" class="chip on" data-value="內容正向，適合國小學生">內容正向</button>
             </div>
           </div>
           <label style="display:flex;gap:8px;align-items:center;cursor:pointer">
@@ -186,7 +228,28 @@
 
         <form class="card card-top-bar" data-step-form="suno" style="--task:var(--t-suno)" onsubmit="return false">
           <div class="callout"><strong>🎵 Suno 需要兩樣東西</strong>「Style of Music」（曲風標籤，用英文）和「Lyrics」（歌詞）。把 Gemini 建議的曲風和修改好的歌詞整理在這裡。</div>
-          <div class="field"><label>歌名</label><input type="text" data-k="title" placeholder="例如：海龜的微笑"></div>
+          <div class="field"><label>歌名</label><input type="text" data-k="title" placeholder="例如：海龜的微笑、追夢的腳步"></div>
+
+          <div class="block-title"><span class="gem-dot">🎼</span>曲風模板（點一下自動填入，可以再修改）</div>
+          <div class="chips" id="tplChips">
+            <button type="button" class="chip" data-value="pop">🎵 流行</button>
+            <button type="button" class="chip" data-value="rock">🎸 搖滾</button>
+            <button type="button" class="chip" data-value="edm">🎹 電子舞曲</button>
+            <button type="button" class="chip" data-value="jazz">🎷 爵士</button>
+            <button type="button" class="chip" data-value="classical">🎻 古典</button>
+            <button type="button" class="chip" data-value="folk">🪕 民謠</button>
+            <button type="button" class="chip" data-value="hiphop">🎤 嘻哈</button>
+            <button type="button" class="chip" data-value="lofi">🌙 Lo-fi</button>
+            <button type="button" class="chip" data-value="anime">🌸 動漫風</button>
+            <button type="button" class="chip" data-value="cinematic">🎬 電影配樂</button>
+            <button type="button" class="chip" data-value="kids">🧸 兒歌</button>
+            <button type="button" class="chip" data-value="chinese">🏮 中國風</button>
+            <button type="button" class="chip" data-value="reggae">🏝️ 雷鬼</button>
+            <button type="button" class="chip" data-value="bossa">🏖️ 巴薩諾瓦</button>
+            <button type="button" class="chip" data-value="synthwave">👾 復古電子</button>
+            <button type="button" class="chip" data-value="rnb">🎙️ R&amp;B</button>
+          </div>
+          <p class="small muted" id="tplDesc" style="margin:8px 0 0"></p>
 
           <div class="block-title"><span class="gem-dot">🎨</span>曲風標籤（Style of Music）</div>
           <div class="field"><label>曲風</label>
@@ -199,8 +262,12 @@
               <button type="button" class="chip" data-value="reggae">雷鬼 reggae</button>
               <button type="button" class="chip" data-value="jazz">爵士 jazz</button>
               <button type="button" class="chip" data-value="orchestral">管弦樂 orchestral</button>
+              <button type="button" class="chip" data-value="classical">古典 classical</button>
               <button type="button" class="chip" data-value="j-pop">日系流行 j-pop</button>
               <button type="button" class="chip" data-value="lo-fi">Lo-fi</button>
+              <button type="button" class="chip" data-value="R&amp;B">R&amp;B</button>
+              <button type="button" class="chip" data-value="children's song">兒歌 children's song</button>
+              <button type="button" class="chip" data-value="cinematic">電影配樂 cinematic</button>
             </div>
           </div>
           <div class="field"><label>情緒</label>
@@ -211,6 +278,10 @@
               <button type="button" class="chip" data-value="gentle">溫柔 gentle</button>
               <button type="button" class="chip" data-value="emotional">感動 emotional</button>
               <button type="button" class="chip" data-value="chill">輕鬆 chill</button>
+              <button type="button" class="chip" data-value="playful">俏皮 playful</button>
+              <button type="button" class="chip" data-value="nostalgic">懷念 nostalgic</button>
+              <button type="button" class="chip" data-value="epic">壯闊 epic</button>
+              <button type="button" class="chip" data-value="mysterious">神祕 mysterious</button>
             </div>
           </div>
           <div class="field"><label>樂器</label>
@@ -220,8 +291,15 @@
               <button type="button" class="chip" data-value="piano">鋼琴</button>
               <button type="button" class="chip" data-value="ukulele">烏克麗麗</button>
               <button type="button" class="chip" data-value="drums">爵士鼓</button>
+              <button type="button" class="chip" data-value="bass">貝斯</button>
               <button type="button" class="chip" data-value="synth">合成器</button>
               <button type="button" class="chip" data-value="strings">弦樂</button>
+              <button type="button" class="chip" data-value="violin">小提琴</button>
+              <button type="button" class="chip" data-value="flute">長笛</button>
+              <button type="button" class="chip" data-value="saxophone">薩克斯風</button>
+              <button type="button" class="chip" data-value="brass">銅管</button>
+              <button type="button" class="chip" data-value="erhu">二胡</button>
+              <button type="button" class="chip" data-value="guzheng">古箏</button>
               <button type="button" class="chip" data-value="whistling">口哨</button>
             </div>
           </div>
@@ -229,6 +307,7 @@
             <div class="field"><label>人聲</label>
               <div class="chips" data-k="vocal">
                 <button type="button" class="chip on" data-value="bright female vocals">女聲</button>
+                <button type="button" class="chip" data-value="soft female vocals">溫柔女聲</button>
                 <button type="button" class="chip" data-value="male vocals">男聲</button>
                 <button type="button" class="chip" data-value="duet">男女對唱</button>
                 <button type="button" class="chip" data-value="choir">合唱</button>
@@ -243,7 +322,17 @@
               </div>
             </div>
           </div>
-          <div class="field"><label>Gemini 建議的曲風 <span class="hint">（選填，英文，用逗號分隔）</span></label>
+          <div class="field"><label>演唱語言</label>
+            <div class="chips" data-k="slang">
+              <button type="button" class="chip on" data-value="Mandarin">國語</button>
+              <button type="button" class="chip" data-value="English">英文</button>
+              <button type="button" class="chip" data-value="Mandarin and English">中英混合</button>
+              <button type="button" class="chip" data-value="Taiwanese Hokkien">台語</button>
+              <button type="button" class="chip" data-value="Hakka">客語</button>
+            </div>
+            <span class="hint">選「純音樂」時不會加入語言標籤。</span>
+          </div>
+          <div class="field"><label>更多曲風標籤 <span class="hint">（選填，英文，用逗號分隔；Gemini 建議的曲風也貼在這裡）</span></label>
             <input type="text" data-k="gemStyle" placeholder="例如：bright acoustic pop, hand claps, cheerful">
           </div>
 
@@ -252,7 +341,7 @@
             <textarea data-k="lyrics" rows="9" placeholder="把 Gemini 寫好、你修改過的歌詞貼在這裡&#10;[Verse]&#10;……&#10;[Chorus]&#10;……"></textarea>
             <span class="hint" id="lyricsCheck"></span>
           </div>
-          <p class="small muted">想要更多曲風選項？可以使用 <a href="../SunoAI提示詞產生器_GEM音樂助手.html" target="_blank">SUNO AI 音樂提示詞產生器</a>。</p>
+          <p class="small muted">想要更多選項（年代風格、混音效果）？可以使用 <a href="../SunoAI提示詞產生器_GEM音樂助手.html" target="_blank">SUNO AI 音樂提示詞產生器</a>，再把產生的英文提示詞貼到「更多曲風標籤」。</p>
         </form>
       </div>
 
@@ -435,15 +524,21 @@
     },
     lyrics(d) {
       const mine = d.myLines.split('\n').map(s => s.trim()).filter(Boolean);
+      const free = d.dir === 'free';
+      const theme = free ? (d.themeFree.trim() || d.theme) : d.topic;
+      const titlePart = d.title.trim() ? `，歌名是「${d.title.trim()}」` : '';
       const lines = [
         '你是一位擅長寫青少年歌曲的作詞老師。',
-        `我是國小六年級學生，正在創作一首關於「${val(d.topic, '環保議題')}」的環保歌曲${d.title.trim() ? `，歌名是「${d.title.trim()}」` : ''}。`,
+        free
+          ? `我是國小六年級學生，正在創作一首主題是「${val(theme, '歌曲主題')}」的歌曲${titlePart}。`
+          : `我是國小六年級學生，正在創作一首關於「${val(theme, '環保議題')}」的環保歌曲${titlePart}。`,
         '',
         '【我自己寫的句子】（請放進歌詞裡）'
       ];
       if (mine.length) mine.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
       else lines.push(BLANK('至少 2 句自己寫的歌詞'));
       lines.push('', `【想表達的情緒】${val(d.mood.join('、'), '情緒')}`);
+      lines.push(`【歌詞語言】${d.lang || '國語（繁體中文）'}`);
       lines.push('', `【歌曲結構】請用英文段落標籤標示：${d.structure || '[Verse] → [Chorus]'}`);
       lines.push(`【長度】${d.length || '唱起來大約 2 分鐘'}`);
       if (d.rules.length) lines.push('', '【要求】', ...d.rules.map(x => `・${x}`));
@@ -452,7 +547,8 @@
       return lines.join('\n');
     },
     suno(d) {
-      return `【歌名】${val(d.title, '歌名')}\n\n【Style of Music】\n${sunoStyle(d) || BLANK('曲風標籤')}\n\n【Lyrics】\n${d.lyrics.trim() || BLANK('歌詞')}`;
+      const lyrics = d.lyrics.trim() || (d.vocal === 'instrumental' ? '（純音樂，不需要歌詞）' : BLANK('歌詞'));
+      return `【歌名】${val(d.title, '歌名')}\n\n【Style of Music】\n${sunoStyle(d) || BLANK('曲風標籤')}\n\n【Lyrics】\n${lyrics}`;
     },
     webapp(d) {
       const lines = [
@@ -474,10 +570,13 @@
   };
 
   function sunoStyle(d) {
-    const parts = [].concat(d.genre, d.smood, d.inst, d.vocal ? [d.vocal] : [], d.tempo ? [d.tempo] : [])
+    const lang = d.slang && d.vocal !== 'instrumental' ? [d.slang + ' vocals'] : [];
+    const parts = [].concat(d.genre, d.smood, d.inst, d.vocal ? [d.vocal] : [], lang, d.tempo ? [d.tempo] : [])
       .concat(String(d.gemStyle || '').split(/[,，]/).map(s => s.trim()).filter(Boolean));
     return [...new Set(parts.filter(Boolean))].join(', ');
   }
+
+  const LYRICS_GEM = 'https://gemini.google.com/gem/11-86qKv4TLDafPxdkM6LzLsCG1Mu1qPk?usp=sharing';
 
   // ---------- 追問句型 ----------
   const FOLLOW = {
@@ -490,7 +589,7 @@
       report: '這張圖有一個問題：＿＿。我希望變成＿＿，請幫我修正。'
     },
     lyrics: {
-      clear: '副歌請寫得更具體，加入＿＿（例如：自備水壺、隨手關燈）這樣的行動，讓人一聽就知道可以做什麼。',
+      clear: '副歌請寫得更具體，加入＿＿（例如：自備水壺、一起練球的畫面）這樣的細節，讓人一聽就有畫面。',
       one: '其他段落都不要改，只修改＿＿（哪一段），改成＿＿。',
       limit: '請修改歌詞：每一句不要超過＿＿個字，而且要保留我寫的句子。',
       askme: '在修改之前，請先問我 2 個問題，確認我想要的感覺。',
@@ -547,6 +646,49 @@
     }
   });
 
+  // ---------- Suno 曲風模板（改編自 SUNO AI 音樂提示詞產生器） ----------
+  const STYLE_TPL = {
+    pop: { desc: '朗朗上口的流行歌，副歌好記。', genre: ['pop'], smood: ['upbeat', 'hopeful'], inst: ['piano', 'synth', 'drums'], vocal: 'bright female vocals', tempo: 'mid-tempo', gemStyle: 'catchy chorus, modern production' },
+    rock: { desc: '電吉他和鼓組很有力量，適合熱血的歌。', genre: ['rock'], smood: ['energetic'], inst: ['electric guitar', 'drums', 'bass'], vocal: 'male vocals', tempo: 'fast tempo', gemStyle: 'anthemic chorus, powerful' },
+    edm: { desc: '會讓人想跳舞的電子節奏，有「堆疊→爆發」的段落。', genre: ['electronic'], smood: ['energetic', 'upbeat'], inst: ['synth', 'drums'], vocal: 'bright female vocals', tempo: 'fast tempo', gemStyle: 'EDM, four-on-the-floor beat, build and drop' },
+    jazz: { desc: '慵懶放鬆的爵士樂，薩克斯風很有味道。', genre: ['jazz'], smood: ['chill'], inst: ['piano', 'saxophone', 'bass'], vocal: 'soft female vocals', tempo: 'slow tempo', gemStyle: 'smooth jazz, brushed drums' },
+    classical: { desc: '鋼琴和弦樂演奏的古典風格，適合純音樂。', genre: ['classical'], smood: ['gentle', 'emotional'], inst: ['piano', 'strings'], vocal: 'instrumental', tempo: 'slow tempo', gemStyle: 'neo-classical, expressive' },
+    folk: { desc: '木吉他自彈自唱，像在說一個溫暖的故事。', genre: ['folk'], smood: ['gentle', 'nostalgic'], inst: ['acoustic guitar'], vocal: 'male vocals', tempo: 'mid-tempo', gemStyle: 'storytelling, harmonica, warm' },
+    hiphop: { desc: '有節奏感的饒舌，主歌用唸的，副歌用唱的。', genre: ['hip hop'], smood: ['energetic'], inst: ['drums', 'bass', 'piano'], vocal: 'male vocals', tempo: 'mid-tempo', gemStyle: 'rap verses, boom bap beat, catchy hook' },
+    lofi: { desc: '輕柔放鬆的讀書音樂。', genre: ['lo-fi'], smood: ['chill'], inst: ['piano'], vocal: 'instrumental', tempo: 'slow tempo', gemStyle: 'soft vinyl crackle, study music, rainy day' },
+    anime: { desc: '像動畫片頭曲一樣充滿能量。', genre: ['j-pop'], smood: ['energetic', 'hopeful'], inst: ['electric guitar', 'synth', 'drums'], vocal: 'bright female vocals', tempo: 'fast tempo', gemStyle: 'anime opening, uplifting' },
+    cinematic: { desc: '壯闊的電影配樂，適合冒險或史詩故事。', genre: ['cinematic', 'orchestral'], smood: ['epic'], inst: ['strings', 'brass'], vocal: 'instrumental', tempo: 'mid-tempo', gemStyle: 'film score, dramatic percussion, building tension' },
+    kids: { desc: '活潑可愛、大家可以一起拍手唱的兒歌。', genre: ["children's song"], smood: ['playful', 'upbeat'], inst: ['ukulele', 'piano'], vocal: 'choir', tempo: 'mid-tempo', gemStyle: 'hand claps, sing-along' },
+    chinese: { desc: '加入二胡、古箏的中國風流行歌。', genre: ['pop'], smood: ['gentle', 'emotional'], inst: ['erhu', 'guzheng', 'piano'], vocal: 'male vocals', tempo: 'mid-tempo', gemStyle: 'Chinese traditional style, pentatonic melody' },
+    reggae: { desc: '悠閒的海島風，反拍的吉他很有特色。', genre: ['reggae'], smood: ['chill', 'upbeat'], inst: ['electric guitar', 'bass', 'drums'], vocal: 'male vocals', tempo: 'mid-tempo', gemStyle: 'offbeat guitar, relaxed groove' },
+    bossa: { desc: '巴西風格的輕柔吉他，像海邊的微風。', genre: ['jazz'], smood: ['chill', 'gentle'], inst: ['acoustic guitar'], vocal: 'soft female vocals', tempo: 'slow tempo', gemStyle: 'bossa nova, soft percussion, breezy' },
+    synthwave: { desc: '80 年代的復古電子音色，像霓虹燈閃爍的城市。', genre: ['electronic'], smood: ['energetic', 'nostalgic'], inst: ['synth', 'drums'], vocal: 'male vocals', tempo: 'mid-tempo', gemStyle: 'synthwave, 80s retro, neon atmosphere' },
+    rnb: { desc: '律動感很強的節奏藍調，人聲有很多轉音。', genre: ['R&B'], smood: ['chill', 'emotional'], inst: ['piano', 'bass'], vocal: 'soft female vocals', tempo: 'slow tempo', gemStyle: 'soul, smooth groove, electric piano' }
+  };
+  E.bindChips($('#tplChips'), {
+    onChange: key => {
+      const t = STYLE_TPL[key];
+      $('#tplDesc').textContent = t ? `🎼 ${t.desc} 已自動填入下面的標籤，你可以再增減。` : '';
+      if (!t) return;
+      const { desc, ...fields } = t;
+      const cur = readForm(formEl('suno')).gemStyle.trim();
+      const known = Object.values(STYLE_TPL).some(x => x.gemStyle === cur);
+      if (cur && !known && !confirm('套用模板會取代「更多曲風標籤」裡你已經寫的內容，確定嗎？')) fields.gemStyle = cur;
+      writeForm(formEl('suno'), fields);
+      onInput();
+    }
+  });
+
+  function syncDirection() {
+    const free = readForm(formEl('lyrics')).dir === 'free';
+    $$('.dir-eco').forEach(el => el.classList.toggle('hidden', free));
+    $$('.dir-free').forEach(el => el.classList.toggle('hidden', !free));
+    const ta = $('[data-step-form="lyrics"] [data-k="myLines"]');
+    ta.placeholder = free
+      ? '例如：\n就算跌倒也沒關係，拍拍膝蓋再出發\n夢想像一顆星星，在黑夜裡閃閃發亮'
+      : '例如：\n帶著水壺去上學，海龜朋友笑呵呵\n少用一個塑膠袋，地球多一口氣';
+  }
+
   // ---------- 畫面更新 ----------
   function render() {
     $$('.mode-tab').forEach(b => b.classList.toggle('on', b.dataset.mode === mode));
@@ -566,11 +708,12 @@
     $('#platformHint').innerHTML = {
       poster: '貼到 Gemini 後，如果沒有產生圖片，可以在開頭加上「請產生一張圖片：」。',
       music: isSuno ? '在 Suno 的 Create 頁面開啟「Custom」模式，分別貼上 Style 和 Lyrics。'
-        : '貼到 Gemini。收到歌詞後，<strong>自己先讀一遍</strong>，想想哪裡要修改。',
+        : `貼到 Gemini。收到歌詞後，<strong>自己先讀一遍</strong>，想想哪裡要修改。<br>也可以貼到老師準備的 <a href="${LYRICS_GEM}" target="_blank" rel="noopener">✨ Gemini 歌詞助手</a>。`,
       webapp: '在 Gemini 輸入框下方的工具列選擇 <strong>Canvas</strong>，再貼上提示詞。'
     }[mode];
     $('#rightPanel').style.setProperty('--task', `var(--t-${taskKey()})`);
     renderFollowChips();
+    syncDirection();
     updatePreview();
   }
 
@@ -606,6 +749,7 @@
 
   function onInput() {
     const fk = formKey();
+    if (fk === 'lyrics') syncDirection();
     E.setDraft('builder.' + fk, readForm(formEl(fk)));
     updatePreview();
   }

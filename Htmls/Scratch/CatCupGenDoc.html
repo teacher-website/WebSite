@@ -143,7 +143,7 @@ pre.code{background:var(--bg); border:2px solid var(--line); border-radius:14px;
   <div class="logo" aria-hidden="true">📝</div>
   <div>
     <h1>貓咪盃程式說明文件產生器</h1>
-    <p class="sub">臺北市 115 年 Scratch 貓咪盃・國小動畫／遊戲 AI 互動組・上傳 .sb3，自動整理成程式說明文件</p>
+    <p class="sub">臺北市 115 年 Scratch 貓咪盃・國小動畫／遊戲 AI 互動組，或其他任何 Scratch 作品・上傳 .sb3，自動整理成程式說明文件</p>
   </div>
 </header>
 <main id="app">
@@ -152,6 +152,7 @@ pre.code{background:var(--bg); border:2px solid var(--line); border-radius:14px;
     <div class="groups" role="radiogroup">
       <label class="grp"><input type="radio" name="grp" value="anim" checked><div><b>國小動畫 AI 互動組</b><span>森林動物搬家記・附件 3（敘事設計＋分鏡表）</span></div></label>
       <label class="grp"><input type="radio" name="grp" value="game"><div><b>國小遊戲 AI 互動組</b><span>AI 節奏接龍大作戰・附件 4（遊戲目標＋任務與規則）</span></div></label>
+      <label class="grp"><input type="radio" name="grp" value="other"><div><b>其他作品</b><span>不對照競賽題目・通用格式（作品簡介＋操作方式＋角色功能＋程式邏輯）</span></div></label>
     </div>
     <h2 style="margin-top:18px"><span class="step">2</span>上傳作品</h2>
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="選擇 sb3 檔案">
@@ -210,6 +211,26 @@ const GROUPS = {
       '主框第一列：「題目:」',
       '1、玩家在這個遊戲的目標是：＿＿＿',
       '2、這個遊戲的規則條件及玩家任務挑戰是：任務一：＿＿ 規則一：＿＿ 任務二：＿＿ 規則二：＿＿ （可自行增加任務與規則）'
+    ]
+  },
+  /* 不屬於競賽組別的作品：不對照題目，改用通用格式說明內容與邏輯 */
+  other: {
+    name: '其他作品', topic: '（沒有指定題目）', attach: '通用格式', general: true,
+    story: '這個作品不屬於國小動畫組或遊戲組（可能是課堂作業、練習作品或其他比賽），沒有指定題目。請直接從程式推論作品的目的、玩法與設計邏輯。',
+    tasks: [
+      '作品在做什麼：主題、場景、主要角色。',
+      '怎麼操作：鍵盤、滑鼠點擊、詢問與回答、AI 偵測，或按下綠旗後自動播放。',
+      '程式邏輯：從綠旗開始的流程、廣播訊息怎麼串起各角色、重要的判斷條件、變數與清單的用途。',
+      '可能的問題：廣播沒有人接收、沒有接在事件下面的積木、「造型換成 (數字變數)」等常見錯誤。'
+    ],
+    docReq: '程式說明文件：請依照程式說明文件內容撰寫，須說明作品在做什麼、怎麼操作、每個角色負責的工作、程式流程、變數用途與重要的判斷條件。',
+    format: [
+      '【基本資料】表格：年級、作品名稱、學生姓名、班級、Scratch 學習時間',
+      '主表格第一列：「題目:作品名稱」',
+      '1、作品簡介：＿＿＿',
+      '2、操作方式：＿＿＿',
+      '3、角色與功能：表格，每列「角色｜負責的工作」（可自行增列）',
+      '【程式說明】：程式流程（事件與廣播）、變數與清單、重要的判斷條件、使用的程式技巧（有 AI 擴充功能時另加 AI 互動方式）'
     ]
   }
 };
@@ -957,10 +978,256 @@ function draftGame(M) {
   };
 }
 
+/* ----------------------------------------------------------------------
+   其他作品：不對照題目，整理「做什麼、怎麼操作、誰負責什麼、程式怎麼串」
+   ---------------------------------------------------------------------- */
+const KEY_NAME = {space: '空白鍵', 'left arrow': '← 鍵', 'right arrow': '→ 鍵', 'up arrow': '↑ 鍵', 'down arrow': '↓ 鍵', any: '任意鍵', enter: 'Enter 鍵'};
+const keyName = k => KEY_NAME[String(k).toLowerCase()] || `${String(k).toUpperCase()} 鍵`;
+/* 從腳本開頭走到的所有積木（含迴圈、條件裡面與參數裡的積木） */
+function reach(ctx, id) {
+  const seen = new Set(), stack = [id];
+  while (stack.length && seen.size < 20000) {
+    const cur = stack.pop();
+    if (typeof cur !== 'string' || seen.has(cur)) continue;
+    const b = ctx.blocks[cur];
+    if (!b || Array.isArray(b)) continue;
+    seen.add(cur);
+    if (b.next) stack.push(b.next);
+    for (const inp of Object.values(b.inputs || {})) if (Array.isArray(inp)) { if (typeof inp[1] === 'string') stack.push(inp[1]); if (typeof inp[2] === 'string') stack.push(inp[2]); }
+  }
+  return [...seen].map(k => ctx.blocks[k]).filter(b => !b.shadow);
+}
+/* 依執行順序列出一段程式送出的廣播 */
+function sentIn(ctx, id, out = [], depth = 0) {
+  if (depth > 8) return out;
+  for (const bid of chain(ctx, id)) {
+    const b = ctx.blocks[bid];
+    if (b.opcode === 'event_broadcast' || b.opcode === 'event_broadcastandwait') { const n = bcastName(ctx, b); if (n != null && !out.includes(n)) out.push(n); }
+    const sub = subOf(b), sub2 = subOf(b, 'SUBSTACK2');
+    if (sub) sentIn(ctx, sub, out, depth + 1);
+    if (sub2) sentIn(ctx, sub2, out, depth + 1);
+  }
+  return out;
+}
+/* 按鍵、點擊之後「做了什麼」：跳過外層的迴圈與條件，列出裡面實際的動作 */
+function firstActs(ctx, id, n = 3) {
+  const out = [];
+  const walk = (bid, depth) => {
+    for (const x of chain(ctx, bid)) {
+      if (out.length >= n || depth > 4) return;
+      const b = ctx.blocks[x], sub = subOf(b), sub2 = subOf(b, 'SUBSTACK2');
+      if (/^control_(if|if_else|forever|repeat|repeat_until|while|wait)$/.test(b.opcode)) { if (sub) walk(sub, depth + 1); if (sub2) walk(sub2, depth + 1); }
+      else out.push(shortText(blockText(ctx, b).split('\n')[0], 28));
+    }
+  };
+  walk(id, 0);
+  return out.join('、') || '（沒有積木）';
+}
+function general(M) {
+  if (M.gen) return M.gen;
+  const g = {keys: [], keyCheck: new Set(), clicks: [], mouse: false, drag: false, ask: false, loud: false, video: false, touch: 0, color: 0,
+    forever: 0, repeat: 0, until: 0, ifs: 0, clones: 0, timer: false, pen: false, music: false, tts: false, calls: 0,
+    costumeNum: [], dead: 0, dynBc: 0, roles: [], flow: [], unusedVars: [], lonelyBc: {noRecv: [], noSend: []}};
+  for (const t of M.targets) {
+    const {ctx} = t;
+    const live = t.scripts.filter(s => s.live);
+    g.dead += t.scripts.filter(s => !s.live).length;
+    const ops = [];
+    for (const s of live) {
+      const hb = ctx.blocks[s.id];
+      if (s.hat === 'event_whenkeypressed') g.keys.push({key: keyName(hb.fields.KEY_OPTION[0]), who: t.name, what: firstActs(ctx, hb.next)});
+      if (s.hat === 'event_whenthisspriteclicked' || s.hat === 'event_whenstageclicked') g.clicks.push({who: t.name, what: firstActs(ctx, hb.next)});
+      ops.push(...reach(ctx, s.id));
+    }
+    for (const b of ops) {
+      const op = b.opcode;
+      if (/^event_broadcast/.test(op) && bcastName(ctx, b) == null) g.dynBc++;
+      if (op === 'sensing_keypressed') { const k = menuVal(ctx, b, 'KEY_OPTION'); if (k) g.keyCheck.add(keyName(k)); }
+      if (/^sensing_mouse|_mouse_/.test(op) || (op === 'motion_goto' && menuVal(ctx, b, 'TO') === '_mouse_') || (op === 'motion_pointtowards' && menuVal(ctx, b, 'TOWARDS') === '_mouse_')) g.mouse = true;
+      if (op === 'sensing_setdragmode') g.drag = true;
+      if (op === 'sensing_askandwait') g.ask = true;
+      if (op === 'sensing_loudness') g.loud = true;
+      if (op.startsWith('videoSensing_')) g.video = true;
+      if (op === 'sensing_touchingobject') g.touch++;
+      if (op === 'sensing_touchingcolor' || op === 'sensing_coloristouchingcolor') g.color++;
+      if (op === 'control_forever') g.forever++;
+      if (op === 'control_repeat') g.repeat++;
+      if (op === 'control_repeat_until' || op === 'control_while') g.until++;
+      if (op === 'control_if' || op === 'control_if_else') g.ifs++;
+      if (op === 'control_create_clone_of') g.clones++;
+      if (/^sensing_(timer|resettimer)/.test(op)) g.timer = true;
+      if (op.startsWith('pen_')) g.pen = true;
+      if (op.startsWith('music_')) g.music = true;
+      if (op.startsWith('text2speech_')) g.tts = true;
+      if (op === 'procedures_call') g.calls++;
+      /* 「造型換成 (數字變數)」會被當成第幾個造型，不是造型名稱 */
+      for (const [bop, key] of [['looks_switchcostumeto', 'COSTUME'], ['looks_switchbackdropto', 'BACKDROP'], ['looks_switchbackdroptoandwait', 'BACKDROP']]) {
+        if (op !== bop) continue;
+        const v = b.inputs?.[key]?.[1];
+        const rb = typeof v === 'string' ? ctx.blocks[v] : null;
+        const vn = Array.isArray(v) && v[0] === 12 ? v[1] : rb?.opcode === 'data_variable' ? rb.fields.VARIABLE[0] : null;
+        if (vn != null) {
+          /* 變數：只有被設成數字（或會被加減）時才會被當成「第幾個造型」；一律設成文字就沒問題 */
+          const vr = M.V(vn);
+          const num = vr && (vr.changes.length || vr.sets.some(r => /^\[-?\d/.test(r.text)));
+          const text = vr && vr.sets.length && vr.sets.every(r => /^「.*」$/.test(r.text));
+          if (!text) g.costumeNum.push({who: t.name, text: blockText(ctx, b), sure: !!num});
+        } else if (rb && !rb.shadow && rb.opcode !== 'operator_join')
+          g.costumeNum.push({who: t.name, text: blockText(ctx, b), sure: /^operator_(add|subtract|multiply|divide|mod|round|mathop|random|length)$/.test(rb.opcode)});
+      }
+    }
+    /* 角色負責的工作：由哪些事件啟動、做了哪些事 */
+    if (!live.length) continue;
+    const hats = [...new Set(live.filter(s => s.hat !== 'procedures_definition').map(s => blockText(ctx, ctx.blocks[s.id])))];
+    const has = re => ops.some(b => re.test(b.opcode));
+    const says = ops.filter(b => /^looks_(say|think)/.test(b.opcode)).length;
+    const sent = [...new Set(ops.filter(b => /^event_broadcast/.test(b.opcode)).map(b => bcastName(ctx, b)).filter(n => n != null))];
+    const vchg = [...new Set(ops.filter(b => /^data_(set|change)variable/.test(b.opcode)).map(b => b.fields.VARIABLE[0]))];
+    const parts = [];
+    if (says) parts.push(`說話或想法（${says} 處）`);
+    if (has(/^motion_/)) parts.push('移動');
+    if (has(/^looks_(switchcostume|nextcostume)/)) parts.push('換造型');
+    if (has(/^looks_(switchbackdrop|nextbackdrop)/)) parts.push('換背景');
+    if (has(/^looks_(show|hide)$/)) parts.push('出現／隱藏');
+    if (has(/^looks_(change|set)(effect|size)/)) parts.push('特效或大小變化');
+    if (has(/^(sound_play|music_)/)) parts.push('播放聲音');
+    if (has(/^control_create_clone_of$/)) parts.push('產生分身');
+    if (has(/^sensing_touching/)) parts.push('偵測碰撞');
+    if (has(/^sensing_askandwait$/)) parts.push('詢問並等待回答');
+    if (ops.some(b => isAIop(b.opcode))) parts.push('讀取 AI 偵測的座標');
+    if (vchg.length) parts.push(`設定／改變變數 ${list(vchg, 4)}`);
+    if (sent.length) parts.push(`廣播 ${list(sent.map(n => `「${n}」`), 4)}`);
+    g.roles.push({name: t.isStage ? '舞台' : t.name, job: `（草稿）${list(hats, 3)}時：${parts.join('、') || '（見程式）'}。`});
+  }
+  /* 程式流程：從綠旗開始，沿著廣播一層一層往下追 */
+  const flagWho = [...new Set(M.targets.filter(t => t.scripts.some(s => s.hat === 'event_whenflagclicked')).map(t => t.name))];
+  if (flagWho.length) g.flow.push(`・按下綠旗：${list(flagWho, 8)} 開始執行`);
+  const visited = new Set();
+  let queue = M.targets.flatMap(t => t.scripts.filter(s => s.hat === 'event_whenflagclicked').map(s => ({who: t.name, names: sentIn(s.ctx, s.ctx.blocks[s.id].next)})));
+  for (let d = 0; d < 6 && queue.length; d++) {
+    const next = [];
+    for (const q of queue) for (const n of q.names) {
+      const key = String(n).toLowerCase();
+      if (visited.has(key)) continue;
+      visited.add(key);
+      const rec = M.bc.get(key)?.receivers || [];
+      g.flow.push(`${'  '.repeat(d)}・${q.who} 廣播「${n}」→ ${[...new Set(rec.map(s => s.who))].join('、') || '（沒有角色接收）'}`);
+      for (const s of rec) next.push({who: s.who, names: sentIn(s.ctx, s.ctx.blocks[s.id].next)});
+    }
+    queue = next;
+  }
+  const rest = [...M.bc.values()].filter(b => !visited.has(b.name.toLowerCase()) && b.senders.length);
+  if (rest.length) g.flow.push('・其他時候（按鍵、點擊、條件成立）才送出的廣播：', ...rest.slice(0, 8).map(b => `  ・${[...new Set(b.senders.map(x => x.who))].join('、')} 廣播「${b.name}」→ ${[...new Set(b.receivers.map(x => x.who))].join('、') || '（沒有角色接收）'}`));
+  if (M.backdrops.length > 1) g.flow.push(`・背景（場景）：${list(M.backdrops, 8)}`);
+  for (const b of M.bc.values()) {
+    if (b.senders.length && !b.receivers.length) g.lonelyBc.noRecv.push(b.name);
+    if (!b.senders.length && b.receivers.length) g.lonelyBc.noSend.push(b.name);
+  }
+  g.unusedVars = [...M.vars.values()].filter(v => !v.sets.length && !v.changes.length).map(v => v.name);
+  M.gen = g;
+  return g;
+}
+function usageText(M) {
+  const g = general(M), out = [];
+  for (const k of g.keys.slice(0, 8)) out.push(`・按 ${k.key}：${k.who} ${k.what}`);
+  const held = [...g.keyCheck].filter(k => !g.keys.some(x => x.key === k));
+  if (held.length) out.push(`・按住 ${held.join('、')}：程式在迴圈裡隨時檢查有沒有按下`);
+  for (const c of g.clicks.slice(0, 6)) out.push(`・點一下 ${c.who}：${c.what}`);
+  if (g.mouse) out.push('・移動滑鼠：有角色會跟著鼠標或讀取鼠標位置');
+  if (g.drag) out.push('・可以用滑鼠拖曳角色');
+  if (g.ask) out.push('・回答問題：程式會用「詢問並等待」讓使用者輸入答案');
+  if (g.loud) out.push('・發出聲音：程式會讀取麥克風的聲音響度');
+  if (M.aiExts.length) out.push(`・用身體動作：${M.aiExts.map(e => EXT_NAME[e] || e).join('、')}${M.partsUsed.length ? `（偵測 ${list(M.partsUsed, 4)}）` : ''}${M.actions.length ? `，動作有 ${M.actions.join('、')}` : ''}`);
+  else if (g.video) out.push('・在攝影機前動作：程式使用視訊偵測');
+  return out.length ? '（草稿）\n' + out.join('\n') : '（草稿）按下綠旗後自動播放，不需要操作。' + TODO + '如果有操作方式，請補充。';
+}
+function draftOther(M) {
+  const g = general(M);
+  const tl = storyTimeline(M);
+  /* 只取真正的對白（說／想著），不含空白對話框與其他動作 */
+  const says = tl.main.flatMap(s => s.action.split('\n')).flatMap(l => {
+    const who = l.split('：')[0];
+    return (l.match(/(說|想著)「(?!\[ \]」)[^」]+」/g) || []).map(x => `${who}${x}`);
+  }).filter((x, i, a) => a.indexOf(x) === i).slice(0, 3);
+  const sprites = M.sprites.map(s => s.name);
+  const intro = `（草稿，請改寫成自己的話）這個作品有 ${sprites.length} 個角色（${list(sprites, 6) || '無'}）` +
+    (M.backdrops.length ? `、${M.backdrops.length} 個背景（${list(M.backdrops, 4)}）` : '') + '。' +
+    (says.length ? `開場對白：${says.join('；')}。` : '') + TODO + '請說明作品的主題，以及想讓觀看者或玩家體驗什麼。';
+  const roles = g.roles.length ? g.roles.slice(0, 12) : [{name: TODO, job: TODO}];
+
+  const vs = [...M.vars.values()].filter(v => v.sets.length || v.changes.length);
+  const guess = v => v.ai ? 'AI 座標計算' : RE.score.test(v.name) ? '計分' : RE.level.test(v.name) ? '關卡' : RE.life.test(v.name) ? '生命' :
+    RE.combo.test(v.name) ? '連續次數' : /時間|計時|倒數|time/i.test(v.name) ? '計時' : RE.flag.test(v.name) ? '開關（旗標）' : '';
+  const vText = vs.slice(0, 12).map(v => `・${v.name}（${v.owner}）：${v.sets.length ? '設為 ' + [...new Set(v.sets.map(r => r.text))].slice(0, 3).join('／') : ''}${v.sets.length && v.changes.length ? '；' : ''}${v.changes.length ? '改變 ' + [...new Set(v.changes.map(r => r.text))].slice(0, 3).join('／') : ''}${guess(v) ? `　→ 看起來是「${guess(v)}」` : ''}`);
+  const lText = [...M.lists.values()].slice(0, 6).map(l => `・清單「${l.name}」：${[...new Set(l.ops.map(o => o.text))].slice(0, 3).join('；') || '程式裡沒有修改（只讀取原本的內容）'}`);
+  const varText = (vText.length || lText.length ? [...vText, ...lText].join('\n') : '沒有使用變數或清單。') + (vs.some(v => !guess(v)) ? '\n' + TODO + '請說明每個變數代表什麼。' : '');
+
+  const seen = new Set();
+  const pick = [...M.endConds, ...M.branches, ...M.conds.filter(c => c.op !== 'hat' && c.thenActs.length)].filter(c => !seen.has(c.text) && seen.add(c.text));
+  const condText = pick.length ? pick.slice(0, 8).map(c => `・如果 ${c.text}（${c.who}）→ ${c.thenActs.slice(0, 3).map(a => a.text).join('；') || '（見程式）'}${c.op === 'control_if_else' && c.elseActs.length ? `；否則 → ${c.elseActs.slice(0, 2).map(a => a.text).join('；')}` : ''}`).join('\n') : '沒有「如果…那麼」之類的判斷，程式依順序執行。';
+
+  const tech = [];
+  if (g.forever + g.repeat + g.until) tech.push(`迴圈：重複無限次 ${g.forever} 個、重複固定次數 ${g.repeat} 個、重複直到 ${g.until} 個`);
+  if (g.ifs) tech.push(`條件判斷（如果…那麼）${g.ifs} 個`);
+  if (M.bc.size) tech.push(`廣播訊息 ${M.bc.size} 種（讓角色之間互相通知）`);
+  if (g.clones) tech.push(`分身 ${g.clones} 處（一次產生很多個相同的角色）`);
+  if (M.procs) tech.push(`自訂積木（函式）${M.procs} 個，使用 ${g.calls} 次`);
+  if (M.randoms.length) tech.push(`亂數 ${M.randoms.length} 處`);
+  if (M.lists.size) tech.push(`清單 ${M.lists.size} 個`);
+  if (g.touch || g.color) tech.push(`碰撞偵測 ${g.touch + g.color} 處`);
+  if (g.timer) tech.push('計時器');
+  if (g.pen) tech.push('畫筆');
+  if (g.music) tech.push('音樂擴充功能');
+  if (g.tts) tech.push('文字轉語音');
+  if (g.ask) tech.push('詢問與回答');
+  const extra = [
+    {title: '程式流程（事件與廣播）', text: g.flow.length ? g.flow.join('\n') : TODO + '沒有找到「當綠旗被點擊」，請說明作品怎麼開始。'},
+    {title: '變數與清單', text: varText},
+    {title: '重要的判斷條件', text: condText},
+    {title: '使用的程式技巧', text: tech.length ? tech.map(t => '・' + t).join('\n') : '只用到基本的依序執行積木。'}
+  ];
+  if (M.aiExts.length) {
+    const ai = [aiSummary(M)];
+    if (M.aiConds.length) ai.push('動作判斷（門檻）：\n' + M.aiConds.slice(0, 6).map(c => '・' + condLine(c, M)).join('\n'));
+    if (M.trigConds.length) ai.push('動作 → 效果：\n' + trigLines(M).map(l => '・' + l).join('\n'));
+    if (M.flags.length || M.waitUntilAI.length) ai.push('避免重複觸發：\n' + flagText(M));
+    const nd = noDetectText(M); if (nd) ai.push(nd);
+    extra.push({title: 'AI 互動方式', text: ai.join('\n\n')});
+  }
+  return {intro, usage: usageText(M), roles, extra};
+}
+function checksOther(M) {
+  const g = general(M), out = [];
+  const add = (st, title, detail) => out.push({st, title, detail});
+  const flag = M.targets.some(t => t.scripts.some(s => s.hat === 'event_whenflagclicked'));
+  add(flag ? 'ok' : 'warn', '從綠旗開始', flag ? '有「當 🚩 被點擊」，按綠旗就會開始。' : '沒有「當 🚩 被點擊」，按綠旗不會有反應，請確認作品怎麼開始。');
+  const inputs = g.keys.length + g.keyCheck.size + g.clicks.length + (g.mouse || g.drag || g.ask || g.loud || g.video || M.aiExts.length ? 1 : 0);
+  add(inputs ? 'ok' : 'check', '操作方式', inputs ? usageText(M).replace('（草稿）\n', '').replace(/・/g, '') : '沒有找到鍵盤、滑鼠、詢問或 AI 操作。如果是純動畫，這是正常的。');
+  const nr = g.lonelyBc.noRecv, ns = g.lonelyBc.noSend;
+  add(nr.length ? 'warn' : ns.length ? 'check' : 'ok', '廣播訊息都有送出也有接收',
+    (nr.length ? `有廣播但沒有角色接收：${list(nr.map(n => `「${n}」`), 6)}（廣播出去不會有任何反應）。` : '') +
+    (ns.length ? `有角色在等但沒有人廣播：${list(ns.map(n => `「${n}」`), 6)}（這段程式目前不會執行；如果是預留給以後用的，可以不用改）。` : '') +
+    (g.dynBc ? `另外有 ${g.dynBc} 處用變數或運算決定廣播名稱，可能就是由那裡送出。` : '') + (nr.length || ns.length ? '' : `${M.bc.size} 種廣播都有配對。`));
+  const sure = g.costumeNum.filter(c => c.sure), maybe = g.costumeNum.filter(c => !c.sure);
+  add(sure.length ? 'warn' : maybe.length ? 'check' : 'ok', '造型／背景用變數切換的寫法', g.costumeNum.length ?
+    `${[...sure, ...maybe].slice(0, 3).map(c => `${c.who}：${c.text}`).join('；')}。${sure.length ? '這裡的值是數字，' : '請確認這裡的值是造型名稱；'}Scratch 遇到數字會當成「第幾個造型」而不是造型名稱，要用名稱時請用「字串組合」把它變成文字。` : '沒有發現「造型換成 (數字變數)」這類容易出錯的寫法。');
+  add(g.dead ? 'check' : 'ok', '沒有接在事件下面的積木', g.dead ? `有 ${g.dead} 段積木沒有接在「當…」下面，不會執行。請確認是否要刪掉或接回去。` : '所有積木都接在事件下面。');
+  add(g.unusedVars.length ? 'check' : 'ok', '變數都有用到', g.unusedVars.length ? `從來沒有被設定或改變的變數：${list(g.unusedVars, 8)}。如果用不到可以刪掉。` : '每個變數都有被設定或改變。');
+  const ends = M.stops.length || M.endConds.length;
+  add(ends ? 'ok' : 'check', '結束方式', ends ? `找到 ${M.stops.length} 個「停止」積木、${M.endConds.length} 個過關／結束相關的條件。` : '沒有找到「停止全部」或結束的廣播。如果作品會一直執行，這也可以，但請在文件寫明怎麼結束。');
+  if (M.aiExts.length) {
+    add(M.aiConds.length ? 'ok' : 'warn', 'AI 互動', `使用 ${M.aiExts.map(e => EXT_NAME[e] || e).join('、')}，有 ${M.aiConds.length} 個用 AI 座標做判斷的條件。`);
+    add(M.noDetect.length ? 'ok' : 'check', '偵測不到手或臉時的處理', M.noDetect.length ? M.noDetect.slice(0, 2).map(c => c.text).join('；') : '沒有找到判斷「偵測不到」的條件（例如 人數 > 0，或座標是空字串）。');
+  }
+  return out;
+}
+const draftFor = (M, grp) => grp === 'anim' ? draftAnim(M) : grp === 'game' ? draftGame(M) : draftOther(M);
+
 /* ======================================================================
    六、題目任務檢核（自動判斷＋需人工確認）
    ====================================================================== */
 function checks(M, g) {
+  if (g === 'other') return checksOther(M);
   const out = [];
   const add = (st, title, detail) => out.push({st, title, detail});
   const hasAI = M.aiExts.length > 0;
@@ -1003,11 +1270,23 @@ function aiPack(S) {
   const M = S.M, G = GROUPS[S.group], D = S.doc, B = S.basic;
   const L = [];
   const h = s => L.push('', s, '');
-  L.push(`# 貓咪盃程式說明文件・AI 分析包`);
-  L.push('', `> **給 AI 的說明**：這份 Markdown 檔由「貓咪盃程式說明文件產生器」從學生的 Scratch 3 作品（.sb3）自動分析產生，已經包含題目原文、官方文件格式、作品的完整程式（積木轉成文字）與自動分析結果。**不需要開啟 .sb3**，請只根據本檔內容完成下面「你的任務」。`);
-  L.push('', `- 組別：${G.name}（題目：${G.topic}）`, `- 作品檔名：${M.fileName}`, `- 產生時間：${new Date().toLocaleString('zh-TW')}`);
+  const O = !!G.general;
+  L.push(O ? '# Scratch 作品程式說明文件・AI 分析包' : `# 貓咪盃程式說明文件・AI 分析包`);
+  L.push('', O ? '> **給 AI 的說明**：這份 Markdown 檔由「貓咪盃程式說明文件產生器」從學生的 Scratch 3 作品（.sb3）自動分析產生。這個作品**不屬於任何競賽組別、沒有指定題目**，檔案裡已經包含通用的文件格式、作品的完整程式（積木轉成文字）與自動分析結果。**不需要開啟 .sb3**，請只根據本檔內容完成下面「你的任務」。'
+    : `> **給 AI 的說明**：這份 Markdown 檔由「貓咪盃程式說明文件產生器」從學生的 Scratch 3 作品（.sb3）自動分析產生，已經包含題目原文、官方文件格式、作品的完整程式（積木轉成文字）與自動分析結果。**不需要開啟 .sb3**，請只根據本檔內容完成下面「你的任務」。`);
+  L.push('', O ? '- 類型：其他作品（不對照競賽題目）' : `- 組別：${G.name}（題目：${G.topic}）`, `- 作品檔名：${M.fileName}`, `- 產生時間：${new Date().toLocaleString('zh-TW')}`);
   h('## 你的任務');
-  L.push(
+  if (O) L.push(
+    '1. **撰寫程式說明文件**：依照第二節的通用格式，寫出可以直接貼進正式文件的內容。',
+    '2. **說明程式邏輯**：用學生看得懂的話，說明作品從按下綠旗到結束的流程、每個角色負責什麼、廣播怎麼串起各角色、變數與清單的用途、重要的判斷條件。',
+    '3. **檢查問題並給改進建議**：先看第五節的自動檢核，再從完整程式找出可能的錯誤（例如廣播沒人接收、迴圈裡沒有等待、造型換成數字變數）與可以加強的地方。依重要程度排序，每點說明「問題 → 原因 → 具體改法（指名角色與積木）」。',
+    '',
+    '寫作規則：',
+    '- 使用繁體中文（台灣用語），讀者是國小高年級學生與指導老師，句子簡短、具體。',
+    '- **只根據本檔的程式內容推論**，不要編造不存在的積木、角色或數值。程式看不出來的事（例如作品的主題與創作動機）請寫「（請學生補充：…）」。',
+    '- 說明條件與數值時，一律寫出**變數名稱與具體數字**。',
+    '- 第六節的「工具草稿」是規則式自動產生，可能有誤，請以第七節完整程式為準。'
+  ); else L.push(
     `1. **撰寫程式說明文件**：依照第二節的官方格式（${G.attach}），寫出可以直接貼進正式文件的內容。`,
     `2. **逐項檢核題目任務**：對照第一節的每一項任務，判斷作品「已完成／部分完成／未完成」，並說出程式證據（哪個角色、哪段腳本）。`,
     `3. **給改進建議**：依重要程度排序，每點說明「問題 → 原因 → 具體改法（指名角色與積木）」。`,
@@ -1016,21 +1295,30 @@ function aiPack(S) {
     '- 使用繁體中文（台灣用語），讀者是國小高年級學生與指導老師，句子簡短、具體。',
     '- **只根據本檔的程式內容推論**，不要編造不存在的積木、角色或數值。程式看不出來的事（例如故事的情感、角色的個性）請寫「（請學生補充：…）」。',
     '- 說明文件裡的門檻、條件、分數一律寫成**具體數字**，並寫出變數名稱，評審只認具體做法。',
-    '- 第五節的「工具草稿」是規則式自動產生，可能有誤，請以第七節完整程式為準。'
+    '- 第六節的「工具草稿」是規則式自動產生，可能有誤，請以第七節完整程式為準。'
   );
   h('### 請用這個格式回覆');
   if (S.group === 'anim') L.push('```markdown', '## 一、程式說明文件（附件 3）', '### 基本資料', '（年級、作品名稱、學生姓名、班級、Scratch 學習時間）',
     '### 主表格', '| 任務 | 敘事設計 | 分鏡 | 場景 | 角色 | 動作 |', '|---|---|---|---|---|---|', '| 任務一 | …故事劇情… | 分鏡一 | … | … | … |', '|  |  | 分鏡二 | … | … | … |',
     '### 補充說明（題目指定）', '- 頭部或手部互動方式：（模組、部位、門檻數字、如何避免重複觸發、偵測不到時怎麼辦）', '- 場景變化規則：（變數意義、範圍、每個行動造成的變化）', '- 故事分支條件：（兩種以上發展的進入條件，寫成數字）',
     '## 二、題目任務檢核', '| 任務 | 判定 | 程式證據 |', '## 三、改進建議', '1. …', '```');
+  else if (O) L.push('```markdown', '## 一、程式說明文件（通用格式）', '### 基本資料', '（年級、作品名稱、學生姓名、班級、Scratch 學習時間）',
+    '### 題目：（作品名稱）', '1、作品簡介：…', '2、操作方式：…', '3、角色與功能：', '| 角色 | 負責的工作 |', '|---|---|', '| … | … |',
+    '### 程式說明', '- 程式流程（事件與廣播）：…', '- 變數與清單：…', '- 重要的判斷條件：…', '- 使用的程式技巧：…', '- （有 AI 擴充功能時）AI 互動方式：…',
+    '## 二、程式邏輯說明', '（依執行順序，用條列或流程說明）', '## 三、作品檢核', '| 項目 | 判定 | 程式證據 |', '## 四、改進建議', '1. …', '```');
   else L.push('```markdown', '## 一、程式說明文件（附件 4）', '### 基本資料', '（年級、作品名稱、學生姓名、班級、Scratch 學習時間）',
     '### 題目：（作品名稱）', '1、玩家在這個遊戲的目標是：…', '2、這個遊戲的規則條件及玩家任務挑戰是：', '任務一：…', '規則一：…', '任務二：…', '規則二：…', '（可自行增加任務與規則）',
     '### 補充說明（題目指定）', '- 動作判定方式（含如何避免重複判定）：…', '- 亂數節奏產生方法：…', '- 動作序列的記錄方式：…', '- 關卡通過與遊戲結束條件：…',
     '## 二、題目任務檢核', '| 任務 | 判定 | 程式證據 |', '## 三、改進建議', '1. …', '```');
 
-  h('## 一、題目原文');
-  L.push(`**組別**：${G.name}　**題目**：${G.topic}`, '', `**情境說明**：${G.story}`, '', '**任務說明**：', ...G.tasks.map(t => `- ${t}`), '', `**${G.docReq}**`);
-  h(`## 二、官方程式說明文件格式（${G.attach}）`);
+  if (O) {
+    h('## 一、作品說明（沒有指定題目）');
+    L.push(G.story, '', '**分析重點**：', ...G.tasks.map(t => `- ${t}`), '', `**${G.docReq}**`);
+  } else {
+    h('## 一、題目原文');
+    L.push(`**組別**：${G.name}　**題目**：${G.topic}`, '', `**情境說明**：${G.story}`, '', '**任務說明**：', ...G.tasks.map(t => `- ${t}`), '', `**${G.docReq}**`);
+  }
+  h(O ? '## 二、程式說明文件格式（通用格式）' : `## 二、官方程式說明文件格式（${G.attach}）`);
   L.push(...G.format.map(f => `- ${f}`));
   h('## 三、作品基本資料');
   L.push(`- 年級：${B.grade || '（未填）'}`, `- 作品名稱：${B.title || M.title}`, `- 學生姓名：${B.name || '（未填）'}`, `- 班級：${B.klass || '（未填）'}`, `- Scratch 學習時間：${B.learn != null ? LEARN[B.learn] : '（未填）'}`);
@@ -1059,7 +1347,12 @@ function aiPack(S) {
     ...M.endings.items.map(it => `- 「${it.value}」：${it.when}${it.outcome ? ` → ${it.outcome}` : ''}`), '', '其他條件分支：');
   const bs = [...new Set([...M.branches, ...M.endConds])];
   L.push(...(bs.length ? bs.slice(0, 12).map(c => `- 如果 ${c.text}（${c.who}）：成立 → ${M.outcome(c.thenActs) || c.thenActs.slice(0, 3).map(a => a.text).join('；') || '—'}${c.op === 'control_if_else' ? `；不成立 → ${M.outcome(c.elseActs) || c.elseActs.slice(0, 3).map(a => a.text).join('；') || '—'}` : ''}`) : ['- （沒有找到）']));
-  h('## 五、題目任務自動檢核（規則式，供參考）');
+  if (O) {
+    const g = general(M);
+    L.push('', '### 操作方式', ...usageText(M).split('\n').slice(1).map(l => '- ' + l.replace(/^・/, '')));
+    L.push('', '### 程式流程（從綠旗開始，沿著廣播往下追）', ...(g.flow.length ? g.flow.map(l => l.replace(/^(\s*)・/, (m, sp) => sp + '- ')) : ['- （沒有找到「當綠旗被點擊」）']));
+  }
+  h(O ? '## 五、作品自動檢核（規則式，供參考）' : '## 五、題目任務自動檢核（規則式，供參考）');
   const ST = {ok: '✅ 偵測到', warn: '⚠️ 沒偵測到', check: '🔍 需人工確認'};
   L.push('| 項目 | 結果 | 說明 |', '|---|---|---|', ...S.checks.map(c => `| ${c.title} | ${ST[c.st]} | ${c.detail.replace(/\|/g, '／').replace(/\n/g, ' ')} |`));
   h('## 六、工具產生的草稿（可能有誤，僅供參考）');
@@ -1069,11 +1362,14 @@ function aiPack(S) {
       t.shots.forEach((sh, j) => L.push(`- 分鏡${cn(j + 1)}｜場景：${sh.scene}｜角色：${sh.roles}｜動作：${sh.action.replace(/\n/g, '；')}`));
       L.push('');
     });
+  } else if (O) {
+    L.push(`1、作品簡介：${D.intro.replace(/\n/g, ' ')}`, '', `2、操作方式：${D.usage.replace(/\n/g, ' ')}`, '', '3、角色與功能：', '', '| 角色 | 負責的工作 |', '|---|---|',
+      ...D.roles.map(r => `| ${r.name.replace(/\|/g, '／')} | ${r.job.replace(/\|/g, '／').replace(/\n/g, ' ')} |`));
   } else {
     L.push(`1、玩家在這個遊戲的目標是：${D.goal}`, '', '2、這個遊戲的規則條件及玩家任務挑戰是：');
     D.pairs.forEach((p, i) => L.push(`- 任務${cn(i + 1)}：${p.task}`, `- 規則${cn(i + 1)}：${p.rule}`));
   }
-  L.push('', '**補充說明（題目指定項目）**');
+  L.push('', O ? '**程式說明**' : '**補充說明（題目指定項目）**');
   for (const e of D.extra) L.push('', `#### ${e.title}`, '', e.text.split('\n').map(l => l.startsWith('・') ? '- ' + l.slice(1) : l).join('\n'));
   h('## 七、完整程式（積木轉成文字）');
   L.push('讀法：每一段以「當…」開頭；縮排代表在迴圈或條件裡面；`(…)` 是數值或變數，`<…>` 是條件，`[…]` 是輸入值或選單，`「…」` 是文字。',
@@ -1115,10 +1411,14 @@ function buildDocxXML(S) {
   const G = GROUPS[S.group], D = S.doc, B = S.basic;
   const W = 9638;
   const body = [];
-  body.push(para(run(G.attach, {sz: 20})));
-  body.push(para(run('臺北市 115 年國中小學生 Scratch 貓咪盃創意競賽初賽', {b: true, sz: 32}), {center: true, after: 0}));
-  body.push(para(run(`${G.name}程式說明文件`, {b: true, sz: 32}), {center: true, after: 200}));
-  body.push(para(run('【基本參賽資料】', {b: true, sz: 28}), {after: 80}));
+  if (G.general) {
+    body.push(para(run('Scratch 作品程式說明文件', {b: true, sz: 32}), {center: true, after: 200}));
+  } else {
+    body.push(para(run(G.attach, {sz: 20})));
+    body.push(para(run('臺北市 115 年國中小學生 Scratch 貓咪盃創意競賽初賽', {b: true, sz: 32}), {center: true, after: 0}));
+    body.push(para(run(`${G.name}程式說明文件`, {b: true, sz: 32}), {center: true, after: 200}));
+  }
+  body.push(para(run(G.general ? '【基本資料】' : '【基本參賽資料】', {b: true, sz: 28}), {after: 80}));
   const g1 = [2200, 3000, 1100, 3338];
   const lb = t => cell(t, g1[0], {r: {b: true}});
   const learn = LEARN.map((t, i) => `${B.learn === i ? '☑' : '□'} ${t}`);
@@ -1141,6 +1441,16 @@ function buildDocxXML(S) {
         cell(sh.scene, g[3]), cell(sh.roles, g[4]), cell(sh.action, g[5])], {h: 700})));
     });
     body.push(table(g, rows));
+  } else if (G.general) {
+    const g = [2400, W - 2400];
+    const full = inner => cell(inner, W, {span: 2});
+    const rows = [row([full([para(runs('題目:' + (B.title || '')))])], {h: 500}),
+      row([full([para(run('1、 作品簡介：', {b: true}) + runs(D.intro))])], {h: 900}),
+      row([full([para(run('2、 操作方式：', {b: true}) + runs(D.usage))])], {h: 900}),
+      row([full([para(run('3、 角色與功能：', {b: true}))])]),
+      row([cell('角色', g[0], {center: true, r: {b: true}}), cell('負責的工作', g[1], {center: true, r: {b: true}})]),
+      ...D.roles.map(r => row([cell(r.name, g[0]), cell(r.job, g[1], {r: {sz: 22}})]))];
+    body.push(table(g, rows));
   } else {
     const txt = [para(runs('題目:' + (B.title || '')))];
     const rows = [row([cell(txt, W)], {h: 500}),
@@ -1154,7 +1464,7 @@ function buildDocxXML(S) {
     body.push(table([W], rows));
   }
   body.push(para('', {after: 120}));
-  body.push(para(run('【程式說明】', {b: true, sz: 28}) + run(`（依題目要求：${G.docReq.replace('程式說明文件：請依照程式說明文件內容撰寫，', '')}）`, {sz: 20}), {after: 80}));
+  body.push(para(run('【程式說明】', {b: true, sz: 28}) + run(`（${G.general ? '' : '依題目要求：'}${G.docReq.replace('程式說明文件：請依照程式說明文件內容撰寫，', '')}）`, {sz: 20}), {after: 80}));
   const ge = [2400, W - 2400];
   body.push(table(ge, D.extra.map(e => row([cell(e.title, ge[0], {r: {b: true}}), cell(e.text, ge[1], {r: {sz: 22}})]))));
   const sect = '<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/></w:sectPr>';
@@ -1185,7 +1495,7 @@ const safeName = s => String(s || '作品').replace(/[\\/:*?"<>|]/g, '_').slice(
 
 function regenerate() {
   const M = S.M;
-  S.doc = S.group === 'anim' ? draftAnim(M) : draftGame(M);
+  S.doc = draftFor(M, S.group);
   S.checks = checks(M, S.group);
   if (!S.basic.title) S.basic.title = M.title;
   render();
@@ -1194,9 +1504,9 @@ const ed = (key, text, inline) => `<span contenteditable="true" data-k="${key}" 
 function paperHTML() {
   const G = GROUPS[S.group], D = S.doc, B = S.basic;
   const learn = LEARN.map((t, i) => `${B.learn === i ? '☑' : '□'} ${t}`);
-  let h = `<div class="paper"><span class="att">${G.attach}</span>
-    <p class="ttl">臺北市 115 年國中小學生 Scratch 貓咪盃創意競賽初賽</p><p class="ttl2">${G.name}程式說明文件</p>
-    <p class="sec">【基本參賽資料】</p>
+  let h = `<div class="paper">${G.general ? '<p class="ttl2">Scratch 作品程式說明文件</p>'
+    : `<span class="att">${G.attach}</span><p class="ttl">臺北市 115 年國中小學生 Scratch 貓咪盃創意競賽初賽</p><p class="ttl2">${G.name}程式說明文件</p>`}
+    <p class="sec">${G.general ? '【基本資料】' : '【基本參賽資料】'}</p>
     <table><colgroup><col style="width:22%"><col style="width:32%"><col style="width:12%"><col></colgroup>
     <tr><td class="lb">年級</td><td colspan="3">${esc(B.grade)}</td></tr>
     <tr><td class="lb">作品名稱</td><td colspan="3">${esc(B.title) || '（請依主題自行命名）'}</td></tr>
@@ -1216,6 +1526,15 @@ function paperHTML() {
       });
     });
     h += `</table><div class="rowctl" style="margin:-8px 0 14px"><button data-act="addTask">＋新增任務</button></div>`;
+  } else if (G.general) {
+    h += `<table><colgroup><col style="width:25%"><col></colgroup>
+      <tr><td colspan="2">題目:${esc(B.title)}</td></tr>
+      <tr><td colspan="2" class="goal"><b>1、 作品簡介：</b>${ed('intro', D.intro, true)}</td></tr>
+      <tr><td colspan="2" class="usage"><b>2、 操作方式：</b>${ed('usage', D.usage, true)}</td></tr>
+      <tr><td colspan="2"><b>3、 角色與功能：</b></td></tr>
+      <tr><td class="c"><b>角色</b></td><td class="c"><b>負責的工作</b></td></tr>
+      ${D.roles.map((r, i) => `<tr class="keep"><td>${ed(`roles.${i}.name`, r.name)}<div class="rowctl"><button data-act="delRole" data-i="${i}" title="刪除這個角色">刪除</button></div></td><td>${ed(`roles.${i}.job`, r.job)}</td></tr>`).join('')}
+      </table><div class="rowctl" style="margin:-8px 0 14px"><button data-act="addRole">＋新增角色</button></div>`;
   } else {
     h += `<table><tr><td>題目:${esc(B.title)}</td></tr>
       <tr><td class="goal"><b>1、 玩家在這個遊戲的目標是：</b>${ed('goal', D.goal, true)}</td></tr>
@@ -1226,7 +1545,7 @@ function paperHTML() {
     });
     h += `<div class="rowctl"><button data-act="addPair">＋新增任務與規則</button></div></td></tr></table>`;
   }
-  h += `<p class="sec">【程式說明】<span style="font-weight:400;font-size:.85rem">（依題目要求：${esc(G.docReq.replace('程式說明文件：請依照程式說明文件內容撰寫，', ''))}）</span></p>
+  h += `<p class="sec">【程式說明】<span style="font-weight:400;font-size:.85rem">（${G.general ? '' : '依題目要求：'}${esc(G.docReq.replace('程式說明文件：請依照程式說明文件內容撰寫，', ''))}）</span></p>
     <table><colgroup><col style="width:25%"><col></colgroup>${D.extra.map((e, i) => `<tr><td class="lb">${esc(e.title)}</td><td>${ed(`extra.${i}.text`, e.text)}</td></tr>`).join('')}</table></div>`;
   return h;
 }
@@ -1239,7 +1558,9 @@ function factsHTML() {
     <h3>用 AI 座標做的判斷（${M.aiConds.length}）</h3>${li(M.aiConds.slice(0, 15).map(c => condLine(c, M)))}
     <h3>動作觸發 → 效果（${M.trigConds.length}）</h3>${li(trigLines(M, 15))}
     <h3>避免重複判定</h3>${li(flagText(M).split('\n'))}
-    <h3>${S.group === 'anim' ? '故事分支' : '過關與結束條件'}</h3>${li([...new Set([...M.branches, ...M.endConds])].slice(0, 10).map(c => `如果 ${c.text}（${c.who}）→ ${M.outcome(c.thenActs) || '—'}${c.op === 'control_if_else' ? `；否則 → ${M.outcome(c.elseActs) || '—'}` : ''}`))}
+    ${S.group === 'other' ? `<h3>操作方式</h3>${li(usageText(M).split('\n').slice(1).map(l => l.replace(/^・/, '')))}
+    <h3>程式流程</h3>${li(general(M).flow.map(l => l.trim().replace(/^・/, '')))}` : ''}
+    <h3>${S.group === 'anim' ? '故事分支' : S.group === 'game' ? '過關與結束條件' : '條件分支與結束'}</h3>${li([...new Set([...M.branches, ...M.endConds])].slice(0, 10).map(c => `如果 ${c.text}（${c.who}）→ ${M.outcome(c.thenActs) || '—'}${c.op === 'control_if_else' ? `；否則 → ${M.outcome(c.elseActs) || '—'}` : ''}`))}
     <h3>亂數</h3>${li(M.randoms.slice(0, 10).map(r => `${r.text}（${r.who}）`))}
     <h3>清單</h3>${li([...M.lists.values()].map(l => `${l.name}：${[...new Set(l.ops.map(o => o.text))].slice(0, 3).join('；') || '沒有被修改'}`))}
     <h3>變數</h3><div class="tablewrap"><table><tr><th>變數</th><th>屬於</th><th>設定</th><th>改變</th></tr>
@@ -1265,8 +1586,8 @@ function render() {
     <h2><span class="step">3</span>${esc(M.fileName)}</h2>
     <div class="stats">${[['角色', s.sprites], ['腳本', s.scripts], ['積木', s.blocks], ['變數', s.vars], ['清單', s.lists], ['廣播', s.broadcasts], ['背景', M.backdrops.length]].map(([l, v]) => `<span class="stat"><b>${v}</b>${l}</span>`).join('')}</div>
     <p style="margin:10px 0 0">擴充功能：${M.extensions.length ? M.extensions.map(e => esc(EXT_NAME[e] || e)).join('、') : '無'}</p>
-    ${guess && guess !== S.group ? `<div class="warnbox">這個作品看起來比較像 <b>${GROUPS[guess].name}</b>（${guess === 'game' ? '有清單和亂數' : '有故事分支、沒有清單'}）。如果選錯了，請回到上面第 1 步切換組別。</div>` : ''}
-    <h3>題目任務檢核（${G.name}）</h3>
+    ${guess && guess !== S.group && !G.general ? `<div class="warnbox">這個作品看起來比較像 <b>${GROUPS[guess].name}</b>（${guess === 'game' ? '有清單和亂數' : '有故事分支、沒有清單'}）。如果選錯了，請回到上面第 1 步切換組別。</div>` : ''}
+    <h3>${G.general ? '作品檢核（通用，不對照題目）' : `題目任務檢核（${G.name}）`}</h3>
     <ul class="checks">${S.checks.map(c => `<li><span class="badge ${ST[c.st][0]}">${ST[c.st][1]}</span><div><b>${esc(c.title)}</b><p>${esc(c.detail)}</p></div></li>`).join('')}</ul>
     <p class="legend">檢核是依積木自動判斷，只能看出「程式裡有沒有」，看不出「做得好不好」。標「請確認」的項目需要打開作品實際操作。</p>
   </section>
@@ -1285,7 +1606,7 @@ function render() {
     <div class="tabs" role="tablist">
       ${[['doc', '📄 文件草稿'], ['facts', '🔍 分析重點'], ['code', '🧩 完整程式']].map(([k, l]) => `<button class="tab" role="tab" data-tab="${k}" aria-selected="${S.tab === k}">${l}</button>`).join('')}
     </div>
-    ${S.tab === 'doc' ? `<div class="hint">這是依程式自動整理的<b>草稿</b>，版面跟${G.attach}一樣。<b>點任何一格就能直接修改</b>；紅字的「【請補充】」是程式看不出來、要學生自己寫的地方。故事內容、角色心情等請學生用自己的話改寫。</div>
+    ${S.tab === 'doc' ? `<div class="hint">這是依程式自動整理的<b>草稿</b>，${G.general ? '使用通用格式（作品簡介、操作方式、角色與功能、程式說明）' : `版面跟${G.attach}一樣`}。<b>點任何一格就能直接修改</b>；紅字的「【請補充】」是程式看不出來、要學生自己寫的地方。故事內容、角色心情等請學生用自己的話改寫。</div>
       <div class="paperwrap">${paperHTML()}</div>
       <div class="acts" style="margin-top:14px"><button class="btn" data-act="docx">⬇️ 下載 Word（.docx）</button><button class="btn orange" data-act="print">🖨️ 列印／存成 PDF</button><button class="btn ghost" data-act="reset">↺ 重新產生草稿</button></div>`
       : S.tab === 'facts' ? factsHTML() : codeHTML()}
@@ -1328,7 +1649,9 @@ document.addEventListener('click', async e => {
   else if (a === 'delTask') { if (S.doc.tasks.length > 1) { S.doc.tasks.splice(i, 1); render(); } else toast('至少要保留一個任務'); }
   else if (a === 'addPair') { S.doc.pairs.push({task: '', rule: ''}); render(); }
   else if (a === 'delPair') { if (S.doc.pairs.length > 1) { S.doc.pairs.splice(i, 1); render(); } else toast('至少要保留一組'); }
-  else if (a === 'reset') { S.doc = S.group === 'anim' ? draftAnim(S.M) : draftGame(S.M); render(); toast('已重新產生草稿（剛才的修改已清除）'); }
+  else if (a === 'addRole') { S.doc.roles.push({name: '', job: ''}); render(); }
+  else if (a === 'delRole') { if (S.doc.roles.length > 1) { S.doc.roles.splice(i, 1); render(); } else toast('至少要保留一個角色'); }
+  else if (a === 'reset') { S.doc = draftFor(S.M, S.group); render(); toast('已重新產生草稿（剛才的修改已清除）'); }
   else if (a === 'print') { window.print(); return; }
   else if (a === 'docx') {
     try { download(`${safeName(S.basic.title || S.M.title)}_程式說明文件.docx`, await makeDocx(S)); toast('已下載 Word 檔'); }

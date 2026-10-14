@@ -189,7 +189,15 @@ body.no-timeline #timeline { display: none; }
 .ftile .fnum { font-size: 11px; text-align: center; background: #d9d9d9; color: #333; line-height: 15px; font-variant-numeric: tabular-nums; }
 .ftile.cur .fnum { background: var(--accent); color: #fff; font-weight: 700; }
 .ftile canvas { height: var(--thumb-h); width: auto; display: block; background: #fff; }
+.ftile.msel { border-color: #4dc3ff; }
+.ftile.msel .fnum { background: #4dc3ff; color: #fff; font-weight: 700; }
+.ftile.cur.msel { border-color: var(--accent); }
+.ftile.cur.msel .fnum { background: var(--accent); }
 .ftile.dragging { opacity: .45; }
+.tl-btn.on { background: #4dc3ff; color: #fff; }
+.tl-btn.multi { background: var(--danger); color: #fff; }
+#tlDel { width: auto; min-width: 50px; padding: 0 8px; white-space: nowrap; }
+#timeline #tlDel.multi span { display: inline; }
 .ftile.drop-before { box-shadow: -6px 0 0 -2px #4dc3ff; }
 .ftile.drop-after { box-shadow: 6px 0 0 -2px #4dc3ff; }
 .fadd {
@@ -536,6 +544,7 @@ input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 
     <div class="tl-actions">
       <button class="tl-btn" id="tlAdd" title="在後面新增空白影格（N）"><i data-ic="plus"></i><span>新增</span></button>
       <button class="tl-btn" id="tlDup" title="複製這一格（Ctrl+D）"><i data-ic="copy"></i><span>複製</span></button>
+      <button class="tl-btn" id="tlMulti" title="多選影格（滑鼠也可以 Ctrl＋點＝加選、Shift＋點＝連續選）"><i data-ic="multi"></i><span>多選</span></button>
       <button class="tl-btn" id="tlDel" title="刪除這一格"><i data-ic="trash"></i><span>刪除</span></button>
     </div>
     <div class="frame-strip" id="frameStrip" data-guide="影格時間軸和影格控制"></div>
@@ -800,6 +809,7 @@ const ICONS = {
   keyboard: '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" stroke-width="2.2"/>',
   sprite: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18"/>',
   hand: '<path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12M11 11V4a1.5 1.5 0 0 1 3 0v7M14 11V5.5a1.5 1.5 0 0 1 3 0V13M17 9.5a1.5 1.5 0 0 1 3 0V15a7 7 0 0 1-7 7h-1.5a6 6 0 0 1-4.8-2.4L3.4 15.8a1.5 1.5 0 0 1 2.3-2L8 16"/>',
+  multi: '<rect x="3" y="7" width="12" height="12" rx="2"/><path d="M8 4h11a2 2 0 0 1 2 2v11"/><path d="m6 13 2.2 2.2L12.5 11"/>',
   history: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3.5 2"/>',
   backup: '<path d="M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3z"/><path d="M4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
   clear: '<path d="M4 4h16v16H4z" class="d"/><path d="M9 9l6 6M15 9l-6 6"/>',
@@ -1202,10 +1212,12 @@ function structChanged() {
   if (OVERVIEW) renderOverview();
   changed();
 }
-function setFrame(i, fromHistory) {
+/** keepSel：保留時間軸的多選（Ctrl／Shift 點選時用） */
+function setFrame(i, fromHistory, keepSel) {
   if (!P) return;
   if (!fromHistory) finishEdits();
   S.fi = clamp(i, 0, P.frames.length - 1);
+  if (!keepSel) { FSEL.clear(); fselAnchor = S.fi; }
   updateCounter();
   highlightTimeline(true);
   updateLayerThumbs();
@@ -1237,6 +1249,21 @@ function opDeleteFrame(i = S.fi) {
   const undoIt = () => { P.frames.splice(i, 0, fr); setFrame(i, true); structChanged(); };
   doIt();
   histPush({ label: '刪除影格', undo: undoIt, redo: doIt });
+}
+/** 一次刪除多格；整批算一個復原步驟 */
+function opDeleteFrames(list) {
+  finishEdits();
+  const idx = [...new Set(list)].filter((i) => i >= 0 && i < P.frames.length).sort((a, b) => a - b);
+  if (idx.length <= 1) { opDeleteFrame(idx.length ? idx[0] : S.fi); return; }
+  const before = P.frames.slice();
+  const drop = new Set(idx.map((i) => before[i]));
+  let after = before.filter((f) => !drop.has(f));
+  if (!after.length) after = [newFrameObj()];
+  const target = Math.min(idx[0], after.length - 1);
+  const set = (arr, fi) => { P.frames = arr.slice(); setFrame(fi, true); structChanged(); };
+  set(after, target);
+  histPush({ label: `刪除 ${idx.length} 格`, undo: () => set(before, idx[0]), redo: () => set(after, target) });
+  toast(`已刪除 ${idx.length} 格（按復原可以救回來）`, 1800);
 }
 function opMoveFrame(from, to) {
   finishEdits();
@@ -2499,8 +2526,9 @@ window.addEventListener('keydown', (e) => {
     n: () => opAddFrame(), o: () => toggleOnion(), h: () => toggleGrid(), l: () => toggleLayers(),
     u: () => cycleShape(), r: () => fitView(), 0: () => fitView(),
     '+': () => zoomAt(VW / 2, VH / 2, 1.25), '=': () => zoomAt(VW / 2, VH / 2, 1.25), '-': () => zoomAt(VW / 2, VH / 2, 0.8),
-    Delete: () => SEL && selDelete(), Backspace: () => SEL && selDelete(),
-    Escape: () => { if (S.picking) endPicking(); else if (SEL) { if (SEL.float) cancelFloat(); else { SEL = null; updateSelBar(); } requestRender(); } },
+    Delete: () => (SEL ? selDelete() : selectedFrameIdx().length > 1 && deleteSelectedFrames()),
+    Backspace: () => (SEL ? selDelete() : selectedFrameIdx().length > 1 && deleteSelectedFrames()),
+    Escape: () => { if (S.picking) endPicking(); else if (!SEL && FSEL.size) { if (multiMode) setMultiMode(false); else { FSEL.clear(); highlightTimeline(false); } } else if (SEL) { if (SEL.float) cancelFloat(); else { SEL = null; updateSelBar(); } requestRender(); } },
     '?': () => openHelp(),
   };
   const fn = map[k] || map[k.toLowerCase()];
@@ -3115,8 +3143,50 @@ function updateThumbs() {
   updateLayerThumbs();
   if (OVERVIEW) for (const t of $$('.ov-tile canvas', OVERVIEW)) { const fr = frameById(t.dataset.fid); if (fr) t.getContext('2d').drawImage(fr.thumb, 0, 0, t.width, t.height); }
 }
+/* ---------- 影格多選（Ctrl 單格加減、Shift 連續、觸控用「多選」按鈕） ---------- */
+const FSEL = new Set();   // 被選取影格的 id；少於 2 格時視為「只選目前這格」
+let fselAnchor = 0;
+let multiMode = false;
+function selectedFrameIdx() {
+  if (FSEL.size <= 1) return [S.fi];
+  return P.frames.map((f, i) => (FSEL.has(f.id) ? i : -1)).filter((i) => i >= 0);
+}
+function tileClick(i, e) {
+  const fr = P.frames[i];
+  if (!fr) return;
+  const ctrl = !!(e && (e.ctrlKey || e.metaKey)) || multiMode;
+  if (e && e.shiftKey) {
+    const a = Math.min(fselAnchor, i), b = Math.max(fselAnchor, i);
+    if (!ctrl) FSEL.clear();
+    for (let k = a; k <= b; k++) FSEL.add(P.frames[k].id);
+    setFrame(i, false, true);
+  } else if (ctrl) {
+    if (!FSEL.size) FSEL.add(curFrame().id);
+    if (FSEL.has(fr.id) && FSEL.size > 1) {
+      FSEL.delete(fr.id);
+      if (i === S.fi) { const rest = selectedFrameIdx(); setFrame(rest[rest.length - 1], false, true); }
+      else highlightTimeline(false);
+    } else {
+      FSEL.add(fr.id);
+      fselAnchor = i;
+      setFrame(i, false, true);
+    }
+  } else {
+    setFrame(i);
+  }
+}
+function setMultiMode(v) {
+  multiMode = typeof v === 'boolean' ? v : !multiMode;
+  $('#tlMulti').classList.toggle('on', multiMode);
+  if (multiMode) { if (!FSEL.size) FSEL.add(curFrame().id); toast('多選：點影格加入或取消，再按「刪除」一次刪掉', 2200); }
+  else FSEL.clear();
+  highlightTimeline(false);
+}
+function deleteSelectedFrames() { opDeleteFrames(selectedFrameIdx()); if (multiMode) setMultiMode(false); }
+
 function rebuildTimeline() {
   if (!P) return;
+  for (const id of [...FSEL]) if (!frameById(id)) FSEL.delete(id);
   const strip = $('#frameStrip');
   strip.textContent = '';
   P.frames.forEach((fr, i) => {
@@ -3136,9 +3206,17 @@ function highlightTimeline(scroll) {
   for (let i = 0; i < tiles.length; i++) {
     const t = tiles[i];
     if (!t.classList.contains('ftile')) continue;
-    const on = +t.dataset.i === S.fi;
+    const k = +t.dataset.i;
+    const on = k === S.fi;
     if (t.classList.contains('cur') !== on) t.classList.toggle('cur', on);
+    const sel = FSEL.size > 1 && P.frames[k] && FSEL.has(P.frames[k].id);
+    if (t.classList.contains('msel') !== sel) t.classList.toggle('msel', sel);
   }
+  const n = selectedFrameIdx().length;
+  const del = $('#tlDel');
+  del.querySelector('span').textContent = n > 1 ? `刪除 ${n} 格` : '刪除';
+  del.title = n > 1 ? `刪除選取的 ${n} 格（Delete）` : '刪除這一格';
+  del.classList.toggle('multi', n > 1);
   if (S.showTimeline) {
     const cur = strip.querySelector('.ftile.cur');
     if (cur) {
@@ -3185,15 +3263,23 @@ function bindTile(tile) {
     $$('#frameStrip .ftile').forEach((t) => t.classList.remove('drop-before', 'drop-after', 'dragging'));
     if (e.type === 'pointercancel') return;
     if (d && d.active) { if (d.to != null && d.to !== d.from) opMoveFrame(d.from, d.to); return; }
-    if (!moved) setFrame(+tile.dataset.i);
+    if (e.pointerType === 'mouse' && e.button !== 0) return; // 右鍵交給選單
+    if (!moved) tileClick(+tile.dataset.i, e);
   };
   tile.addEventListener('pointerup', end);
   tile.addEventListener('pointercancel', end);
   tile.addEventListener('contextmenu', (e) => { e.preventDefault(); clearTimeout(lp); if (!POP || POP.anchor !== tile) openFrameMenu(tile); });
-  tile.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFrame(+tile.dataset.i); } });
+  tile.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tileClick(+tile.dataset.i, e); } });
 }
 function frameMenuItems(i) {
   const n = P.frames.length;
+  const sel = selectedFrameIdx();
+  if (sel.length > 1 && sel.includes(i)) {
+    return [
+      { icon: 'trash', label: `刪除選取的 ${sel.length} 格`, run: deleteSelectedFrames, danger: true },
+      { icon: 'x', label: '取消多選', run: () => { if (multiMode) setMultiMode(false); else { FSEL.clear(); highlightTimeline(false); } } },
+    ];
+  }
   return [
     { icon: 'plus', label: '在後面新增空白影格', run: () => opAddFrame(i) },
     { icon: 'copy', label: '複製這一格', run: () => opDupFrame(i) },
@@ -3207,7 +3293,8 @@ function frameMenuItems(i) {
 }
 function openFrameMenu(tile) {
   const i = +tile.dataset.i;
-  if (i !== S.fi) setFrame(i);
+  const inSel = FSEL.size > 1 && P.frames[i] && FSEL.has(P.frames[i].id);
+  if (i !== S.fi && !inSel) setFrame(i);
   menuPop(tile, frameMenuItems(i), { side: 'above', key: 'frame' });
 }
 
@@ -3860,13 +3947,14 @@ function openHelp(tab = 'gest') {
     keys: () => {
       const d = h('div', { class: 'help' });
       d.append(h('h4', {}, '滑鼠'));
-      d.append(h('ul', { html: '<li>滾輪：縮放畫布（以游標為中心）</li><li>按住<kbd>空白鍵</kbd>拖曳、或按住滑鼠中鍵／右鍵拖曳：移動畫布</li><li><kbd>Shift</kbd>＋滾輪：旋轉畫布</li><li><kbd>Alt</kbd>＋點畫面：取用顏色（滴管）</li><li>時間軸上的影格可以用滑鼠直接拖曳換位置；右鍵看更多</li>' }));
+      d.append(h('ul', { html: '<li>滾輪：縮放畫布（以游標為中心）</li><li>按住<kbd>空白鍵</kbd>拖曳、或按住滑鼠中鍵／右鍵拖曳：移動畫布</li><li><kbd>Shift</kbd>＋滾輪：旋轉畫布</li><li><kbd>Alt</kbd>＋點畫面：取用顏色（滴管）</li><li>時間軸上的影格可以用滑鼠直接拖曳換位置；右鍵看更多</li><li>按住<kbd>Ctrl</kbd>點影格可以加選、按住<kbd>Shift</kbd>點可以連續選取，再按「刪除」或<kbd>Delete</kbd>一次刪掉（平板手機請按時間軸左邊的「多選」）</li>' }));
       d.append(h('h4', {}, '鍵盤快捷鍵'));
       const keys = [
         ['B', '筆刷'], ['E', '橡皮擦'], ['G', '填色'], ['T', '文字'], ['S', '選取'], ['I', '滴管取色'],
         ['[ / ]', '筆刷變小／變大'], ['Ctrl+Z', '復原'], ['Ctrl+Y／Ctrl+Shift+Z', '重做'],
         ['Ctrl+C / X / V', '複製／剪下／貼上'], ['Ctrl+A', '全選'], ['Delete', '刪除選取範圍'], ['方向鍵', '移動貼上中的圖片（加 Shift 一次 10 格）'],
         ['← / →', '上一格／下一格'], ['Home / End', '第一格／最後一格'], ['N', '新增影格'], ['Ctrl+D', '複製影格'],
+        ['Ctrl+點影格', '加選／取消一格'], ['Shift+點影格', '連續選取多格'], ['Delete', '刪除選取的多個影格（沒有圈選畫面時）'], ['Esc', '取消多選'],
         ['P', '播放／暫停'], ['O', '洋蔥皮開關'], ['H', '網格'], ['U', '切換尺規形狀'], ['L', '圖層面板'],
         ['0 或 R', '畫布回到原本大小'], ['+ / -', '放大／縮小'], ['Ctrl+S', '儲存專案檔'], ['?', '說明'],
       ];
@@ -4158,7 +4246,8 @@ function bindUI() {
 
   $('#tlAdd').addEventListener('click', () => opAddFrame());
   $('#tlDup').addEventListener('click', () => opDupFrame());
-  $('#tlDel').addEventListener('click', () => opDeleteFrame());
+  $('#tlDel').addEventListener('click', deleteSelectedFrames);
+  $('#tlMulti').addEventListener('click', () => setMultiMode());
 
   $('#homeOpenFile').addEventListener('click', () => $('#fileProject').click());
   $('#homeBackup').addEventListener('click', backupAll);

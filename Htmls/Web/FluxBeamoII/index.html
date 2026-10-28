@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>光雕彩印實驗室</title>
+<meta name="description" content="光雕彩印實驗室：beamo II 從設計到成品一次上手｜FLUX beamo II 雷射切割／雕刻／彩色列印教師研習互動學習網站：構造、安全、切割與雕線刻面、Inkscape、Beam Studio、彩印、逐步操作、保養維護、測驗認證。">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="開啟目錄">☰ 目錄</button>
+  <a class="brand" href="#home"><span class="dot"></span>光雕彩印實驗室</a>
+  <div class="prog" title="已完成的單元"><span>研習進度</span><div class="bar"><i id="progBar"></i></div><b id="progTxt">0/0</b></div>
+</header>
+
+<div class="layout">
+<nav class="side" id="side" aria-label="單元目錄"></nav>
+<main id="main">
+
+<!-- ======================= 首頁 ======================= -->
+<section class="page" id="home" data-title="研習首頁" data-grp="開始" data-nodone="1">
+  <div class="hero">
+    <span class="tag">FLUX beamo II 雷射切割與彩色列印教師增能研習 · 校內設備自主使用培訓</span>
+    <h1>光雕彩印實驗室</h1>
+    <p style="font-size:1.25em;font-weight:700;margin-bottom:8px">beamo II 從設計到成品一次上手</p>
+    <p>從認識機器、安全守則、切割與雕刻（雕線／刻面）的差異，到用 Inkscape 畫向量圖、用 Beam Studio 送出工作、彩色列印、保養維護。<br>每個單元都有互動練習；「逐步操作」可以在機器旁一步一步照著做。</p>
+  </div>
+
+  <div class="grid g4">
+    <div class="tile"><b class="big">30 W</b><span class="small">CO₂ 雷射管</span></div>
+    <div class="tile"><b class="big">360×240</b><span class="small">雷射工作範圍（mm）</span></div>
+    <div class="tile"><b class="big">0～8 mm</b><span class="small">可切割厚度（依材料）</span></div>
+    <div class="tile"><b class="big">CMYK</b><span class="small">四色彩色列印 600 DPI</span></div>
+  </div>
+
+  <div class="card">
+    <h3>研習目標：研習結束後，每位老師能夠……</h3>
+    <ol class="steps">
+      <li>說出 beamo II 各部位的名稱與功能，並遵守<b>安全守則</b>（知道哪些材料絕對不能放進去、起火怎麼處理）。</li>
+      <li>分辨<b>切割</b>、<b>雕線</b>（向量線刻）、<b>刻面</b>（點陣填色雕刻）三種加工，知道什麼時候用哪一種。</li>
+      <li>用 <b>Inkscape</b> 畫出符合雷射規範的向量檔（紅切、藍雕線、黑刻面，單位 mm），匯出 SVG。</li>
+      <li>用 <b>Beam Studio</b> 匯入、設定圖層參數、相機預覽、對焦、走邊框、送出工作。</li>
+      <li>完成一次<b>彩色列印＋雷射切割</b>的作品，並會保存墨水匣。</li>
+      <li>做每次使用後的清潔與定期<b>保養</b>，遇到問題會查「疑難排解」。</li>
+    </ol>
+  </div>
+
+  <h3>學習單元</h3>
+  <div class="mod-cards" id="modCards"></div>
+
+  <div class="card">
+    <h3>建議研習流程（3 小時）</h3>
+    <div class="tbl-wrap"><table class="timeline">
+      <tr><th>時間</th><th>內容</th><th>對應單元</th><th>活動</th></tr>
+      <tr><td>0:00–0:20</td><td>研習說明、雷射安全</td><td>1、2</td><td>機器構造熱點、材料判斷遊戲</td></tr>
+      <tr><td>0:20–0:45</td><td>雷射原理：切割 vs 雕線 vs 刻面</td><td>3、4</td><td>加工模擬器、時間估算</td></tr>
+      <tr><td>0:45–1:25</td><td>Inkscape 向量繪圖實作</td><td>5</td><td>畫出個人名牌（逐步操作 C）</td></tr>
+      <tr><td>1:25–1:35</td><td>休息</td><td></td><td>講師集中排版、預先切割</td></tr>
+      <tr><td>1:35–2:05</td><td>Beam Studio 實機操作</td><td>6、9</td><td>三模式對照卡（逐步操作 D）</td></tr>
+      <tr><td>2:05–2:30</td><td>彩色列印＋切割</td><td>7</td><td>彩印鑰匙圈（逐步操作 E）</td></tr>
+      <tr><td>2:30–2:45</td><td>保養、清潔、疑難排解、官方指南導覽</td><td>11、12、14</td><td>現場示範清潔鏡片、蜂巢板</td></tr>
+      <tr><td>2:45–3:00</td><td>測驗與使用認證</td><td>15</td><td>18 題測驗，80 分以上列印認證</td></tr>
+    </table></div>
+    <p class="small">一台機器、多位老師時：每人先在電腦完成設計，講師把多人作品合併到同一個 Beam Studio 檔案一次切割，可大幅縮短排隊時間。全部切割時間可用「加工原理」單元的時間估算先算。</p>
+  </div>
+
+  <div class="note"><b>📌 使用說明</b>左側（手機為上方「☰ 目錄」）切換單元。每個單元看完按最下方「✓ 我完成這個單元」，進度會記在這台電腦的瀏覽器裡。內容中的參數只是<b>起點</b>，每台機器與每批材料都不同，一定要先試切。</div>
+</section>
+
+<!-- ======================= 1 認識 beamo II ======================= -->
+<section class="page" id="intro" data-title="認識 beamo II" data-grp="認識設備" data-u="#2457c5">
+  <div class="hero"><span class="tag">單元 1</span><h2>認識 beamo II</h2><p>桌上型 30W CO₂ 雷射切割機，加裝列印套件後可在同一台機器上全彩列印。</p></div>
+
+  <div class="card">
+    <h3>機器構造（點紅色數字）</h3>
+    <div data-tool="machine"></div>
+    <p class="small">示意圖，按鍵與接頭實際位置請以學校機器與隨機《快速入門指南》為準。</p>
+  </div>
+
+  <div class="card">
+    <h3>重要規格</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>項目</th><th>規格</th><th>老師要知道的意義</th></tr>
+      <tr><td>雷射光源</td><td>30W DC CO₂ 玻璃雷射管，波長 10.6 μm</td><td>能切木頭、壓克力、紙、皮革、布；<b>不能直接打金屬</b>（需選配 2W 紅外線模組）</td></tr>
+      <tr><td>雷射工作範圍</td><td>360 × 240 mm（14.2″ × 9.5″）</td><td>Inkscape 文件大小直接設成 360×240 mm，畫在裡面就一定切得到</td></tr>
+      <tr><td>平台可放材料</td><td>415 × 335 mm（比工作範圍大）</td><td>大板子放得進去，但只有 360×240 範圍內能加工</td></tr>
+      <tr><td>可放材料高度</td><td>含蜂巢板 7 mm；拿掉蜂巢板 30 mm；加擴充底座 155 mm</td><td>一般板材放蜂巢板上；較厚的物品要拿掉蜂巢板或用擴充底座</td></tr>
+      <tr><td>切割厚度</td><td>0～8 mm（依材料不同）</td><td>3 mm 椴木合板、3 mm 壓克力是校園最常用的材料</td></tr>
+      <tr><td>解析度／速度</td><td>雷射最高 1000 DPI；最高雕刻速度 750 mm/s；光斑約 0.3 mm</td><td>線條細到 0.3 mm 以下會刻不清楚；DPI 越高越細但越久</td></tr>
+      <tr><td>相機</td><td>800 萬畫素廣角（裝在雷射頭上），一次拍攝預覽範圍約 300 × 195 mm</td><td>可以在 Beam Studio 看到材料，把圖拖到材料上對位</td></tr>
+      <tr><td>對位與對焦</td><td>內建自動對焦（<b>往下拉對焦拉桿</b>，探針碰到材料後彈起即完成）、紅光預覽（走邊框）</td><td>每次加工前都要確認對焦；送出前用紅光確認位置</td></tr>
+      <tr><td>彩色列印</td><td>CMYK 四色墨水，600 DPI（需列印套件與墨水）</td><td>可在木頭、紙板等材料上印出彩色圖案，再用雷射切外形</td></tr>
+      <tr><td>安全等級</td><td>Class 1（IEC 60825-1），全罩式，開蓋即停，緊急停止鈕</td><td>蓋子關好時雷射不會外洩；但<b>開蓋或改裝就失去保護</b></td></tr>
+      <tr><td>軟體／檔案</td><td>Beam Studio（免費，Windows／macOS／Linux／ChromeOS，另有網頁版可在 iPad、Android 平板使用）；可用 LightBurn。支援 SVG、DXF、PDF、AI、JPG、PNG</td><td>本研習用 Inkscape 畫圖 → 存 SVG → Beam Studio 送出</td></tr>
+      <tr><td>連線</td><td>Wi-Fi（插隨附的 Wi-Fi 接收器，<b>只支援 2.4 GHz</b>）、USB、有線網路（需 <b>USB 轉網路線轉接器</b>，不支援 PoE）</td><td>電腦和機器要在同一個網路；學校網路有隔離時用有線網路或固定 IP 最穩</td></tr>
+      <tr><td>機身</td><td>約 710 × 474 × 208 mm，23 kg；5 吋觸控螢幕；運轉音量低於 70 dB；AC 100–240 V</td><td>兩人一起搬；放在平穩桌面，<b>避開陽光直射</b>（陽光會觸發火焰感測器），排風管可伸到窗外</td></tr>
+    </table></div>
+    <p class="src">資料來源：FLUX 官方 beamo II 產品頁、台灣官方商店、FLUX Help Center《beamo II 線上指南》1-4 規格（2026-10-28 查詢）。</p>
+  </div>
+
+  <div class="card">
+    <h3>工作範圍有多大？（拖曳藍色材料）</h3>
+    <div data-tool="area"></div>
+  </div>
+
+  <div class="card">
+    <h3>選配套件</h3>
+    <div class="grid g2">
+      <div><h4>🎨 列印套件（學校已購買）</h4>CMYK 四色墨水匣，可直接在材料上列印全彩圖案，再用雷射切割或雕刻。詳見單元 7。</div>
+      <div><h4>📦 擴充底座</h4>讓機器底部加高，可放入最高 155 mm 的物品（盒子、器皿），也能做寬 340 mm 的貫穿式雕刻。夾爪旋轉軸與自動送料都要搭配擴充底座。</div>
+      <div><h4>🔄 夾爪旋轉軸</h4>夾住圓柱形物品（保溫杯、筆筒）邊轉邊雕刻：圓柱直徑 1–140 mm、可雕長度 275 mm。</div>
+      <div><h4>➡️ 自動送料</h4>可處理長度到約 1 m 的長條材料。<b>注意：自動送料與寬幅雕刻必須在面板把安全模式切到 Class 4，操作者要先完成官方「雷射安全員（LSO）訓練」並戴對應波長的雷射護目鏡。校園一般使用請維持 Class 1。</b></div>
+      <div><h4>🔴 2W 紅外線雷射</h4>波長 1064 nm，可在不鏽鋼、鋁、銅等金屬表面打標（工作範圍約 270 × 190 mm）。</div>
+      <div><h4>💨 Beam Air 空氣淨化器</h4>過濾雷射產生的煙與氣味。教室沒有對外排風管時一定要用。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 2 安全守則 ======================= -->
+<section class="page" id="safety" data-title="安全守則" data-grp="認識設備" data-u="#dc2626">
+  <div class="hero"><span class="tag">單元 2</span><h2>雷射安全守則</h2><p>雷射切割的本質是「用光把材料燒掉」：會有火、會有煙。安全規則沒有例外。</p></div>
+
+  <div class="danger"><b>🔥 第一守則：機器在工作時，人絕對不能離開。</b>雷射切割是點火燃燒的過程，材料隨時可能起火。即使只是去倒杯水也要先按暫停。</div>
+
+  <div class="card">
+    <h3>官方安全須知重點（beamo II 線上指南 1-2）</h3>
+    <ul class="clean">
+      <li><b>不可讓未成年人單獨操作</b>；操作者必須先讀過安全須知與使用手冊。</li>
+      <li>排風管一定要正確安裝；沒裝或裝不好，會增加雷射、煙與粉塵的危險。</li>
+      <li>未經 FLUX 授權不可改裝機器；<b>不可改裝、繞過或拆除安全連鎖裝置</b>。</li>
+      <li>不可放在潮濕、會被雨水噴濺或<b>陽光直射</b>的地方；下雨或極端天氣時停止使用，並把排風管收回室內。</li>
+      <li>機器附近不可放液體、易燃或易爆物品；<b>嚴禁把任何生物放進機器</b>。</li>
+      <li>工作中不可無人看顧；定期清理機器內的碎屑；工作場所要有可用的滅火器。</li>
+    </ul>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>使用前</h3>
+      <ul class="clean">
+        <li>確認材料<b>可以用雷射加工</b>（不知道成分的材料一律不切）。</li>
+        <li>開啟 Beam Air 空氣淨化器或排風，確認排風管沒有被壓扁、脫落。</li>
+        <li>蜂巢板與下方機殼底部沒有堆積的碎屑（碎屑是最容易起火的燃料）。</li>
+        <li>旁邊放 CO₂ 或乾粉滅火器，知道緊急停止鈕在哪裡。</li>
+        <li>周圍淨空：不放紙張、酒精、噴漆等易燃物；機器沒有被陽光直射。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>工作中</h3>
+      <ul class="clean">
+        <li><b>蓋子保持關閉</b>，不要掀蓋看（開蓋會停機，也會中斷作品）。</li>
+        <li>隔著上蓋觀察：小火花、小閃光是正常的；<b>持續的火焰</b>要立刻處理。</li>
+        <li>不要用手、物品伸進機器內。</li>
+        <li>學生只能在教師在場、教師按下開始的情況下觀看。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>結束後</h3>
+      <ul class="clean">
+        <li>工作完成後<b>等 1～2 分鐘</b>讓煙排完，再開蓋。</li>
+        <li>取出作品，邊緣可能有焦黑或餘熱。</li>
+        <li>清掉蜂巢板上的小碎片；碎屑多時取出蜂巢板，清理下方機殼底部。</li>
+        <li>列印後清潔墨頭並蓋上保護蓋。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>起火怎麼辦？</h3>
+      <ol class="steps">
+        <li>按<b>緊急停止鈕</b>（機器右側）或暫停，並依官方指示<b>立即關閉電源、拔掉插頭</b>。</li>
+        <li><b>不要馬上掀蓋</b>：蓋子關著，小火會因缺氧自己熄滅。</li>
+        <li>若火焰持續或變大：用滅火器（CO₂ 或乾粉）滅火。</li>
+        <li>火熄滅後檢查鏡片、蜂巢板、排風管，損壞先別再使用，聯絡廠商。</li>
+        <li>記錄當時的材料與參數（多半是速度太慢、功率太高或沒開空氣輔助）。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>⛔ 絕對禁止放進雷射切割機的材料</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>材料</th><th>為什麼不行</th></tr>
+      <tr><td>PVC、塑膠皮、人造皮、黑膠唱片、PVC 名片卡</td><td>含氯，燃燒產生<b>氯氣與鹽酸</b>，對人體有毒，也會腐蝕機器的鏡片與金屬零件</td></tr>
+      <tr><td>聚碳酸酯 PC（耐力板、部分「壓克力替代品」）</td><td>吸收雷射後變黃、起火，切不乾淨</td></tr>
+      <tr><td>ABS 塑膠</td><td>熔化成黏稠物，產生有毒氣體</td></tr>
+      <tr><td>HDPE（塑膠瓶蓋、牛奶瓶）</td><td>熔化、容易起火</td></tr>
+      <tr><td>保麗龍（EPS、PS 泡棉）</td><td>極易燃燒</td></tr>
+      <tr><td>玻璃纖維板、碳纖維、含樹脂的電路板</td><td>產生有毒煙、無法乾淨切割</td></tr>
+      <tr><td>金屬、鏡面、反光材料（CO₂ 雷射）</td><td>CO₂ 雷射不會切金屬，反光可能<b>反射</b>雷射傷機器（金屬打標需選配紅外線模組）</td></tr>
+      <tr><td>不明成分的板材、塑膠</td><td>無法判斷就不切。買材料時請廠商確認「可雷射」</td></tr>
+    </table></div>
+    <p class="small">小技巧：分不清「壓克力」和「PC 耐力板」時，看包裝標示 PMMA（壓克力，可以）或 PC（不行）。</p>
+  </div>
+
+  <div class="card">
+    <h3>互動練習：這個材料可以放進去嗎？</h3>
+    <div data-tool="matgame"></div>
+  </div>
+
+  <div class="card">
+    <h3>機器的安全設計</h3>
+    <div class="grid g3">
+      <div><h4>Class 1 雷射等級</h4>正常使用（蓋子關好）時，雷射不會外洩，可以在教室使用。</div>
+      <div><h4>開蓋即停</h4>工作中掀開上蓋，雷射立刻停止。<b>不可以拆掉或遮住上蓋的安全開關。</b></div>
+      <div><h4>緊急停止鈕</h4>在機器右側的紅色按鈕，按下立即停止雷射與動作。解除：<b>順時針朝白色箭頭旋轉</b>讓它彈起。</div>
+      <div><h4>火焰感測器</h4>雷射頭與工作燈板上有火焰感測器，偵測到火光會<b>自動暫停</b>（錯誤碼 #912）。陽光直射也可能誤觸。<b>它不能取代人看顧。</b></div>
+      <div><h4>安全鑰匙</h4>可在面板「機器 → 硬體設定 → 安全鑰匙設定」啟用：每次開機要輸入密碼或插入隨附的實體鑰匙轉到 ON 才能用，<b>適合防止學生自行開機</b>（錯誤碼 #929＝沒偵測到鑰匙）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 3 加工原理 ======================= -->
+<section class="page" id="principle" data-title="切割、雕線、刻面" data-grp="加工原理" data-u="#e5484d">
+  <div class="hero"><span class="tag">單元 3</span><h2>切割 vs 雕線 vs 刻面</h2><p>同一道雷射光，靠「功率、速度、走法」的不同，做出三種完全不同的效果。</p></div>
+
+  <div class="grid g3">
+    <div class="card" style="border-top:5px solid var(--cut)">
+      <h3 style="margin-top:0"><span class="pill cut">切割 Cut</span></h3>
+      <p><b>沿著線走、走得慢、功率高</b>，把材料燒穿，零件會掉下來。</p>
+      <ul class="clean small">
+        <li>設計檔：<b>紅色 #FF0000 線條</b>、無填色</li>
+        <li>用途：外形、挖洞、卡榫</li>
+        <li>注意：要是<b>封閉</b>的線條，零件才會掉下來</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:5px solid var(--vline)">
+      <h3 style="margin-top:0"><span class="pill line">雕線 Line Engrave</span></h3>
+      <p><b>沿著線走、走得快、功率低</b>，只在表面燒出一條細線，不會穿透。又叫「向量線刻」。</p>
+      <ul class="clean small">
+        <li>設計檔：<b>藍色 #0000FF 線條</b>、無填色</li>
+        <li>用途：線稿、刻度、邊框、描邊文字</li>
+        <li>優點：<b>很快</b>，時間只和線的總長度有關</li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:5px solid var(--fill)">
+      <h3 style="margin-top:0"><span class="pill fill">刻面 Raster Engrave</span></h3>
+      <p>雷射頭像印表機一樣<b>左右來回掃描</b>，一行一行把整塊區域燒深、燒黑。又叫「點陣雕刻」、「填色雕刻」。</p>
+      <ul class="clean small">
+        <li>設計檔：<b>黑色填色</b>、無邊框；或點陣圖（照片）</li>
+        <li>用途：實心文字、Logo、照片、大面積圖案</li>
+        <li>缺點：<b>比較慢</b>，時間和圖案的「高度」關係最大</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>加工模擬器</h3>
+    <p class="small">選一種加工方式，按「開始」看雷射頭怎麼走。比較同一個圖案用不同方式加工的時間與效果。</p>
+    <div data-tool="sim"></div>
+  </div>
+
+  <div class="card">
+    <h3>三種加工比一比</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th><span class="pill cut">切割</span></th><th><span class="pill line">雕線</span></th><th><span class="pill fill">刻面</span></th></tr>
+      <tr><td>雷射頭怎麼走</td><td>沿路徑（向量）</td><td>沿路徑（向量）</td><td>逐行來回掃描（點陣）</td></tr>
+      <tr><td>功率</td><td>高</td><td>低</td><td>低～中</td></tr>
+      <tr><td>速度</td><td>很慢（約 5–20 mm/s）</td><td>中等（約 20–100 mm/s）</td><td>很快（約 150–750 mm/s）</td></tr>
+      <tr><td>決定時間的因素</td><td>線的總長度 × 執行次數</td><td>線的總長度</td><td>圖案<b>高度</b>（行數）× 寬度</td></tr>
+      <tr><td>Inkscape 顏色</td><td>紅線 #FF0000</td><td>藍線 #0000FF</td><td>黑色填色 #000000</td></tr>
+      <tr><td>Beam Studio 判斷</td><td colspan="2">只有邊框、沒有填色的路徑 → 向量加工</td><td>有填色的物件、點陣圖 → 點陣雕刻</td></tr>
+    </table></div>
+    <p class="small">表中的速度只是常見範圍，實際參數請看單元 4 與 Beam Studio 內建的材料參數。</p>
+  </div>
+
+  <div class="tip"><b>💡 刻面省時間的小秘訣</b>刻面是一行一行掃描，<b>行數由圖案的高度決定</b>。同一段橫寫文字「橫著刻」比「轉 90° 直著刻」快很多。大面積只需要「看得到」的地方，可以改用雕線描邊代替整片刻面。</div>
+
+  <div class="card">
+    <h3>時間估算器</h3>
+    <div data-tool="timecalc"></div>
+  </div>
+
+  <details><summary>進階：刻面的 DPI（解析度）是什麼？</summary><div>
+    <p>DPI 是「每英吋掃描幾行」。Beam Studio 文件設定中的雕刻解析度越高，行距越密、細節越好，但時間也越久（1000 DPI 的時間大約是 250 DPI 的 4 倍）。</p>
+    <p>一般文字與圖案用中等解析度（約 250 DPI）就夠；照片可提高。行距大約 = 25.4 ÷ DPI mm，例如 250 DPI 行距約 0.1 mm。</p>
+  </div></details>
+  <details><summary>進階：為什麼「切割」也會分很多次？</summary><div>
+    <p>太厚的材料用一次高功率慢速切，邊緣容易燒焦甚至起火。可以改成「功率稍低、速度稍快、執行 2 次」，邊緣比較乾淨。Beam Studio 圖層參數中的「執行次數」就是這個用途；進階設定可讓每次 Z 軸下降一點，對準材料更深的位置。</p>
+  </div></details>
+</section>
+
+<!-- ======================= 4 材料與參數 ======================= -->
+<section class="page" id="materials" data-title="材料與參數" data-grp="加工原理" data-u="#b45309">
+  <div class="hero"><span class="tag">單元 4</span><h2>材料與參數</h2><p>參數三兄弟：功率（%）、速度（mm/s）、執行次數。功率越高、速度越慢 → 燒得越深。</p></div>
+
+  <div class="card">
+    <h3>beamo II（CO₂ 30W）可以加工的材料</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>材料</th><th>切割（官方最大厚度）</th><th>雕刻</th><th>校園用途</th></tr>
+      <tr><td>壓克力（各色、透明）</td><td>約 7 mm</td><td>✓</td><td>吊飾、名牌、立牌</td></tr>
+      <tr><td>合板（椴木合板）</td><td>約 6 mm</td><td>✓</td><td>最常用：鑰匙圈、卡榫、盒子</td></tr>
+      <tr><td>檜木</td><td>約 8 mm</td><td>✓</td><td>香味木片、杯墊</td></tr>
+      <tr><td>黑胡桃木</td><td>約 6 mm</td><td>✓</td><td>質感作品</td></tr>
+      <tr><td>密集板 MDF</td><td>約 4 mm</td><td>✓</td><td>便宜、適合大量練習（煙較多）</td></tr>
+      <tr><td>紙板、厚紙</td><td>約 7.6 mm（瓦楞紙板）</td><td>✓</td><td>模型、卡片。<b>很容易燒</b>，功率不要太高</td></tr>
+      <tr><td>皮革（真皮）</td><td>約 5 mm</td><td>✓</td><td>書籤、名牌（<b>人造皮多含 PVC，不行</b>）</td></tr>
+      <tr><td>布料</td><td>約 7 mm</td><td>✓</td><td>布章、拼布</td></tr>
+      <tr><td>竹片</td><td>約 5 mm</td><td>✓</td><td>書籤、杯墊</td></tr>
+      <tr><td>軟木、橡膠、玻璃、石材、水泥、陽極處理鋁</td><td>不切割</td><td>✓（只雕刻）</td><td>杯墊、玻璃杯、石板、印章（雷射用橡膠）</td></tr>
+    </table></div>
+    <p class="src">資料來源：FLUX 官方 beamo II 材料表（2026-10 查詢）。最大厚度通常需要降速或多次切割才能達到；木材含水量、密度不同結果也會不同。</p>
+  </div>
+
+  <div class="card">
+    <h3>參數從哪裡來？</h3>
+    <ol class="steps">
+      <li><b>先用 Beam Studio 內建的材料參數</b>：圖層參數的下拉選單有常見材料與厚度（例如「木板 3mm 切割」），選了就會自動填入功率與速度。</li>
+      <li><b>做一張材料測試</b>：同一塊材料切出「不同功率 × 不同速度」的小方格，找出最剛好的組合（Beam Studio 新版有「材質測試產生器」可自動產生；或用本網站「實作與產生器」裡的對照卡）。</li>
+      <li><b>記下來</b>：把測好的數字記在「參數紀錄本」，全校共用，下一位老師就不用重測。</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>參數調整口訣</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>看到的狀況</th><th>可能原因</th><th>先調哪裡</th></tr>
+      <tr><td>切不斷，背面只有淺淺的線</td><td>能量不夠</td><td>速度調慢 10–20%，或執行次數 +1；再不行才提高功率</td></tr>
+      <tr><td>切斷了但邊緣很焦黑、背面有煙燻痕</td><td>能量太多、煙沒被吹走</td><td>速度調快、功率調低，改成兩次切；確認空氣輔助有開</td></tr>
+      <tr><td>刻面太淺、顏色太淡</td><td>能量不夠</td><td>提高功率或降低速度</td></tr>
+      <tr><td>刻面太深、焦黑糊成一片、細節不見</td><td>能量太多</td><td>降低功率或提高速度；細節多時用較低 DPI 反而清楚</td></tr>
+      <tr><td>雕線變成切斷</td><td>雕線參數太強</td><td>雕線速度加快、功率調低</td></tr>
+      <tr><td>位置有偏移、切出來大小不對</td><td>對焦或對位問題</td><td>重新對焦（拉下對焦拉桿）、用相機預覽與走邊框確認；仍偏移就重做相機校正</td></tr>
+    </table></div>
+  </div>
+
+  <div class="warn"><b>⚠ 起點參考（請一定要自己試切）</b>以下只是讓你知道「大概的方向」，實際請以學校機器測試結果與 Beam Studio 內建參數為準：3 mm 椴木合板切割約「功率 60–70%、速度 5–10 mm/s」；雕線約「功率 15–30%、速度 30–80 mm/s」；刻面約「功率 15–30%、速度 200–400 mm/s」。壓克力切割通常要比木板更慢。</div>
+
+  <div class="note"><b>🔧 雷射管健康檢查（官方建議）</b>如果用 70% 功率已經切不斷 3 mm 壓克力，代表雷射管可能老化，要考慮更換。另外即使不常使用，也建議<b>每個月雕刻一次範例檔</b>（Beam Studio「檔案 → 範例」），延長雷射管壽命。</div>
+</section>
+
+<!-- ======================= 5 Inkscape ======================= -->
+<section class="page" id="inkscape" data-title="Inkscape 向量繪圖" data-grp="軟體操作" data-u="#7c3aed">
+  <div class="hero"><span class="tag">單元 5</span><h2>Inkscape 向量繪圖</h2><p>Inkscape 是免費、開源的向量繪圖軟體。雷射機看的是「線」，向量圖就是用數學記錄的線，放大也不會糊。</p></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>點陣圖 vs 向量圖</h3>
+      <div data-tool="vecraster"></div>
+    </div>
+    <div class="card">
+      <h3>安裝與第一次設定</h3>
+      <ol class="steps">
+        <li>到 <b>inkscape.org</b> 下載 Windows 版（1.3 以上）安裝。</li>
+        <li>開新檔後按 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> 開「文件屬性」。</li>
+        <li><b>顯示單位與文件單位都改成 mm</b>，寬 360、高 240（＝ beamo II 工作範圍）。</li>
+        <li>「縮放」設成 1.0（使用者單位每 mm = 1），尺寸才不會跑掉。</li>
+        <li>另存成「雷射範本.svg」，以後都從這個檔開始。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>雷射顏色規範（全校統一）</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>加工</th><th>填色（Fill）</th><th>邊框（Stroke）</th><th>邊框寬度</th></tr>
+      <tr><td><span class="pill cut">切割</span></td><td>無</td><td><span class="color-sw" style="background:#ff0000"></span>#FF0000 紅</td><td>0.1 mm</td></tr>
+      <tr><td><span class="pill line">雕線</span></td><td>無</td><td><span class="color-sw" style="background:#0000ff"></span>#0000FF 藍</td><td>0.1 mm</td></tr>
+      <tr><td><span class="pill fill">刻面</span></td><td><span class="color-sw" style="background:#000"></span>#000000 黑</td><td>無</td><td>—</td></tr>
+      <tr><td><span class="pill print">彩色列印</span></td><td>彩色圖片或彩色填色</td><td>無</td><td>—（Beam Studio 裡把該圖層設為「列印」）</td></tr>
+    </table></div>
+    <p class="small">在 Inkscape 用 <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> 開「填色與邊框」：左鍵點色盤設定填色、<kbd>Shift</kbd>+左鍵設定邊框。也可以在 RGBA 欄直接輸入 <code>ff0000ff</code>。Beam Studio 匯入時選「依顏色分層」，每種顏色會自動變成一個圖層。</p>
+  </div>
+
+  <div class="card">
+    <h3>常用工具與快捷鍵</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>工具／功能</th><th>快捷鍵</th><th>雷射設計用途</th></tr>
+      <tr><td>選取工具</td><td><kbd>S</kbd></td><td>移動、縮放；上方工具列可直接輸入 W、H（mm）</td></tr>
+      <tr><td>節點工具</td><td><kbd>N</kbd></td><td>修改曲線形狀</td></tr>
+      <tr><td>矩形（圓角）</td><td><kbd>R</kbd></td><td>名牌、鑰匙圈外框；Rx、Ry 設圓角</td></tr>
+      <tr><td>圓／橢圓</td><td><kbd>E</kbd></td><td>吊飾孔（直徑 3–4 mm）、杯墊</td></tr>
+      <tr><td>星形／多邊形</td><td><kbd>*</kbd></td><td>裝飾圖案</td></tr>
+      <tr><td>貝茲曲線（鋼筆）</td><td><kbd>B</kbd></td><td>自由造型</td></tr>
+      <tr><td>文字</td><td><kbd>T</kbd></td><td>名字、標語（完成後一定要轉路徑）</td></tr>
+      <tr><td>物件轉成路徑</td><td><kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd></td><td><b>文字、形狀交出去之前都轉路徑</b>，別台電腦沒字型也不會跑掉</td></tr>
+      <tr><td>筆畫轉成路徑</td><td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>C</kbd></td><td>把粗線變成可以刻面或切割的外形</td></tr>
+      <tr><td>聯集／差集／交集／互斥</td><td><kbd>Ctrl</kbd>+<kbd>+</kbd>／<kbd>-</kbd>／<kbd>*</kbd>／<kbd>^</kbd></td><td>把多個形狀合成一個外框、挖洞</td></tr>
+      <tr><td>外擴／內縮</td><td><kbd>Ctrl</kbd>+<kbd>)</kbd>／<kbd>(</kbd></td><td>在文字外圍做出一圈底板</td></tr>
+      <tr><td>對齊與分佈</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td><td>置中、排整齊</td></tr>
+      <tr><td>群組／取消群組</td><td><kbd>Ctrl</kbd>+<kbd>G</kbd>／<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td><td>整組移動</td></tr>
+      <tr><td>描繪點陣圖</td><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd></td><td>把插圖、手繪稿轉成向量</td></tr>
+      <tr><td>另存新檔</td><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd></td><td>存成「Inkscape SVG」或「一般 SVG」都可以</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>範例：做一個名牌（約 10 分鐘）</h3>
+    <ol class="steps">
+      <li>矩形工具 <kbd>R</kbd> 畫框，上方輸入 W=80、H=30、Rx=Ry=4（mm）。填色「無」、邊框紅色 0.1 mm → <span class="pill cut">切割</span>外框。</li>
+      <li>橢圓工具 <kbd>E</kbd> 在左側畫一個 W=H=4 的圓，同樣紅色邊框 → 吊繩孔（離邊緣至少 3 mm）。</li>
+      <li>文字工具 <kbd>T</kbd> 打上名字，字型選粗一點的（例如微軟正黑體 Bold），填色黑、無邊框 → <span class="pill fill">刻面</span>。</li>
+      <li>在外框內再畫一個小 3 mm 的圓角矩形，邊框藍色 → <span class="pill line">雕線</span>裝飾框。</li>
+      <li>全選文字 <kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd> 轉路徑；用「對齊與分佈」讓文字置中。</li>
+      <li>另存 SVG，到「SVG 檢查器」單元上傳檢查一次。</li>
+    </ol>
+    <p>完整一步一步版本在「逐步操作」→ <b>C. Inkscape 設計名牌</b>。</p>
+  </div>
+
+  <div class="card">
+    <h3>常見錯誤</h3>
+    <div class="grid g2">
+      <div><h4>❌ 文字沒有轉路徑</h4>別台電腦缺字型會變成新細明體或亂碼。→ 全選文字 <kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd>。</div>
+      <div><h4>❌ 切割線沒有封閉</h4>零件不會掉下來。→ 用節點工具檢查，或用矩形、圓形工具畫外框。</div>
+      <div><h4>❌ 重複的線</h4>複製貼上時疊了兩條，會切兩次、燒焦。→ 刪掉重複的物件。</div>
+      <div><h4>❌ 顏色差一點點</h4>#FE0000 不是 #FF0000，會變成另一個圖層。→ 直接輸入色碼。</div>
+      <div><h4>❌ 線條太細的刻面</h4>小於 0.3 mm 的筆畫刻不出來，鏤空的字太小會斷掉。→ 字高至少 5 mm、用粗字體。</div>
+      <div><h4>❌ 文件單位是 px</h4>尺寸會被換算錯。→ 文件屬性改 mm、縮放 1.0。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 6 Beam Studio ======================= -->
+<section class="page" id="beamstudio" data-title="Beam Studio 操作" data-grp="軟體操作" data-u="#0f766e">
+  <div class="hero"><span class="tag">單元 6</span><h2>Beam Studio 操作</h2><p>FLUX 的免費雷射軟體：負責「把圖放到材料上、設定參數、送給機器」。</p></div>
+
+  <div class="note"><b>📌 版本說明</b>以下依 Beam Studio 2.x 的介面整理；不同版本按鈕位置可能略有差異，名稱大致相同。軟體從 FLUX 官網「下載」頁取得，要用最新版才支援 beamo II 的所有功能。</div>
+
+  <div class="card">
+    <h3>第一次連線機器</h3>
+    <ol class="steps">
+      <li>機器插上隨附的 <b>Wi-Fi 接收器</b>（或用 USB 轉網路線轉接器接網路線）。在觸控面板點「機器 → 網路 → 連接 Wi-Fi」，選學校的 <b>2.4 GHz</b> Wi-Fi 並輸入密碼，記下面板「網路」頁的 <b>IP 位址</b>。</li>
+      <li>電腦安裝 Beam Studio，第一次開啟先選語言，再登入 FLUX ID（沒有網路可按「離線工作」跳過）。</li>
+      <li>進入連線設定（之後也可從選單「機器 → 機器設定」打開），機型選 <b>beamo II</b>、選連線方式（Wi-Fi／有線網路／USB），輸入面板上的 IP，按「下一步」做連線測試。</li>
+      <li><b>相機校正</b>（第一次使用、機器移動過、或預覽和實際位置對不上時都要做）：Beam Studio 2.5.11 以上、韌體 6.1.6 以上 → 新增專案、選機器、按「校正相機」→ 在工作區中央放一張乾淨 A4 白紙、四角貼膠帶 → 按「開始雕刻」畫出校正圖 → 縮放、調曝光，把紅色標記點對準畫出來的 8 個點。</li>
+      <li><b>驗證</b>：畫 4 個 100×60 mm 矩形（X／Y＝30／30、230／30、30／150、230／150 mm），確認四邊都和雷射標記點對齊；對不齊就重新對焦、再校正一次。</li>
+      <li>試刻範例：選單「檔案 → 範例 → beamo II 範例」。</li>
+    </ol>
+    <p class="small">學校網路若有隔離（電腦教室與行政網段不同），請資訊組協助給機器固定 IP，或改用 USB 連線。</p>
+  </div>
+
+  <div class="card">
+    <h3>畫面導覽</h3>
+    <div data-tool="bsui"></div>
+  </div>
+
+  <div class="card">
+    <h3>標準工作流程（8 步）</h3>
+    <ol class="steps">
+      <li><b>匯入</b>：檔案 → 匯入（或直接把 SVG 拖進畫面）。出現選項時選 <b>「依顏色分層」</b>。</li>
+      <li><b>檢查圖層</b>：右側「圖層」面板應該出現紅、藍、黑幾個圖層。可把圖層改名為「切割」「雕線」「刻面」。</li>
+      <li><b>設定參數</b>：點每個圖層，從參數下拉選單選材料，或手動輸入功率、速度、執行次數。</li>
+      <li><b>排列順序</b>：Beam Studio 依圖層由上而下執行。<b>刻面 → 雕線 → 切割</b>，<b>切割一定放最後</b>（先切的話零件掉下去、位置會跑掉）。</li>
+      <li><b>放材料、對焦</b>：材料平放在蜂巢板上（官方建議放在左上角）。把雷射頭移到材料上方，<b>往下拉對焦拉桿</b>，雷射頭碰到材料後會往上彈，對焦就完成了，再關上上蓋。每次加工前都要確認對焦。</li>
+      <li><b>相機預覽</b>：按<b>左上角</b>的相機圖示拍攝工作區，把圖拖到材料上適當位置，再離開預覽模式。</li>
+      <li><b>走邊框</b>：把雷射頭移到材料上方，按<b>右上角</b>的「走邊框」圖示，讓紅光繞作品外框一圈，確認不會超出材料。</li>
+      <li><b>開始</b>：按右上角的<b>箭頭按鈕</b>送出工作；看預估時間，<b>人在機器旁看完整個過程</b>。</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>好用功能</h3>
+    <div class="grid g2">
+      <div><h4>📐 路徑預覽</h4>送出前可模擬雷射頭的路徑與預估時間，排程時很好用。</div>
+      <div><h4>📦 盒子產生器、元素庫</h4>內建產生盒子、常用形狀，不用自己畫。</div>
+      <div><h4>🖼 圖片處理</h4>匯入照片後可去背、調整門檻值（黑白）或灰階雕刻。</div>
+      <div><h4>🔁 陣列、偏移</h4>大量複製同一個作品排滿材料，省材料。</div>
+      <div><h4>💾 存成 .beam 檔</h4>連同圖層參數一起保存，下次直接開來切。建議每個作品都存一份。</div>
+      <div><h4>🧪 材質測試</h4>自動產生「功率 × 速度」矩陣，一次找出新材料的參數。</div>
+    </div>
+  </div>
+
+  <div class="tip"><b>💡 填色或不填色？</b>Beam Studio 會把「有填色」的封閉形狀當成<b>刻面</b>，「只有邊框」的當成<b>向量加工</b>（切割或雕線）。若一個圖形同時有紅邊框和黑填色，會造成混淆 —— 在 Inkscape 就分開畫好最保險。</div>
+</section>
+
+<!-- ======================= 7 彩色列印 ======================= -->
+<section class="page" id="print" data-title="彩色列印" data-grp="軟體操作" data-u="#be185d">
+  <div class="hero" style="background:linear-gradient(130deg,#1f2a44,#6b2154 60%,#00718f)"><span class="tag">單元 7</span><h2>彩色列印（列印套件）</h2><p>beamo II 加裝列印套件後，可以在材料上直接噴印 CMYK 全彩圖案，再用雷射切割外形 —— 一台機器完成「印＋雕＋切」。</p></div>
+
+  <div class="warn"><b>⚠ 資料來源說明</b>FLUX《beamo II 線上指南》（2026-10-28 查詢）目前<b>沒有獨立的列印章節</b>。本單元的墨水匣使用、清潔、保存方式取自官方〈墨水匣使用指南〉與同公司 Ador 的列印說明；按鈕名稱與流程請以學校機器、列印套件說明書與 Beam Studio 實際畫面為準。</div>
+
+  <div class="card">
+    <h3>彩色列印的原理</h3>
+    <div class="grid g2">
+      <div>
+        <p>和噴墨印表機一樣：墨頭在材料上方移動，噴出 <b style="color:var(--c)">C 青</b>、<b style="color:var(--m)">M 洋紅</b>、<b style="color:#b38f00">Y 黃</b>、<b>K 黑</b> 四色小墨點，疊出各種顏色。</p>
+        <ul class="clean">
+          <li>解析度 600 DPI；墨頭必須<b>非常貼近</b>材料表面（約 2 mm 左右）才會清楚。</li>
+          <li>因為距離很近：<b>材料一定要平</b>，翹起的木板會撞到墨頭。</li>
+          <li>墨水會被吸進材料：<b>吸墨、霧面</b>的材料效果最好。</li>
+        </ul>
+      </div>
+      <div data-tool="cmyk"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>材料適不適合列印？</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>材料</th><th>列印效果</th><th>說明</th></tr>
+      <tr><td>椴木合板、原木、MDF（淺色）</td><td><span class="pill ok">很適合</span></td><td>最常用，顏色會帶一點木頭底色</td></tr>
+      <tr><td>厚紙、卡紙、紙板</td><td><span class="pill ok">很適合</span></td><td>顏色鮮豔；注意紙板很易燃，切割功率別太高</td></tr>
+      <tr><td>帆布、棉布</td><td><span class="pill ok">適合</span></td><td>要平整固定</td></tr>
+      <tr><td>深色木材、黑胡桃</td><td><span class="pill mid">效果差</span></td><td>底色深，彩色會變暗（需要先上白色底漆）</td></tr>
+      <tr><td>亮面壓克力、玻璃、金屬</td><td><span class="pill no">不建議直接印</span></td><td>表面不吸墨，墨水不易附著、容易暈開或被擦掉；需塗佈專用塗層</td></tr>
+    </table></div>
+    <p class="small">實際能印的材料請以 FLUX 官方說明與學校試印結果為準，並記在「參數紀錄本」。</p>
+  </div>
+
+  <div class="card">
+    <h3>彩印＋切割 作業流程</h3>
+    <ol class="steps">
+      <li><b>設計</b>：Inkscape 裡放入彩色圖片（或彩色填色）＋紅色切割外框。圖片要<b>比外框大一點點</b>（外擴約 1 mm，稱為「出血」），切割後邊緣才不會露出白邊。</li>
+      <li><b>匯入 Beam Studio</b>：依顏色分層後，把<b>彩色圖片所在的圖層，模組設定為「列印」</b>；紅色外框圖層維持「雷射」切割。</li>
+      <li><b>列印參數</b>：可調整解析度、飽和度、列印次數（顏色太淡可多印一次）。</li>
+      <li><b>順序</b>：<b>先印，最後切</b>。切割一定放在最後，否則零件移位會印歪。</li>
+      <li><b>放材料、對焦</b>：材料要平、要固定；用對焦拉桿完成對焦，確認墨頭與材料距離正確（材料翹曲或列印模組卡住，可能出現 #921 對焦失敗）。</li>
+      <li><b>預噴區</b>：Beam Studio 會在工作區旁設定一個「預噴」小區域，讓墨頭先噴幾下暢通墨水 —— 請在那個位置放一小塊廢料或紙。</li>
+      <li><b>相機預覽與走邊框</b>：確認位置後送出。</li>
+      <li><b>完成後</b>：等墨水乾（約數分鐘）再拿，避免手指抹花。立刻<b>清潔墨頭並蓋上保護蓋</b>。</li>
+    </ol>
+    <p>完整一步一步版本在「逐步操作」→ <b>E. 彩色列印＋切割</b>。</p>
+  </div>
+
+  <div class="card">
+    <h3>墨水匣保養（官方建議）</h3>
+    <div class="grid g2">
+      <div>
+        <h4>使用前</h4>
+        <ul class="clean">
+          <li>輕輕搖勻墨水匣，取下保護夾。</li>
+          <li>用<b>無塵布沾 99% 酒精</b>，<b>朝同一個方向</b>輕擦噴頭，直到看到墨水順暢流出（不要來回擦）。</li>
+          <li>裝入列印模組，確認蓋子完全扣好。</li>
+          <li><b>機器工作中不可拆下墨水匣或列印模組。</b></li>
+        </ul>
+      </div>
+      <div>
+        <h4>使用後與保存</h4>
+        <ul class="clean">
+          <li>用乾的無塵布擦噴頭，<b>立刻蓋上保護蓋</b>，避免墨頭乾掉堵塞。</li>
+          <li>保存時<b>噴頭朝上</b>，溫度 15–30 °C。</li>
+          <li>開封後建議 <b>3 個月內</b>用完；不要放超過 6 個月。</li>
+          <li>幾週不用的話，取下墨水匣蓋好保護蓋存放。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warn"><b>⚠ 墨水安全</b>避免接觸眼睛、不可吞食、放在學生拿不到的地方；處理墨水時可戴手套，用完洗手。</div>
+  </div>
+
+  <div class="card">
+    <h3>列印效果不好？</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>狀況</th><th>處理</th></tr>
+      <tr><td>顏色淡、模糊</td><td>先確認對焦（墨頭距離）；再提高飽和度或增加列印次數；換更吸墨的材料</td></tr>
+      <tr><td>有白色橫紋、缺色</td><td>噴頭堵塞 → 用酒精無塵布同方向擦拭；做預噴；必要時用 Beam Studio 的列印測試檔檢查</td></tr>
+      <tr><td>印的位置和切割對不準</td><td>重做相機校正；確認材料沒有移動；切割放在最後</td></tr>
+      <tr><td>墨水暈開</td><td>材料表面太光滑或太濕 → 換材料或先上塗層；降低飽和度</td></tr>
+      <tr><td>墨頭刮到材料</td><td>材料翹曲 → 換平的材料、用膠帶或磁鐵固定四角，重新對焦</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= 8 逐步操作 ======================= -->
+<section class="page" id="sop" data-title="逐步操作 SOP" data-grp="實機操作" data-u="#e5484d">
+  <div class="hero"><span class="tag">單元 8</span><h2>逐步操作 SOP</h2><p>站在機器旁，一步一步照著做。每一步的檢查項目都打勾才進下一步，進度會自動記住。</p></div>
+  <div data-tool="sop"></div>
+  <div id="sopPrint"></div>
+</section>
+
+<!-- ======================= 9 實作與產生器 ======================= -->
+<section class="page" id="practice" data-title="實作與作品產生器" data-grp="實機操作" data-u="#2457c5">
+  <div class="hero"><span class="tag">單元 9</span><h2>研習實作與作品產生器</h2><p>不用從零開始畫：在這裡輸入尺寸與文字，直接下載符合雷射規範的 SVG（單位 mm），再用 Inkscape 修改或直接匯入 Beam Studio。</p></div>
+
+  <div class="grid g3">
+    <div class="card"><h4>實作 1｜三模式對照卡</h4>同一張卡上有切割外框、雕線星星、刻面方塊與文字。切完一眼看懂三種加工的差異，也可當參數測試。<br><span class="small">材料：3 mm 椴木合板 80×50 mm</span></div>
+    <div class="card"><h4>實作 2｜個人名牌</h4>用 Inkscape 從零畫（逐步操作 C），或用下方產生器做底稿再修改。<br><span class="small">材料：3 mm 椴木合板或壓克力</span></div>
+    <div class="card"><h4>實作 3｜彩印鑰匙圈</h4>產生外框與吊孔後，在 Inkscape 放入彩色圖片，Beam Studio 設定列印＋切割（逐步操作 E）。<br><span class="small">材料：3 mm 椴木合板</span></div>
+  </div>
+
+  <div class="card">
+    <h3>作品產生器</h3>
+    <div data-tool="gen"></div>
+  </div>
+
+  <div class="note"><b>📌 產生器的文字</b>為了讓檔案在每台電腦都能打開，下載的 SVG 中文字仍是「文字物件」。請用 Inkscape 打開，全選後按 <kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd> 轉成路徑再存檔（或在 Beam Studio 裡確認字型正確）。這也是 Inkscape 的練習之一。</div>
+</section>
+
+<!-- ======================= 10 SVG 檢查器 ======================= -->
+<section class="page" id="checker" data-title="SVG 檢查器" data-grp="實機操作" data-u="#7c3aed">
+  <div class="hero"><span class="tag">單元 10</span><h2>SVG 檢查器</h2><p>送到機器之前先檢查：顏色是不是規範色、文字轉路徑了沒、尺寸有沒有超出工作範圍。檔案只在這台電腦的瀏覽器裡分析，不會上傳。</p></div>
+  <div class="card"><div data-tool="checker"></div></div>
+</section>
+
+<!-- ======================= 11 保養維護 ======================= -->
+<section class="page" id="maint" data-title="保養維護" data-grp="管理維護" data-u="#15803d">
+  <div class="hero"><span class="tag">單元 11</span><h2>保養維護</h2><p>雷射切割機最怕「煙油」與「碎屑」。煙油沾到鏡片會讓功率下降、切不斷；碎屑堆積會起火。</p></div>
+
+  <div class="card">
+    <h3>官方保養週期表（beamo II）</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>部位</th><th>保養內容</th><th>頻率</th></tr>
+      <tr><td>面板</td><td>面板「維護」頁面測試 ★：歸零後檢查上蓋／底蓋／後蓋狀態圖示、水泵、X／Y／Z 限位開關、自動對焦、相機、空氣泵、排風扇、紅光（不要測「雷射脈衝」）</td><td>每月 1 次</td></tr>
+      <tr><td>面板</td><td>清潔觸控螢幕灰塵油污</td><td>每 2 週</td></tr>
+      <tr><td>工作區</td><td>清潔並潤滑 Y 軸導桿、X 軸滑軌（先用紙巾擦掉油污灰塵，再用刷子沾隨附潤滑油塗勻，手推雷射頭前後左右 3–5 次）</td><td>每 1–2 週（切壓克力：每週；切紙：每個使用日）</td></tr>
+      <tr><td>工作區</td><td>清潔蜂巢板 ★：取出（網格邊緣很利，小心拿）→ 吸塵器或刷子清碎屑 → 噴冷氣散熱片泡沫清潔劑軟化焦油再擦掉 → 以 45° 斜放回去再放平</td><td><b>每次使用後</b></td></tr>
+      <tr><td>工作區</td><td>清潔機殼底部 ★：取出蜂巢板 → 吸塵器或刷子清碎屑 → 均勻噴 75–99% 酒精，約 1 分鐘後用紙巾擦掉焦油。<b>碎屑起火是雷射機最常見的火災原因。</b></td><td><b>每次使用後</b></td></tr>
+      <tr><td>光學</td><td>清潔 3 片反射鏡、聚焦鏡、雷射管端聚焦鏡 ★（棉花棒沾 75–99% 酒精；管端鏡片與第 1 片反射鏡要拆後蓋）</td><td>每 1–2 週</td></tr>
+      <tr><td>光學</td><td>光路檢查 ★</td><td>開箱時、換雷射管後、每月 1 次</td></tr>
+      <tr><td>光學</td><td>光路校正</td><td>光路偏移時（建議由廠商協助）</td></tr>
+      <tr><td>上蓋</td><td>清潔上蓋視窗油污</td><td>每 2 週</td></tr>
+      <tr><td>冷卻</td><td>補充冷卻水 ★：準備約 350 ml <b>蒸餾水或純水</b> → 拆後蓋、開機 → 用隨附漏斗慢慢加到約 50% → 進「維護模式」歸零後按「水泵」→ 水位下降就關水泵再補，直到約 80% 且不再下降。水不夠會讓玻璃雷射管過熱破裂</td><td>每 3 個月</td></tr>
+      <tr><td>排風</td><td>清潔排風扇葉灰塵</td><td>每月 1 次</td></tr>
+      <tr><td>雷射管</td><td>健康檢查：70% 功率切不斷 3 mm 壓克力時考慮更換</td><td>依使用情形</td></tr>
+      <tr><td>全機</td><td>雕刻範例檔一次（即使不常用）</td><td>每月 1 次</td></tr>
+    </table></div>
+    <p class="small">★ 為官方標示的「必要保養」。資料來源：FLUX Help Center《beamo II 線上指南》第 IV 章 4-1～4-8（2026-10-28 查詢）。實際拆裝步驟請看官方說明與影片，沒有把握的項目（光路校正、換雷射管）請聯絡廠商。</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>每次使用後（3 分鐘）</h3>
+      <ol class="steps">
+        <li>取出作品與廢料，蜂巢板上卡住的小碎片用夾子或刷子清掉。</li>
+        <li>碎屑多時取出蜂巢板，清理下方機殼底部（beamo II <b>沒有可拉出的碎屑抽屜</b>；底蓋有磁鐵感測器，平常不要拆）。</li>
+        <li>用過列印：清潔噴頭、蓋保護蓋。</li>
+        <li>關閉 Beam Air，機器關機。</li>
+        <li>填寫使用紀錄（日期、使用者、材料、時間、異常）。</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3>清潔鏡片的重點</h3>
+      <ul class="clean">
+        <li><b>先關機、斷電</b>再動手。</li>
+        <li>用<b>棉花棒沾少量 75–99% 酒精</b>輕擦，擦到沒有髒污即可，不要過度擦拭。</li>
+        <li>不可用面紙、衣服（會刮傷鍍膜）。</li>
+        <li><b>擦完不能留下水氣</b>：水氣會讓鏡片氧化、功率下降。有燒痕或裂痕要更換。</li>
+        <li>聚焦鏡在雷射頭內：先在工作區中央放一塊材料防止鏡片掉落再取下；<b>裝回時凸面朝上</b>。</li>
+        <li>雷射管端鏡片和第 1 片反射鏡要用 T8 星型起子拆後蓋，建議由管理老師照官方影片操作。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tip"><b>💡 官方建議：趁機器正常時切一個「光路校正工具」</b>用透明壓克力切出官方提供的光路校正工具檔（見線上指南 2-5 第 6 步），保存起來，日後光路檢查與校正時會用到。</div>
+
+  <div class="card">
+    <h3>保養打勾表（記在本機瀏覽器，可列印貼在機器旁）</h3>
+    <div data-tool="maintlog"></div>
+  </div>
+</section>
+
+<!-- ======================= 12 疑難排解 ======================= -->
+<section class="page" id="trouble" data-title="疑難排解 FAQ" data-grp="管理維護" data-u="#d97706">
+  <div class="hero"><span class="tag">單元 12</span><h2>疑難排解</h2><p>遇到問題先看這裡；仍無法解決請記下面板訊息、Beam Studio 版本與照片，聯絡 FLUX 客服或經銷商。</p></div>
+  <div class="row no-print" style="margin-bottom:6px"><input class="inp" id="faqSearch" placeholder="🔍 輸入關鍵字，例如：切不斷、連不上、列印" style="flex:1;min-width:200px"></div>
+  <div id="faqList">
+    <details><summary>切不斷，零件掉不下來</summary><div>
+      <p>先確認設計檔：切割線是<b>封閉</b>的紅色路徑、沒有填色；材料沒有翹曲。再照官方〈5-7 切不斷〉的順序：</p>
+      <ol class="steps"><li><b>清潔所有反射鏡與聚焦鏡</b>（髒污會讓雷射變弱）。</li><li><b>確認參數</b>：Beam Studio 的功率、速度設定正確，面板上的速度與功率倍率是 100%。</li><li><b>確認對焦距離</b>（必要時做 4-12 焦距微調）。</li><li><b>檢查光路</b>：官方表示切不斷<b>最常見的原因是光路偏移</b>（4-9 光路檢查）。沒把握就直接聯絡經銷商。</li><li>確認功率曲線設定為 25/100（4-13）。</li><li>用 3 mm 透明壓克力（或 3 mm MDF）在<b>工作區中央</b>、再到<b>右下角</b>切範例檔：兩處都切得斷 → 機器正常，是材料參數問題（提高功率、降低速度或多切一次）。</li><li>仍切不斷：功率 +20%、速度減半再試，拍照聯絡客服（可能是雷射管老化或電源）。</li></ol>
+    </div></details>
+    <details><summary>邊緣焦黑、背面有煙燻痕</summary><div>
+      <p>能量太多或煙沒有被吹走：速度調快、功率調低改兩次切；確認空氣輔助有開；可在木板正面貼紙膠帶（遮蔽膠帶）保護表面，切完撕掉。蜂巢板太髒也會在背面留下焦痕，記得清潔。</p>
+    </div></details>
+    <details><summary>雕刻位置和預覽不一樣、偏掉</summary><div>
+      <p>重新做相機校正（第一次使用、機器移動過、預覽和實際位置不一致時都要做），並用 4 個 100×60 mm 矩形驗證；預覽前先對焦；送出前用「走邊框」確認。材料在相機預覽後被移動也會偏。</p>
+    </div></details>
+    <details><summary>Beam Studio 找不到機器、連不上</summary><div>
+      <ol class="steps"><li>電腦與機器是否在同一個網路（同一個 Wi-Fi 或網段）？機器的 Wi-Fi <b>只支援 2.4 GHz</b>；看不到學校 Wi-Fi 名稱時，在面板選「連接其他 Wi-Fi」手動輸入。</li><li>到機器面板查看 IP，在 Beam Studio「新增機器」手動輸入 IP。</li><li>學校防火牆或網路隔離 → 請資訊組協助；或改用網路線直連電腦（USB 轉網路線轉接器，Windows 要開啟「網際網路連線共用」，IP 通常是 192.168 開頭，若是 169.254 開頭代表設定或網路線有問題）。</li><li>更新 Beam Studio 與機器韌體到最新版。</li></ol>
+    </div></details>
+    <details><summary>匯入 SVG 後尺寸變大或變小</summary><div>
+      <p>Inkscape 文件單位不是 mm 或縮放不是 1.0。到文件屬性（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>）改 mm、縮放 1.0 後重新存檔。用本網站「SVG 檢查器」可看出檔案寬高的單位。</p>
+    </div></details>
+    <details><summary>匯入後只有一個圖層，紅藍黑沒有分開</summary><div>
+      <p>匯入時要選「依顏色分層」。若還是混在一起，可能顏色不是純色（例如 #FE0101）或被群組裡的樣式蓋過 —— 用 SVG 檢查器看實際顏色，在 Inkscape 重新輸入色碼。</p>
+    </div></details>
+    <details><summary>文字變成別的字型或亂碼</summary><div>
+      <p>文字沒有轉路徑。在 Inkscape 全選文字 → 路徑 → 物件轉成路徑（<kbd>Shift</kbd>+<kbd>Ctrl</kbd>+<kbd>C</kbd>）後再存檔。</p>
+    </div></details>
+    <details><summary>刻面很慢，時間比預期多很多</summary><div>
+      <p>刻面時間由圖案「高度」決定：把作品轉成橫向、多個作品「橫向排在同一排」一起刻；降低 DPI；不重要的大面積改用雕線描邊。</p>
+    </div></details>
+    <details><summary>列印顏色很淡、有條紋</summary><div>
+      <p>見「彩色列印」單元的列印問題表：先對焦、清潔噴頭、預噴，再調飽和度或列印次數。</p>
+    </div></details>
+    <details><summary>面板出現錯誤碼（#900、#901……）</summary><div>
+      <p>先拍照記錄訊息內容，對照下方「錯誤碼速查」。同一個錯誤反覆出現請聯絡客服，不要自行拆機。</p>
+    </div></details>
+    <details><summary>按電源鍵沒反應、開不了機</summary><div>
+      <p>先檢查機器右側的<b>緊急停止鈕</b>是不是被按下了：順時針朝白色箭頭旋轉讓它彈起。電源線兩端都要插緊。第一次開機約需 2～5 分鐘。</p>
+    </div></details>
+    <details><summary>按了緊急停止之後怎麼恢復？</summary><div>
+      <p>確認危險排除後，<b>順時針朝白色箭頭旋轉</b>讓按鈕彈起，重新開機，並檢查材料與機器狀態再重新送出工作。</p>
+    </div></details>
+    <details><summary>加工到一半自己暫停，顯示偵測到火焰（#912）</summary><div>
+      <p>先確認真的沒有起火。若沒有：機器是否被<b>陽光直射</b>或強光照到（陽光波長接近火光）→ 拉上窗簾或移位置。面板「機器 → 硬體設定 → 火焰感測器測試」可看觸發數量；可把靈敏度調到「低」。官方允許關閉火焰偵測，但<b>關閉後一定要有人全程看顧</b>，校園不建議關閉。</p>
+    </div></details>
+    <details><summary>壓克力切完邊緣霧霧的、有氣泡</summary><div>
+      <p>壓克力切割要「慢速、高功率、一次切穿」邊緣才會亮；分很多次切會霧。保護膜可以保留切割（減少表面燻黑），但雕刻面要先撕掉。</p>
+    </div></details>
+  </div>
+  <div class="card">
+    <h3>錯誤碼速查（官方線上指南第 VI 章）</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>代碼</th><th>意思</th><th>先檢查</th></tr>
+      <tr><td>#900</td><td>冷卻水流量不足／冷卻系統異常</td><td>冷卻水是否不足 → 依 4-8 補充蒸餾水或純水</td></tr>
+      <tr><td>#901</td><td>上蓋開啟／上蓋關不上</td><td>上蓋是否關好、有沒有東西卡住</td></tr>
+      <tr><td>#902</td><td>過熱／水溫過高</td><td>室溫太高、通風不良；先停機讓機器降溫</td></tr>
+      <tr><td>#903</td><td>底蓋開啟／底蓋偵測異常</td><td>底蓋是否裝好（有磁鐵感測）；有擴充底座時前後門是否關好；先更新韌體</td></tr>
+      <tr><td>#904</td><td>X／Y 軸歸零失敗</td><td>運送固定件是否都拆了、軌道上有沒有異物</td></tr>
+      <tr><td>#910</td><td>Z 軸歸零失敗</td><td>平台下方有沒有東西卡住</td></tr>
+      <tr><td>#912</td><td>火焰偵測異常</td><td>是否真的起火；陽光、強光直射</td></tr>
+      <tr><td>#913</td><td>氣流偵測異常</td><td>空氣輔助、排風是否正常，進氣口或濾網是否堵塞</td></tr>
+      <tr><td>#920</td><td>後蓋開啟</td><td>保養後後蓋是否裝回、鎖好</td></tr>
+      <tr><td>#921</td><td>自動對焦失敗</td><td>探針是否碰到材料、材料是否翹曲；按面板 Z 軸歸零後再試；列印模組是否干擾</td></tr>
+      <tr><td>#927</td><td>遠端安全連鎖被觸發</td><td>外接的安全連鎖裝置狀態</td></tr>
+      <tr><td>#928</td><td>主機板沒有回應</td><td>重新開機；仍出現請聯絡客服</td></tr>
+      <tr><td>#929</td><td>沒有偵測到安全鑰匙</td><td>插入實體鑰匙轉到 ON，或在面板輸入密碼</td></tr>
+    </table></div>
+    <p class="small">各代碼的完整排除步驟請點「官方線上指南」單元的連結。「先檢查」欄只是第一步的整理；#900、#902、#904、#910、#913、#927、#928 是依官方文章標題整理，詳細請看原文。</p>
+  </div>
+  <p class="small">FLUX Help Center：support.flux3dp.com（搜尋 beamo II）。台灣 FLUX 客服電話 02-2651-3137（週一至週五 9:00–18:00，依官網公告為準）。</p>
+</section>
+
+<!-- ======================= 13 參數紀錄本 ======================= -->
+<section class="page" id="log" data-title="參數紀錄本" data-grp="管理維護" data-u="#0f766e">
+  <div class="hero"><span class="tag">單元 13</span><h2>參數紀錄本</h2><p>每位老師試出好參數就記下來，匯出 CSV 放到學校共用雲端，大家一起累積「我們這台機器」的參數表。</p></div>
+  <div class="card"><div data-tool="paramlog"></div></div>
+</section>
+
+<!-- ======================= 14 官方線上指南 ======================= -->
+<section class="page" id="guide" data-title="官方線上指南" data-grp="管理維護" data-u="#2457c5">
+  <div class="hero"><span class="tag">單元 14</span><h2>官方《beamo II 線上指南》導覽</h2><p>FLUX Help Center 的 beamo II 線上指南共 9 章，有官方影片與圖解。遇到本網站沒寫到的狀況，從這裡找最準。</p></div>
+
+  <div class="note"><b>📌 入口</b><a href="https://support.flux3dp.com/hc/zh-tw/categories/13025863120655-beamo-II-%E7%B7%9A%E4%B8%8A%E6%8C%87%E5%8D%97" target="_blank" rel="noopener">support.flux3dp.com › beamo II 線上指南</a>　（網站可能自動切成英文，可在頁面上切換語言。2026-10-28 查詢）</div>
+
+  <div class="grid g2">
+    <div class="card"><h3>I. 開始之前</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258320038415" target="_blank" rel="noopener">1-2 安全須知</a>：未成年人不可單獨操作、不可拆安全連鎖、避開陽光</li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258333839759" target="_blank" rel="noopener">1-3 標籤</a>：機身上警示標籤的意思</li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258338546447" target="_blank" rel="noopener">1-4 規格</a>：工作範圍、平台尺寸、配件規格</li></ul>
+      <p class="small">→ 本網站單元 1、2</p></div>
+    <div class="card"><h3>II. 開始使用</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258541463567" target="_blank" rel="noopener">2-1 組裝與開機</a>：拆固定件、裝排風管、Wi-Fi 接收器、開機測試</li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258539791119" target="_blank" rel="noopener">2-2 軟體安裝與啟用</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258555892751" target="_blank" rel="noopener">2-3 連線設定</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258379407119" target="_blank" rel="noopener">2-4 相機校正</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258393536399" target="_blank" rel="noopener">2-5 開始雕刻</a>（對焦拉桿、範例檔）</li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/15501369093903" target="_blank" rel="noopener">2-6 安全鑰匙</a>：密碼／實體鑰匙、Class 1／Class 4</li></ul>
+      <p class="small">→ 本網站單元 6、SOP A／D</p></div>
+    <div class="card"><h3>III. 軟體操作</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258564753039" target="_blank" rel="noopener">3-1 關於 Beam Studio</a></li>
+      <li>3-2～3-4 LightBurn 操作、相機預覽、夾爪旋轉軸（選用）</li></ul>
+      <p class="small">→ 本網站單元 6</p></div>
+    <div class="card"><h3>IV. 保養（16 篇）</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258917875087" target="_blank" rel="noopener">4-1 保養週期表</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258886683919" target="_blank" rel="noopener">4-2 面板維護測試</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258878868111" target="_blank" rel="noopener">4-3 潤滑</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258836792079" target="_blank" rel="noopener">4-4 反射鏡與鏡片清潔</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258807191055" target="_blank" rel="noopener">4-5 機殼底部清潔</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258802809871" target="_blank" rel="noopener">4-6 蜂巢板清潔</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13258747614095" target="_blank" rel="noopener">4-7 韌體更新</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14128368849935" target="_blank" rel="noopener">4-8 補充冷卻水</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13258745036047" target="_blank" rel="noopener">4-9 光路檢查</a></li>
+      <li>4-10～4-16 光路調整、焦距微調、功率曲線、進階相機校正、雷射安全員訓練（建議由管理老師或廠商處理）</li></ul>
+      <p class="small">→ 本網站單元 11</p></div>
+    <div class="card"><h3>V. 疑難排解（15 篇）</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13277088616591" target="_blank" rel="noopener">5-1 聯絡客服</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13277087448463" target="_blank" rel="noopener">5-3 略過或重跑開機測試</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13277063972367" target="_blank" rel="noopener">5-4 連線問題</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13277033366415" target="_blank" rel="noopener">5-7 切不斷</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13276985325967" target="_blank" rel="noopener">5-8 相機問題</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13277005221519" target="_blank" rel="noopener">5-11 雷射不出光</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13277003372943" target="_blank" rel="noopener">5-12 無法開機</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13276971741711" target="_blank" rel="noopener">5-13 觸控沒反應</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13276952000783" target="_blank" rel="noopener">5-15 手動對焦</a></li></ul>
+      <p class="small">→ 本網站單元 12</p></div>
+    <div class="card"><h3>VI. 錯誤碼（13 篇）</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/14166917446031" target="_blank" rel="noopener">#900 冷卻</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14166904431759" target="_blank" rel="noopener">#901 上蓋</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14166906026127" target="_blank" rel="noopener">#902 過熱</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14108393763471" target="_blank" rel="noopener">#903 底蓋</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/14166890705295" target="_blank" rel="noopener">#904 歸零</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14166909036687" target="_blank" rel="noopener">#910 Z 軸</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14166938370447" target="_blank" rel="noopener">#912 火焰</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14166898460303" target="_blank" rel="noopener">#913 氣流</a></li>
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/14066666269839" target="_blank" rel="noopener">#920 後蓋</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13025888432015" target="_blank" rel="noopener">#921 對焦</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14068134886543" target="_blank" rel="noopener">#927 遠端連鎖</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14068122850703" target="_blank" rel="noopener">#928 主機板</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14289792455823" target="_blank" rel="noopener">#929 安全鑰匙</a></li></ul>
+      <p class="small">→ 本網站單元 12「錯誤碼速查」</p></div>
+    <div class="card"><h3>VII. 保固與免責</h3><ul class="clean"><li><a href="https://support.flux3dp.com/hc/zh-tw/articles/13306462067343" target="_blank" rel="noopener">7-1 保固</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13306481297551" target="_blank" rel="noopener">7-2 免責聲明</a></li></ul>
+      <p class="small">自行拆裝前先確認是否影響保固。</p></div>
+    <div class="card"><h3>VIII. 擴充模組　IX. 更換影片</h3><ul class="clean">
+      <li><a href="https://support.flux3dp.com/hc/zh-tw/articles/17100568321295" target="_blank" rel="noopener">貫穿式雕刻</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13660025097103" target="_blank" rel="noopener">擴充底座安裝</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14125713774991" target="_blank" rel="noopener">夾爪旋轉軸</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/14128083771023" target="_blank" rel="noopener">自動送料</a>、<a href="https://support.flux3dp.com/hc/zh-tw/articles/13859915373199" target="_blank" rel="noopener">2W 紅外線模組</a></li>
+      <li>IX 章：散熱器、風扇、流量感測器、雷射管等零件更換影片（請由廠商或熟悉的管理老師處理）</li></ul></div>
+  </div>
+
+  <div class="card">
+    <h3>本網站依官方指南修正的內容（2026-10-28 對照）</h3>
+    <div class="tbl-wrap"><table>
+      <tr><th>項目</th><th>原本寫的</th><th>依官方指南修正為</th><th>出處</th></tr>
+      <tr><td>碎屑清理</td><td>拉出底盤（抽屜）倒碎屑</td><td>beamo II 沒有可拉出的碎屑抽屜：取出蜂巢板，清潔機殼底部（吸塵器／刷子＋酒精擦焦油）；底蓋有磁鐵感測器，平常不拆</td><td>4-5、4-6、#903</td></tr>
+      <tr><td>相機位置</td><td>裝在上蓋內側</td><td>相機（與火焰感測器）在雷射頭上，移動雷射頭時預覽畫面會跟著變</td><td>4-2、#912</td></tr>
+      <tr><td>按鍵與接頭</td><td>電源開關、網路、USB 都在背面</td><td>正面：觸控面板、電源鍵、緊急停止（右側）、USB-A、USB-B；背面：電源插座、外部進氣口、排風口</td><td>2-1</td></tr>
+      <tr><td>對焦方式</td><td>在面板或 Beam Studio 執行自動對焦</td><td>雷射頭移到材料上方，往下拉對焦拉桿，碰到材料彈起即完成</td><td>2-5</td></tr>
+      <tr><td>有線網路</td><td>直接插網路線</td><td>需 USB 轉網路線轉接器（不支援 PoE）；Wi-Fi 要插隨附接收器、只支援 2.4 GHz</td><td>1-4、2-3</td></tr>
+      <tr><td>擺放位置</td><td>靠近窗戶</td><td>避開陽光直射與潮濕（陽光會觸發火焰感測器 #912）；排風管伸到窗外即可</td><td>1-2、#912</td></tr>
+      <tr><td>起火處理</td><td>先按暫停、蓋子關著觀察</td><td>官方：立即關閉電源並拔插頭；蓋子仍先不要掀開，火持續才用滅火器</td><td>1-2</td></tr>
+      <tr><td>冷卻水</td><td>「更換」冷卻水</td><td>每 3 個月「補充」約 350 ml 蒸餾水或純水到約 80%（拆後蓋、維護模式開水泵）</td><td>4-8</td></tr>
+      <tr><td>鏡片清潔</td><td>鏡頭紙、單方向擦</td><td>棉花棒沾 75–99% 酒精；3 片反射鏡＋聚焦鏡＋管端鏡片；擦完不留水氣；聚焦鏡凸面朝上</td><td>4-4</td></tr>
+      <tr><td>機身尺寸</td><td>711 × 475 × 208 mm</td><td>710 × 474 × 208 mm；平台可放材料 415 × 335 mm；5 吋觸控螢幕</td><td>1-4</td></tr>
+      <tr><td>自動送料</td><td>屬於 Class 4</td><td>要在面板安全鑰匙設定切到 Class 4，且操作者需完成雷射安全員訓練並戴護目鏡</td><td>2-6</td></tr>
+      <tr><td>Beam Studio 按鈕</td><td>走邊框在左上</td><td>相機預覽在左上、走邊框在右上、送出是右上箭頭按鈕；範例檔在「檔案 → 範例 → beamo II 範例」</td><td>2-5</td></tr>
+      <tr><td>新增內容</td><td>—</td><td>安全鑰匙、火焰感測器、開機測試、相機校正驗證矩形、錯誤碼速查、切不斷的官方排除順序、光路校正工具</td><td>2-1、2-4、2-6、5-7、VI</td></tr>
+    </table></div>
+    <p class="small">彩色列印：線上指南目前沒有 beamo II 專屬的列印章節，單元 7 仍參考官方墨水匣指南與 Ador 列印說明，已在該單元標示。</p>
+  </div>
+</section>
+
+<!-- ======================= 15 測驗與認證 ======================= -->
+<section class="page" id="quiz" data-title="測驗與使用認證" data-grp="結業" data-u="#b08a3c" data-auto="1">
+  <div class="hero" style="background:linear-gradient(130deg,#1f2a44,#7a5a1c)"><span class="tag">單元 15</span><h2>測驗與使用認證</h2><p>18 題，80 分以上即可列印「beamo II 校內使用認證」。</p></div>
+  <div class="cert-zone">
+    <div class="row no-print" style="margin-bottom:8px">
+      <label class="field" style="flex:1;min-width:200px">姓名（印在認證上）<input id="certName" placeholder="例如：王小明 老師"></label>
+      <label class="field" style="flex:1;min-width:200px">研習名稱<input id="certTitle" value="光雕彩印實驗室：beamo II 從設計到成品一次上手"></label>
+    </div>
+    <div data-tool="quiz"></div>
+  </div>
+</section>
+
+<!-- ======================= 參考資料 ======================= -->
+<section class="page" id="refs" data-title="參考資料" data-grp="結業" data-nodone="1">
+  <div class="hero"><span class="tag">附錄</span><h2>參考資料與下載</h2><p>官方資料會更新，研習前請再確認一次。</p></div>
+  <div class="card">
+    <h3>官方</h3>
+    <ul class="clean">
+      <li>beamo II 台灣官方商店：<a href="https://tw-shop.flux3dp.com/products/beamo-ii" target="_blank" rel="noopener">tw-shop.flux3dp.com/products/beamo-ii</a></li>
+      <li>beamo II 產品頁（規格、材料表）：<a href="https://tw.flux3dp.com/beamo-ii/" target="_blank" rel="noopener">tw.flux3dp.com/beamo-ii</a></li>
+      <li>Beam Studio 下載：<a href="https://tw.flux3dp.com/downloads/" target="_blank" rel="noopener">tw.flux3dp.com/downloads</a></li>
+      <li>FLUX Help Center（使用手冊、保養、疑難排解）：<a href="https://support.flux3dp.com/hc/en-us" target="_blank" rel="noopener">support.flux3dp.com</a></li>
+      <li>beamo II 保養週期表：<a href="https://support.flux3dp.com/hc/en-us/articles/13258917875087-4-1-beamo-II-Maintenance-Checklist" target="_blank" rel="noopener">4-1 beamo II - Maintenance Checklist</a></li>
+      <li>墨水匣使用與保存：<a href="https://support.flux3dp.com/hc/en-us/articles/8237431544591-Ink-Cartridge-Usage-Guidelines" target="_blank" rel="noopener">Ink Cartridge Usage Guidelines</a></li>
+    </ul>
+    <h3>軟體</h3>
+    <ul class="clean">
+      <li>Inkscape（免費向量繪圖）：<a href="https://inkscape.org/" target="_blank" rel="noopener">inkscape.org</a></li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>清除本機紀錄</h3>
+    <p class="small">研習進度、SOP 打勾、保養表、參數紀錄都存在這台電腦的瀏覽器。公用電腦研習結束後可以清除。（參數紀錄請先匯出 CSV）</p>
+    <button class="btn red" id="resetAll">清除本網站在這台電腦的所有紀錄</button>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/tools.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
